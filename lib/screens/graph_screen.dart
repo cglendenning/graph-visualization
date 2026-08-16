@@ -78,6 +78,10 @@ class _GraphScreenState extends State<GraphScreen>
   RosetteState? _to;
 
   bool _busy = true;
+
+  /// Set while relocating. Non-null replaces the canvas with a progress
+  /// panel, because a dimmed copy of the previous rosette reads as a stall.
+  String? _working;
   String? _error;
   bool _hintVisible = true;
 
@@ -115,9 +119,10 @@ class _GraphScreenState extends State<GraphScreen>
 
   /// Runs one navigation step, holding the outgoing rosette on screen until
   /// the new one has arrived so the canvas never blanks out mid-jump.
-  Future<void> _load(Future<void> Function() step) async {
+  Future<void> _load(Future<void> Function() step, {String? working}) async {
     setState(() {
       _busy = true;
+      _working = working;
       _error = null;
     });
     try {
@@ -125,9 +130,10 @@ class _GraphScreenState extends State<GraphScreen>
       await step();
       if (!mounted) return;
       setState(() {
-        _from = outgoing;
+        _from = working == null ? outgoing : null;
         _to = _session.rosette;
         _busy = false;
+        _working = null;
       });
       _controller.forward(from: 0);
 
@@ -144,6 +150,7 @@ class _GraphScreenState extends State<GraphScreen>
       if (!mounted) return;
       setState(() {
         _busy = false;
+        _working = null;
         _error = error is WikidataUnavailable
             ? error.message
             : 'Could not reach Wikidata. Check your connection.';
@@ -167,7 +174,7 @@ class _GraphScreenState extends State<GraphScreen>
   void _reroll() {
     if (_inFlight || _busy) return;
     HapticFeedback.lightImpact();
-    _load(() => _session.start());
+    _load(() => _session.start(), working: 'FINDING A NEW TOPIC');
   }
 
   Future<void> _openFilter() async {
@@ -177,16 +184,23 @@ class _GraphScreenState extends State<GraphScreen>
       initial: widget.wikidata.filterLabel,
     );
     if (result == null || !mounted) return;
-    await _load(() async {
-      if (result.cleared) {
-        widget.wikidata.clearFilter();
-      } else {
+    await _load(
+      () async {
+        if (result.cleared) {
+          widget.wikidata.clearFilter();
+          await _session.refresh();
+          return;
+        }
         await widget.wikidata.applyFilter(result.terms);
-      }
-      // Move to the subject rather than redrawing where we happen to stand,
-      // since the reader asked to go there.
-      await (result.cleared ? _session.refresh() : _session.start());
-    });
+        // Open on the subject itself. Steering toward dogs should put the
+        // dog article at the centre, not something that merely mentions it.
+        final anchor = widget.wikidata.anchorQid;
+        await (anchor == null ? _session.start() : _session.startAt(anchor));
+      },
+      working: result.cleared
+          ? 'CLEARING'
+          : 'FINDING ${result.terms.trim().toUpperCase()}',
+    );
   }
 
   void _openDetail() {
@@ -344,6 +358,9 @@ class _GraphScreenState extends State<GraphScreen>
                   builder: (context, constraints) {
                     if (_error != null) {
                       return _Failure(message: _error!, onRetry: _reroll);
+                    }
+                    if (_working != null) {
+                      return _Working(label: _working!);
                     }
                     if (current == null) {
                       return const _Booting();
@@ -521,6 +538,89 @@ class _Booting extends StatelessWidget {
   Widget build(BuildContext context) => Center(
         child: Text('FINDING A TOPIC', style: HudPalette.telemetry),
       );
+}
+
+/// Shown while relocating: a moving bar and what is being looked for.
+class _Working extends StatefulWidget {
+  const _Working({required this.label});
+
+  final String label;
+
+  @override
+  State<_Working> createState() => _WorkingState();
+}
+
+class _WorkingState extends State<_Working>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _sweep = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _sweep.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 44),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              widget.label,
+              textAlign: TextAlign.center,
+              style: HudPalette.telemetry.copyWith(
+                color: HudPalette.aqua,
+                letterSpacing: 2.2,
+              ),
+            ),
+            const SizedBox(height: 18),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(2),
+              child: SizedBox(
+                height: 2,
+                width: 200,
+                child: Stack(
+                  children: [
+                    Container(color: HudPalette.aqua.withValues(alpha: 0.12)),
+                    AnimatedBuilder(
+                      animation: _sweep,
+                      builder: (context, _) => Align(
+                        alignment: Alignment(_sweep.value * 4 - 2, 0),
+                        child: Container(
+                          width: 64,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(colors: [
+                              HudPalette.aqua.withValues(alpha: 0),
+                              HudPalette.aqua.withValues(alpha: 0.9),
+                              HudPalette.aqua.withValues(alpha: 0),
+                            ]),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'READING WIKIDATA',
+              style: HudPalette.telemetry.copyWith(
+                fontSize: 8.5,
+                color: HudPalette.aquaDim,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _Failure extends StatelessWidget {

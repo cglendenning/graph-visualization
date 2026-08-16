@@ -820,6 +820,28 @@ void mainThemed() {
       expect(s.isFiltered, isFalse);
     });
 
+    test('opens on the subject itself, not merely near it', () async {
+      final s = WikidataService(fetcher: themedWorld, random: Random(3));
+      await s.applyFilter('jazz');
+      // Steering toward dogs should put the dog article at the centre.
+      expect(s.anchorQid, 'Q8341');
+      expect(s.isThemed(s.anchorQid!), isTrue);
+    });
+
+    test('discards pre-warmed topics when steering changes', () async {
+      // Regression: the warmed topic pool survived a filter change, so
+      // asking to steer opened on whatever unrelated topic was waiting.
+      final s = WikidataService(fetcher: themedWorld, random: Random(3));
+      s.prefetchRandomTopics();
+      var spins = 0;
+      while (!s.hasWarmRandomTopic && spins++ < 200) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      if (!s.hasWarmRandomTopic) return; // fixture did not warm; nothing to prove
+      await s.applyFilter('jazz');
+      expect(s.hasWarmRandomTopic, isFalse);
+    });
+
     test('drops warmed draws when steering changes', () async {
       final s = WikidataService(fetcher: themedWorld, random: Random(3));
       s.prefetch(['Q1']);

@@ -169,6 +169,9 @@ class WikidataService {
 
   int get themeSize => _theme.length;
 
+  /// The subject itself — where steering should first put you.
+  String? get anchorQid => _anchorQid;
+
   bool isThemed(String qid) => _theme.contains(qid);
 
   /// Pages of backlinks to gather, 500 each. Six is about three thousand
@@ -207,8 +210,7 @@ class WikidataService {
       ..add(anchor.qid);
     _filterLabel = anchor.label;
     _anchorQid = anchor.qid;
-    _readyDraws.clear();
-    _prefetchQueue.clear();
+    _invalidateWarmed();
   }
 
   void clearFilter() {
@@ -216,8 +218,19 @@ class WikidataService {
     _theme.clear();
     _filterLabel = '';
     _anchorQid = null;
+    _invalidateWarmed();
+  }
+
+  /// Throws away everything warmed under the previous steering.
+  ///
+  /// The pre-warmed topic pool matters as much as the draws: without
+  /// clearing it, asking to steer toward dogs would open on whatever random
+  /// topic happened to be waiting.
+  void _invalidateWarmed() {
     _readyDraws.clear();
     _prefetchQueue.clear();
+    _readyRandom.clear();
+    _cacheChanged();
   }
 
   /// Picks the concept rather than a work named after it.
