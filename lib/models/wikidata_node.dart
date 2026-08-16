@@ -31,6 +31,7 @@ class WikidataNeighbor {
     required this.node,
     required this.relation,
     required this.incoming,
+    this.themed = false,
   });
 
   final WikidataNode node;
@@ -42,8 +43,22 @@ class WikidataNeighbor {
   /// centre, which is how most of the interesting edges are stored.
   final bool incoming;
 
+  /// Whether this neighbour falls inside the active keyword theme.
+  ///
+  /// A preference, not a requirement. Themed neighbours take seats first and
+  /// the rest are filled normally, because measurement showed a hard
+  /// constraint starves within one or two hops of the anchor.
+  final bool themed;
+
   /// Reads with the centre as the subject.
   String get phrasing => incoming ? '$relation of' : relation;
+
+  WikidataNeighbor asThemed(bool value) => WikidataNeighbor(
+        node: node,
+        relation: relation,
+        incoming: incoming,
+        themed: value,
+      );
 }
 
 /// A property that has at least one statement in the given direction.

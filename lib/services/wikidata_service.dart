@@ -57,7 +57,7 @@ class WikidataService {
   static const Duration timeout = Duration(seconds: 20);
 
   static const String userAgent =
-      'Perihelion/2.3 (https://github.com/cglendenning/graph-visualization)';
+      'Perihelion/2.6 (https://github.com/cglendenning/graph-visualization)';
 
   static const int seatCount = 6;
 
@@ -143,6 +143,142 @@ class WikidataService {
   static final RegExp _qid = RegExp(r'^Q\d+$');
   static final RegExp _pid = RegExp(r'^P\d+$');
 
+  // ------------------------------------------------------------ the theme
+
+  /// Items inside the active theme, as Wikidata ids.
+  ///
+  /// Built from the Wikipedia articles that link to the anchor's article.
+  /// That link graph carries topical "aboutness", which Wikidata's typed
+  /// statements do not: an article about a guitarist links to Electric
+  /// guitar, but Wikidata records only that they play an instrument.
+  final Set<String> _theme = <String>{};
+
+  String _filterLabel = '';
+  String? _anchorQid;
+
+  bool get isFiltered => _theme.isNotEmpty;
+
+  /// The concept the words resolved to, for display.
+  String get filterLabel => _filterLabel;
+
+  int get themeSize => _theme.length;
+
+  bool isThemed(String qid) => _theme.contains(qid);
+
+  /// Pages of backlinks to gather, 500 each. Six is about three thousand
+  /// items and takes roughly three seconds — paid once when the filter is
+  /// set, not on every rosette.
+  static const int themePages = 6;
+
+  /// Candidates to gather before ranking when a theme is active. The draw
+  /// has to look at many more than six to find themed ones among them.
+  static const int filteredDrawTarget = 30;
+
+  /// Resolves [input] to a concept and loads its topical neighbourhood.
+  ///
+  /// Throws [WikidataUnavailable] if the words match nothing, leaving any
+  /// previous filter untouched.
+  Future<void> applyFilter(String input) async {
+    final phrase = input.trim().replaceAll('"', '');
+    if (phrase.isEmpty) {
+      clearFilter();
+      return;
+    }
+
+    final anchor = await _resolveAnchor(phrase);
+    if (anchor == null) {
+      throw WikidataUnavailable('Nothing on Wikipedia matches "$phrase".');
+    }
+
+    final members = await _themeMembers(anchor.article);
+    if (members.isEmpty) {
+      throw WikidataUnavailable('Could not read the topic around "$phrase".');
+    }
+
+    _theme
+      ..clear()
+      ..addAll(members)
+      ..add(anchor.qid);
+    _filterLabel = anchor.label;
+    _anchorQid = anchor.qid;
+    _readyDraws.clear();
+    _prefetchQueue.clear();
+  }
+
+  void clearFilter() {
+    if (_theme.isEmpty) return;
+    _theme.clear();
+    _filterLabel = '';
+    _anchorQid = null;
+    _readyDraws.clear();
+    _prefetchQueue.clear();
+  }
+
+  /// Picks the concept rather than a work named after it.
+  ///
+  /// Search alone ranks a Queen album called "Jazz" above the genre; ordering
+  /// by how many language Wikipedias carry the article corrects that.
+  Future<_Anchor?> _resolveAnchor(String phrase) async {
+    final rows = await _select('''
+SELECT ?item ?itemLabel ?title WHERE {
+  SERVICE wikibase:mwapi {
+    bd:serviceParam wikibase:endpoint "www.wikidata.org" ;
+                    wikibase:api "EntitySearch" ;
+                    mwapi:search "$phrase" ;
+                    mwapi:language "en" ;
+                    mwapi:limit "20" .
+    ?item wikibase:apiOutputItem mwapi:item .
+  }
+  ?item wikibase:sitelinks ?n ; rdfs:label ?itemLabel .
+  FILTER(lang(?itemLabel) = "en")
+  ?sl schema:about ?item ; schema:isPartOf <https://en.wikipedia.org/> ;
+      schema:name ?title .
+}
+ORDER BY DESC(?n)
+LIMIT 1''');
+    if (rows.isEmpty) return null;
+    final qid = _localName(_value(rows.first, 'item') ?? '');
+    final title = _value(rows.first, 'title');
+    if (!_qid.hasMatch(qid) || title == null) return null;
+    return _Anchor(
+      qid: qid,
+      label: _value(rows.first, 'itemLabel') ?? title,
+      article: title,
+    );
+  }
+
+  /// Every Wikidata item whose English article links to [article].
+  Future<Set<String>> _themeMembers(String article) async {
+    final found = <String>{};
+    String? cursor;
+    for (var page = 0; page < themePages; page++) {
+      final body = await _get(Uri.https('en.wikipedia.org', '/w/api.php', {
+        'action': 'query',
+        'format': 'json',
+        'formatversion': '2',
+        'generator': 'backlinks',
+        'gbltitle': article,
+        'gblnamespace': '0',
+        'gbllimit': '500',
+        'prop': 'pageprops',
+        'ppprop': 'wikibase_item',
+        'gblcontinue': ?cursor,
+      }));
+      final json = _decode(body);
+      final pages = (json['query'] as Map<String, dynamic>?)?['pages'];
+      if (pages is! List) break;
+      for (final raw in pages) {
+        final qid = ((raw as Map<String, dynamic>)['pageprops']
+            as Map<String, dynamic>?)?['wikibase_item'] as String?;
+        if (qid != null && _qid.hasMatch(qid)) found.add(qid);
+      }
+      cursor = (json['continue'] as Map<String, dynamic>?)?['gblcontinue']
+          as String?;
+      if (cursor == null) break;
+    }
+    return found;
+  }
+
   // ---------------------------------------------------------------- queries
 
   static Uri sparqlUrl(String query) => Uri.https(
@@ -169,6 +305,12 @@ class WikidataService {
   /// is bot-imported scholarly records, so a raw random item is almost never
   /// something a person would want to land on.
   Future<String> randomStartQid() async {
+    // Inside a theme, start inside it. A purely random article is almost
+    // never about the subject asked for.
+    if (isFiltered) {
+      final pool = <String>[?_anchorQid, ..._theme];
+      return pool[_random.nextInt(pool.length)];
+    }
     final body = await _get(randomArticleUrl());
     final json = _decode(body);
     final pages = (json['query'] as Map<String, dynamic>?)?['pages'];
@@ -387,6 +529,7 @@ LIMIT 200''';
   }
 
   Future<List<WikidataNeighbor>> _drawNeighbors(String qid) async {
+    final target = isFiltered ? filteredDrawTarget : seatCount;
     final all = await propertiesFor(qid);
     if (all.isEmpty) return const [];
 
@@ -408,7 +551,7 @@ LIMIT 200''';
     for (var round = 0;
         round < maxRounds &&
             round < notabilityTiers.length &&
-            chosen.length < seatCount &&
+            chosen.length < target &&
             clock.elapsed < sampleBudget;
         round++) {
       var slice = preferred
@@ -433,7 +576,7 @@ LIMIT 200''';
     // Last resort for a thinly connected topic: drop the requirement that a
     // neighbour have its own article, and let the blocked properties back in.
     // A duller satellite beats an empty seat.
-    if (chosen.length < seatCount && clock.elapsed < sampleBudget) {
+    if (chosen.length < target && clock.elapsed < sampleBudget) {
       final fallback = List<PropertyLink>.of(all)..shuffle(_random);
       final rows = await _neighborRows(
         qid,
@@ -454,7 +597,36 @@ LIMIT 200''';
       await _fillFromSecondHop(chosen.first, qid, chosen, taken);
     }
 
-    return chosen.take(seatCount).toList(growable: false);
+    return _rank(chosen);
+  }
+
+  /// Orders the draw for the six seats.
+  ///
+  /// Without a theme the draw is already varied, so it passes through. With
+  /// one, neighbours inside the theme take seats first — still preferring an
+  /// unused category among them — and the remainder fill from outside it, so
+  /// the rosette is never short.
+  List<WikidataNeighbor> _rank(List<WikidataNeighbor> drawn) {
+    if (!isFiltered) return drawn.take(seatCount).toList(growable: false);
+
+    final marked = drawn
+        .map((n) => n.asThemed(isThemed(n.node.qid)))
+        .toList(growable: false);
+
+    final seated = <WikidataNeighbor>[];
+    final used = <NodeCategory>{};
+    for (final themed in [true, false]) {
+      for (final pass in [true, false]) {
+        for (final n in marked) {
+          if (seated.length == seatCount) break;
+          if (n.themed != themed || seated.contains(n)) continue;
+          if (pass && used.contains(n.node.category)) continue;
+          seated.add(n);
+          used.add(n.node.category);
+        }
+      }
+    }
+    return seated;
   }
 
   Future<void> _fillFromSecondHop(
@@ -729,6 +901,19 @@ LIMIT 600''';
       client.close();
     }
   }
+}
+
+/// The concept a keyword filter resolved to.
+class _Anchor {
+  const _Anchor({
+    required this.qid,
+    required this.label,
+    required this.article,
+  });
+
+  final String qid;
+  final String label;
+  final String article;
 }
 
 /// Convenience for the UI, which colours by category.

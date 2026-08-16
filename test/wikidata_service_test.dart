@@ -18,6 +18,7 @@ const _wd = 'http://www.wikidata.org/prop/direct/';
 const _entity = 'http://www.wikidata.org/entity/';
 
 void main() {
+  mainThemed();
   group('WikidataService queries', () {
     test('sends SPARQL as a json-formatted GET', () {
       final url = WikidataService.sparqlUrl('SELECT * WHERE {}');
@@ -676,4 +677,157 @@ void main() {
 
 class _Offline implements Exception {
   const _Offline();
+}
+
+/// Answers anchor resolution, the backlink theme fetch, the property list and
+/// the neighbour draw, so a themed session can be exercised offline.
+Future<String> themedWorld(Uri url) async {
+  if (url.host == 'en.wikipedia.org') {
+    return jsonEncode({
+      'query': {
+        'pages': [
+          {'title': 'Bebop', 'pageprops': {'wikibase_item': 'Q105513'}},
+          {'title': 'Miles Davis', 'pageprops': {'wikibase_item': 'Q93341'}},
+          {'title': 'No item here'},
+        ],
+      },
+    });
+  }
+  final q = url.queryParameters['query']!;
+  if (q.contains('EntitySearch')) {
+    return jsonEncode({
+      'results': {
+        'bindings': [
+          {
+            'item': {'value': 'http://www.wikidata.org/entity/Q8341'},
+            'itemLabel': {'value': 'jazz'},
+            'title': {'value': 'Jazz'},
+          },
+        ],
+      },
+    });
+  }
+  if (q.contains('SELECT DISTINCT ?pd')) {
+    return jsonEncode({
+      'results': {
+        'bindings': [
+          {
+            'pd': {'value': 'http://www.wikidata.org/prop/direct/P136'},
+            'dir': {'value': 'in'},
+          },
+        ],
+      },
+    });
+  }
+  return jsonEncode({
+    'results': {
+      'bindings': [
+        for (final e in [
+          ['Q93341', 'Miles Davis'], // in theme
+          ['Q105513', 'Bebop'], // in theme
+          ['Q999001', 'Unrelated One'],
+          ['Q999002', 'Unrelated Two'],
+        ])
+          {
+            'pd': {'value': 'http://www.wikidata.org/prop/direct/P136'},
+            'dir': {'value': 'in'},
+            'other': {'value': 'http://www.wikidata.org/entity/${e[0]}'},
+            'otherLabel': {'value': e[1]},
+            'propLabel': {'value': 'genre'},
+          },
+      ],
+    },
+  });
+}
+
+void mainThemed() {
+  group('theme steering', () {
+    test('starts unsteered', () {
+      final s = WikidataService(fetcher: themedWorld);
+      expect(s.isFiltered, isFalse);
+      expect(s.filterLabel, isEmpty);
+    });
+
+    test('resolves the concept and loads its topical neighbourhood', () async {
+      final s = WikidataService(fetcher: themedWorld);
+      await s.applyFilter('jazz');
+      expect(s.isFiltered, isTrue);
+      // Ranked by sitelinks, so the genre wins over a same-named album.
+      expect(s.filterLabel, 'jazz');
+      expect(s.isThemed('Q105513'), isTrue);
+      expect(s.isThemed('Q93341'), isTrue);
+      expect(s.isThemed('Q999001'), isFalse);
+      // Pages without a Wikidata item are skipped, not counted.
+      expect(s.themeSize, greaterThanOrEqualTo(2));
+    });
+
+    test('seats themed neighbours first but still fills all six', () async {
+      final s = WikidataService(fetcher: themedWorld, random: Random(3));
+      await s.applyFilter('jazz');
+      final n = await s.sampleNeighbors('Q1');
+      expect(n, isNotEmpty);
+      // Steering is a pull, not a fence: unthemed neighbours still appear.
+      expect(n.first.themed, isTrue);
+      expect(n.map((x) => x.node.qid), contains('Q93341'));
+    });
+
+    test('marks which neighbours came from the theme', () async {
+      final s = WikidataService(fetcher: themedWorld, random: Random(3));
+      await s.applyFilter('jazz');
+      final n = await s.sampleNeighbors('Q1');
+      for (final x in n) {
+        expect(x.themed, s.isThemed(x.node.qid));
+      }
+    });
+
+    test('starts inside the theme rather than anywhere at all', () async {
+      final s = WikidataService(fetcher: themedWorld, random: Random(3));
+      await s.applyFilter('jazz');
+      final start = await s.randomStartQid();
+      expect(s.isThemed(start), isTrue);
+    });
+
+    test('clearing returns to unsteered browsing', () async {
+      final s = WikidataService(fetcher: themedWorld);
+      await s.applyFilter('jazz');
+      s.clearFilter();
+      expect(s.isFiltered, isFalse);
+      expect(s.filterLabel, isEmpty);
+      expect(s.isThemed('Q105513'), isFalse);
+    });
+
+    test('an empty phrase clears rather than steering nowhere', () async {
+      final s = WikidataService(fetcher: themedWorld);
+      await s.applyFilter('jazz');
+      await s.applyFilter('   ');
+      expect(s.isFiltered, isFalse);
+    });
+
+    test('reports words that match nothing, keeping the old theme', () async {
+      final s = WikidataService(
+        fetcher: (url) async {
+          if (url.queryParameters['query']?.contains('EntitySearch') ?? false) {
+            return jsonEncode({'results': {'bindings': <dynamic>[]}});
+          }
+          return themedWorld(url);
+        },
+      );
+      await expectLater(
+        s.applyFilter('qwertyuiopasdf'),
+        throwsA(isA<WikidataUnavailable>()),
+      );
+      expect(s.isFiltered, isFalse);
+    });
+
+    test('drops warmed draws when steering changes', () async {
+      final s = WikidataService(fetcher: themedWorld, random: Random(3));
+      s.prefetch(['Q1']);
+      while (s.isPrefetching) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      expect(s.hasReadyDraw('Q1'), isTrue);
+      await s.applyFilter('jazz');
+      expect(s.hasReadyDraw('Q1'), isFalse);
+    });
+  });
 }

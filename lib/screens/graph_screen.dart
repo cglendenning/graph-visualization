@@ -13,6 +13,7 @@ import '../services/wikidata_service.dart';
 import '../services/wikipedia_service.dart';
 import '../theme/hud_palette.dart';
 import '../widgets/hud_readout.dart';
+import '../widgets/keyword_filter_sheet.dart';
 import '../widgets/node_circle.dart';
 import 'node_detail_screen.dart';
 
@@ -163,6 +164,25 @@ class _GraphScreenState extends State<GraphScreen>
     _load(() => _session.start());
   }
 
+  Future<void> _openFilter() async {
+    if (_inFlight || _busy) return;
+    final result = await KeywordFilterSheet.show(
+      context,
+      initial: widget.wikidata.filterLabel,
+    );
+    if (result == null || !mounted) return;
+    await _load(() async {
+      if (result.cleared) {
+        widget.wikidata.clearFilter();
+      } else {
+        await widget.wikidata.applyFilter(result.terms);
+      }
+      // Move to the subject rather than redrawing where we happen to stand,
+      // since the reader asked to go there.
+      await (result.cleared ? _session.refresh() : _session.start());
+    });
+  }
+
   void _openDetail() {
     final current = _to;
     if (_inFlight || _busy || current == null) return;
@@ -309,6 +329,8 @@ class _GraphScreenState extends State<GraphScreen>
                 canGoBack: _session.canGoBack && !_busy,
                 onBack: _stepBack,
                 onReroll: _busy ? null : _reroll,
+                onFilter: _busy ? null : _openFilter,
+                theme: widget.wikidata.filterLabel,
               ),
               Expanded(
                 child: LayoutBuilder(
@@ -336,6 +358,9 @@ class _GraphScreenState extends State<GraphScreen>
                 busy: _busy,
                 hintVisible: _hintVisible && _session.depth == 0 && !_busy,
                 bottomInset: media.padding.bottom,
+                theme: widget.wikidata.filterLabel,
+                inTheme:
+                    current?.occupied.where((n) => n.themed).length ?? 0,
               ),
             ],
           ),
@@ -540,11 +565,15 @@ class _TopBar extends StatelessWidget {
     required this.canGoBack,
     required this.onBack,
     required this.onReroll,
+    required this.onFilter,
+    required this.theme,
   });
 
   final bool canGoBack;
   final VoidCallback onBack;
   final VoidCallback? onReroll;
+  final VoidCallback? onFilter;
+  final String theme;
 
   @override
   Widget build(BuildContext context) {
@@ -567,6 +596,35 @@ class _TopBar extends StatelessWidget {
                 ],
               ),
             ),
+          const Spacer(),
+          _BarButton(
+            onTap: onFilter,
+            child: theme.isEmpty
+                ? Text('STEER',
+                    style: HudPalette.telemetry.copyWith(
+                      color: onFilter == null
+                          ? HudPalette.aquaDim.withValues(alpha: 0.4)
+                          : HudPalette.aquaDim,
+                    ))
+                : Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                          color: HudPalette.aqua.withValues(alpha: 0.45)),
+                      color: HudPalette.aqua.withValues(alpha: 0.10),
+                    ),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 120),
+                      child: Text(theme.toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: HudPalette.telemetry
+                              .copyWith(color: HudPalette.aqua)),
+                    ),
+                  ),
+          ),
           const Spacer(),
           _BarButton(
             onTap: onReroll,
@@ -617,6 +675,8 @@ class _Footer extends StatelessWidget {
     required this.busy,
     required this.hintVisible,
     required this.bottomInset,
+    required this.theme,
+    required this.inTheme,
   });
 
   final int depth;
@@ -625,6 +685,19 @@ class _Footer extends StatelessWidget {
   final bool busy;
   final bool hintVisible;
   final double bottomInset;
+  final String theme;
+  final int inTheme;
+
+  /// Steering is a pull rather than a fence, so the count says how much of
+  /// this rosette came from the subject rather than implying all of it did.
+  String get _hint {
+    if (busy) return 'DRAWING FROM WIKIDATA';
+    if (theme.isNotEmpty) {
+      return '${inTheme.toString().padLeft(2, '0')} OF 06 FROM '
+          '${theme.toUpperCase()}';
+    }
+    return 'TAP A SATELLITE TO TRAVEL  ·  TAP THE CENTRE FOR DETAIL';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -642,14 +715,13 @@ class _Footer extends StatelessWidget {
           SizedBox(
             height: 22,
             child: AnimatedOpacity(
-              opacity: busy || hintVisible ? 1 : 0,
+              opacity: busy || hintVisible || theme.isNotEmpty ? 1 : 0,
               duration: const Duration(milliseconds: 300),
               child: Padding(
                 padding: const EdgeInsets.only(top: 9),
                 child: Text(
-                  busy
-                      ? 'DRAWING FROM WIKIDATA'
-                      : 'TAP A SATELLITE TO TRAVEL  ·  TAP THE CENTRE FOR DETAIL',
+                  _hint,
+                  textAlign: TextAlign.center,
                   style: HudPalette.telemetry.copyWith(
                     fontSize: 8.5,
                     color: busy ? HudPalette.aqua : HudPalette.aquaDim,
