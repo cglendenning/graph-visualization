@@ -13,6 +13,7 @@ import '../services/wikidata_service.dart';
 import '../services/wikipedia_service.dart';
 import '../theme/hud_palette.dart';
 import '../widgets/hud_readout.dart';
+import '../widgets/keyword_filter_sheet.dart';
 import '../widgets/node_circle.dart';
 import 'node_detail_screen.dart';
 
@@ -163,6 +164,19 @@ class _GraphScreenState extends State<GraphScreen>
     _load(() => _session.start());
   }
 
+  Future<void> _openFilter() async {
+    if (_inFlight || _busy) return;
+    final result = await KeywordFilterSheet.show(
+      context,
+      initial: widget.wikidata.keywords.join(' '),
+    );
+    if (result == null || !mounted) return;
+    widget.wikidata.setKeywords(result.terms);
+    // Redraw where we stand, so the constraint takes effect without losing
+    // the reader's place in the graph.
+    await _load(() => _session.refresh());
+  }
+
   void _openDetail() {
     final current = _to;
     if (_inFlight || _busy || current == null) return;
@@ -309,6 +323,8 @@ class _GraphScreenState extends State<GraphScreen>
                 canGoBack: _session.canGoBack && !_busy,
                 onBack: _stepBack,
                 onReroll: _busy ? null : _reroll,
+                onFilter: _busy ? null : _openFilter,
+                keywords: widget.wikidata.keywords,
               ),
               Expanded(
                 child: LayoutBuilder(
@@ -336,6 +352,8 @@ class _GraphScreenState extends State<GraphScreen>
                 busy: _busy,
                 hintVisible: _hintVisible && _session.depth == 0 && !_busy,
                 bottomInset: media.padding.bottom,
+                filtered: widget.wikidata.isFiltered,
+                matched: current?.occupied.length ?? 0,
               ),
             ],
           ),
@@ -540,11 +558,15 @@ class _TopBar extends StatelessWidget {
     required this.canGoBack,
     required this.onBack,
     required this.onReroll,
+    required this.onFilter,
+    required this.keywords,
   });
 
   final bool canGoBack;
   final VoidCallback onBack;
   final VoidCallback? onReroll;
+  final VoidCallback? onFilter;
+  final List<String> keywords;
 
   @override
   Widget build(BuildContext context) {
@@ -567,6 +589,40 @@ class _TopBar extends StatelessWidget {
                 ],
               ),
             ),
+          const Spacer(),
+          _BarButton(
+            onTap: onFilter,
+            child: keywords.isEmpty
+                ? Text(
+                    'FILTER',
+                    style: HudPalette.telemetry.copyWith(
+                      color: onFilter == null
+                          ? HudPalette.aquaDim.withValues(alpha: 0.4)
+                          : HudPalette.aquaDim,
+                    ),
+                  )
+                : Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: HudPalette.aqua.withValues(alpha: 0.45),
+                      ),
+                      color: HudPalette.aqua.withValues(alpha: 0.10),
+                    ),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 128),
+                      child: Text(
+                        keywords.join(' ').toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: HudPalette.telemetry
+                            .copyWith(color: HudPalette.aqua),
+                      ),
+                    ),
+                  ),
+          ),
           const Spacer(),
           _BarButton(
             onTap: onReroll,
@@ -617,6 +673,8 @@ class _Footer extends StatelessWidget {
     required this.busy,
     required this.hintVisible,
     required this.bottomInset,
+    required this.filtered,
+    required this.matched,
   });
 
   final int depth;
@@ -625,6 +683,20 @@ class _Footer extends StatelessWidget {
   final bool busy;
   final bool hintVisible;
   final double bottomInset;
+  final bool filtered;
+  final int matched;
+
+  /// A filtered rosette is often partly empty on purpose, so it says so
+  /// rather than leaving the reader wondering what went wrong.
+  String get _hint {
+    if (busy) return 'DRAWING FROM WIKIDATA';
+    if (filtered) {
+      return matched == 0
+          ? 'NOTHING HERE MATCHES  ·  TRY FEWER WORDS OR CLEAR THE FILTER'
+          : 'MATCHING ${matched.toString().padLeft(2, '0')} OF 06';
+    }
+    return 'TAP A SATELLITE TO TRAVEL  ·  TAP THE CENTRE FOR DETAIL';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -642,17 +714,20 @@ class _Footer extends StatelessWidget {
           SizedBox(
             height: 22,
             child: AnimatedOpacity(
-              opacity: busy || hintVisible ? 1 : 0,
+              opacity: busy || hintVisible || filtered ? 1 : 0,
               duration: const Duration(milliseconds: 300),
               child: Padding(
                 padding: const EdgeInsets.only(top: 9),
                 child: Text(
-                  busy
-                      ? 'DRAWING FROM WIKIDATA'
-                      : 'TAP A SATELLITE TO TRAVEL  ·  TAP THE CENTRE FOR DETAIL',
+                  _hint,
+                  textAlign: TextAlign.center,
                   style: HudPalette.telemetry.copyWith(
                     fontSize: 8.5,
-                    color: busy ? HudPalette.aqua : HudPalette.aquaDim,
+                    color: busy
+                        ? HudPalette.aqua
+                        : (filtered && matched == 0)
+                            ? HudPalette.amber
+                            : HudPalette.aquaDim,
                   ),
                 ),
               ),

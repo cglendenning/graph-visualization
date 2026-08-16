@@ -101,6 +101,14 @@ class TraversalSession {
     _rosette = best;
   }
 
+  /// Redraws the current topic without moving, used when the keyword filter
+  /// changes and the satellites on screen no longer reflect it.
+  Future<void> refresh() async {
+    final current = _rosette;
+    if (current == null) return;
+    _rosette = await _build(current.center.qid, arrivedFrom: null);
+  }
+
   /// Re-centres on a satellite, keeping a way back to where the user was.
   Future<void> jumpTo(String qid) async {
     final leaving = _rosette;

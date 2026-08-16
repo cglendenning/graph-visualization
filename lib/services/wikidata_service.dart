@@ -57,7 +57,7 @@ class WikidataService {
   static const Duration timeout = Duration(seconds: 20);
 
   static const String userAgent =
-      'Perihelion/2.3 (https://github.com/cglendenning/graph-visualization)';
+      'Perihelion/2.4 (https://github.com/cglendenning/graph-visualization)';
 
   static const int seatCount = 6;
 
@@ -142,6 +142,49 @@ class WikidataService {
 
   static final RegExp _qid = RegExp(r'^Q\d+$');
   static final RegExp _pid = RegExp(r'^P\d+$');
+
+  List<String> _keywords = const [];
+
+  /// Words every satellite must match, or empty for unconstrained browsing.
+  List<String> get keywords => List<String>.unmodifiable(_keywords);
+
+  /// Narrows exploration to neighbours mentioning all of [terms].
+  ///
+  /// Matching is against the label *and* the description together, which
+  /// matters more than it sounds: nobody born in Vienna is called "music",
+  /// but plenty are described as musicians. Label-only matching returns
+  /// almost nothing.
+  ///
+  /// Changing the filter discards anything already warmed, since those draws
+  /// were made under the previous constraint.
+  void setKeywords(String input) {
+    final terms = input
+        .toLowerCase()
+        .split(RegExp(r'[^a-z0-9]+'))
+        .where((t) => t.length > 1)
+        .take(4)
+        .toList(growable: false);
+    if (_sameTerms(terms, _keywords)) return;
+    _keywords = terms;
+    _readyDraws.clear();
+    _prefetchQueue.clear();
+  }
+
+  bool get isFiltered => _keywords.isNotEmpty;
+
+  static bool _sameTerms(List<String> a, List<String> b) =>
+      a.length == b.length &&
+      List<int>.generate(a.length, (i) => i).every((i) => a[i] == b[i]);
+
+  /// When a keyword filter is on, most properties return nothing, so the
+  /// search has to look at more of them. Fewer per query keeps the request
+  /// under the URL ceiling; more rounds make up the coverage.
+  static const int filteredPropertiesSampled = 8;
+  static const int filteredMaxRounds = 4;
+
+  /// A keyword is already a strong constraint, so the notability bar is
+  /// lowered — insisting on both would usually leave the rosette empty.
+  static const List<int> filteredNotabilityTiers = [12, 0, 0, 0];
 
   // ---------------------------------------------------------------- queries
 
@@ -405,27 +448,31 @@ LIMIT 200''';
     // Each round widens the net: a fresh slice of properties, and a lower bar
     // for how widely known a neighbour has to be. The best-known candidates
     // therefore take seats first, and the obscure ones only fill what is left.
+    final tiers = isFiltered ? filteredNotabilityTiers : notabilityTiers;
+    final perRound = isFiltered ? filteredPropertiesSampled : propertiesSampled;
+    final rounds = isFiltered ? filteredMaxRounds : maxRounds;
+
     for (var round = 0;
-        round < maxRounds &&
-            round < notabilityTiers.length &&
+        round < rounds &&
+            round < tiers.length &&
             chosen.length < seatCount &&
             clock.elapsed < sampleBudget;
         round++) {
       var slice = preferred
-          .skip(round * propertiesSampled)
-          .take(propertiesSampled)
+          .skip(round * perRound)
+          .take(perRound)
           .toList(growable: false);
       // Once the property list is exhausted, keep going on the first slice
       // with the lower bar rather than stopping early.
       if (slice.isEmpty) {
-        slice = preferred.take(propertiesSampled).toList(growable: false);
+        slice = preferred.take(perRound).toList(growable: false);
       }
       if (slice.isEmpty) break;
       final rows = await _neighborRows(
         qid,
         slice,
         requireArticle: true,
-        minSitelinks: notabilityTiers[round],
+        minSitelinks: tiers[round],
       );
       _absorb(rows, qid, chosen, taken);
     }
@@ -532,6 +579,16 @@ LIMIT 60''');
       final notable = minSitelinks > 0
           ? '?other wikibase:sitelinks ?n$tag . FILTER(?n$tag >= $minSitelinks)'
           : '';
+      // Matched inside the subquery, not outside it: filtering after the
+      // per-property LIMIT would test ten random candidates and almost
+      // always find none.
+      final keyword = _keywords.isEmpty
+          ? ''
+          : '?other rdfs:label ?l$tag . FILTER(lang(?l$tag) = "en") '
+              'OPTIONAL { ?other schema:description ?d$tag . '
+              'FILTER(lang(?d$tag) = "en") } '
+              'BIND(LCASE(CONCAT(?l$tag, " ", COALESCE(?d$tag, ""))) AS ?h$tag) '
+              '${_keywords.map((k) => 'FILTER(CONTAINS(?h$tag, "$k"))').join(' ')}';
       return '''
   {
     SELECT ?pd ?dir ?other WHERE {
@@ -539,6 +596,7 @@ LIMIT 60''');
       $pattern
       $article
       $notable
+      $keyword
     }
     LIMIT $candidatesPerProperty
   }''';

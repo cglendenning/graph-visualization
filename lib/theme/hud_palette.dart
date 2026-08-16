@@ -11,6 +11,7 @@ class HudPalette {
   static const Color aqua = Color(0xFF56E8FF);
   static const Color aquaDim = Color(0xFF2E7F94);
   static const Color ice = Color(0xFFDCE9F5);
+  static const Color amber = Color(0xFFFFB259);
 
   /// Telemetry text: hairline, wide-tracked, tabular so digits do not jitter
   /// as the depth counter climbs.
