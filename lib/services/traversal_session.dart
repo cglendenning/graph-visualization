@@ -65,11 +65,24 @@ class TraversalSession {
   ///
   /// Most articles fill all six seats first time. A stub about a village or
   /// a minor species may not, and landing on one is a poor way to open.
-  static const int startAttempts = 4;
+  ///
+  /// Kept low because each attempt is a full rosette draw: four of them in
+  /// sequence could take twenty-five seconds. The warmed pool covers the
+  /// common case, so this is only the cold fallback.
+  static const int startAttempts = 2;
 
   /// Lands on a random topic drawn from the whole of Wikipedia, preferring
   /// one connected enough to fill every seat.
   Future<void> start() async {
+    // A topic warmed while the user was reading is already vetted and drawn,
+    // which turns "new topic" from several seconds into none.
+    final warm = _service.takeWarmRandomQid();
+    if (warm != null) {
+      _history.clear();
+      _rosette = await _build(warm, arrivedFrom: null);
+      return;
+    }
+
     RosetteState? best;
     for (var attempt = 0; attempt < startAttempts; attempt++) {
       final candidate = await _build(

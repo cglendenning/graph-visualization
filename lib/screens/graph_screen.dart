@@ -130,7 +130,8 @@ class _GraphScreenState extends State<GraphScreen>
       if (arrived != null) {
         widget.wikidata
           ..cancelPendingPrefetch()
-          ..prefetch(arrived.occupied.map((n) => n.node.qid));
+          ..prefetch(arrived.occupied.map((n) => n.node.qid))
+          ..prefetchRandomTopics();
       }
     } on Object catch (error) {
       if (!mounted) return;
@@ -550,41 +551,59 @@ class _TopBar extends StatelessWidget {
     return SizedBox(
       height: 46,
       child: Row(
+        // Stretch, so each control is as tall as the bar and comfortably
+        // tappable rather than a hairline of text.
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (canGoBack)
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
+            _BarButton(
               onTap: onBack,
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.chevron_left,
-                        size: 18, color: HudPalette.aquaDim),
-                    SizedBox(width: 2),
-                    Text('BACK', style: HudPalette.telemetry),
-                  ],
-                ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.chevron_left, size: 18, color: HudPalette.aquaDim),
+                  SizedBox(width: 2),
+                  Text('BACK', style: HudPalette.telemetry),
+                ],
               ),
             ),
           const Spacer(),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
+          _BarButton(
             onTap: onReroll,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'NEW TOPIC',
-                style: HudPalette.telemetry.copyWith(
-                  color: onReroll == null
-                      ? HudPalette.aquaDim.withValues(alpha: 0.4)
-                      : HudPalette.aquaDim,
-                ),
+            child: Text(
+              'NEW TOPIC',
+              style: HudPalette.telemetry.copyWith(
+                color: onReroll == null
+                    ? HudPalette.aquaDim.withValues(alpha: 0.4)
+                    : HudPalette.aquaDim,
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A control in the top bar.
+///
+/// Fills the bar's full height on purpose: laid out by its label alone, a
+/// line of 10px telemetry type gives a hit area about ten pixels tall, which
+/// reads to the user as a button that does not work.
+class _BarButton extends StatelessWidget {
+  const _BarButton({required this.onTap, required this.child});
+
+  final VoidCallback? onTap;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Center(widthFactor: 1, child: child),
       ),
     );
   }

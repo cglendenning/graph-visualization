@@ -277,6 +277,51 @@ LIMIT 200''';
   /// Whether [qid] can be seated instantly from a warmed draw.
   bool hasReadyDraw(String qid) => _readyDraws.containsKey(qid);
 
+  /// Random topics already drawn and waiting, so "new topic" is immediate.
+  final List<String> _readyRandom = <String>[];
+  bool _warmingRandom = false;
+
+  /// How many random topics to keep in hand.
+  static const int randomTopicsWarm = 2;
+
+  /// Takes a pre-drawn random topic, or null if none is ready yet.
+  String? takeWarmRandomQid() =>
+      _readyRandom.isEmpty ? null : _readyRandom.removeAt(0);
+
+  bool get hasWarmRandomTopic => _readyRandom.isNotEmpty;
+
+  /// Tops up the pool of random topics in the background.
+  ///
+  /// Only topics that fill every seat are kept, so pressing "new topic" never
+  /// lands on a stub — the same standard the foreground path applies, paid
+  /// for while the user is reading instead of while they wait.
+  void prefetchRandomTopics() {
+    if (_warmingRandom || _readyRandom.length >= randomTopicsWarm) return;
+    _warmingRandom = true;
+    unawaited(_warmRandom());
+  }
+
+  Future<void> _warmRandom() async {
+    try {
+      var attempts = 0;
+      while (_readyRandom.length < randomTopicsWarm && attempts < 6) {
+        attempts++;
+        final qid = await randomStartQid();
+        if (_readyRandom.contains(qid)) continue;
+        await node(qid);
+        final draw = await _drawNeighbors(qid);
+        if (draw.length < seatCount) continue;
+        _remember(_readyDraws, qid, draw);
+        _readyRandom.add(qid);
+      }
+    } on Object catch (error) {
+      // Not fatal — pressing "new topic" falls back to drawing on demand.
+      debugPrint('Perihelion: random topic warm failed: $error');
+    } finally {
+      _warmingRandom = false;
+    }
+  }
+
   void _drainPrefetchQueue() {
     while (_prefetching.length < maxConcurrentPrefetch &&
         _prefetchQueue.isNotEmpty) {

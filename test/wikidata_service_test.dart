@@ -470,6 +470,96 @@ void main() {
     });
   });
 
+  group('random topic warming', () {
+    /// Answers the random-article call, the property list and the neighbour
+    /// query, so a whole random topic can be warmed offline.
+    Future<String> everything(Uri url) async {
+      if (url.host == 'en.wikipedia.org') {
+        return jsonEncode({
+          'query': {
+            'pages': [
+              {'title': 'Vienna', 'pageprops': {'wikibase_item': 'Q1741'}},
+            ],
+          },
+        });
+      }
+      final q = url.queryParameters['query']!;
+      if (q.contains('SELECT DISTINCT ?pd')) {
+        return _bindings([_row({'pd': '${_wd}P19', 'dir': 'in'})]);
+      }
+      if (q.contains('rdfs:label')) {
+        return _bindings([
+          _row({'label': 'Vienna', 'type': '${_entity}Q515'}),
+        ]);
+      }
+      return _bindings([
+        for (var i = 0; i < 8; i++)
+          _row({
+            'pd': '${_wd}P19', 'dir': 'in', 'other': '${_entity}Q${70 + i}',
+            'otherLabel': 'Person $i', 'propLabel': 'place of birth',
+            'type': '${_entity}Q5',
+          }),
+      ]);
+    }
+
+    test('has nothing warm before it is asked', () {
+      final service = WikidataService(fetcher: (_) async => _bindings([]));
+      expect(service.hasWarmRandomTopic, isFalse);
+      expect(service.takeWarmRandomQid(), isNull);
+    });
+
+    test('warms a topic and hands it over once', () async {
+      final service =
+          WikidataService(fetcher: everything, random: Random(9));
+      service.prefetchRandomTopics();
+      var spins = 0;
+      while (!service.hasWarmRandomTopic && spins++ < 200) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      expect(service.hasWarmRandomTopic, isTrue);
+      expect(service.takeWarmRandomQid(), 'Q1741');
+      // Handed over, not kept.
+      expect(service.takeWarmRandomQid(), isNull);
+    });
+
+    test('keeps only topics that can fill every seat', () async {
+      // One usable neighbour, so this topic is rejected rather than warmed.
+      final service = WikidataService(
+        fetcher: (url) async {
+          if (url.host == 'en.wikipedia.org') {
+            return jsonEncode({
+              'query': {
+                'pages': [
+                  {'title': 'Stub', 'pageprops': {'wikibase_item': 'Q9001'}},
+                ],
+              },
+            });
+          }
+          final q = url.queryParameters['query']!;
+          if (q.contains('SELECT DISTINCT ?pd')) {
+            return _bindings([_row({'pd': '${_wd}P19', 'dir': 'in'})]);
+          }
+          if (q.contains('rdfs:label')) {
+            return _bindings([_row({'label': 'Stub'})]);
+          }
+          return _bindings([
+            _row({
+              'pd': '${_wd}P19', 'dir': 'in', 'other': '${_entity}Q77',
+              'otherLabel': 'Only One', 'propLabel': 'place of birth',
+            }),
+          ]);
+        },
+        random: Random(9),
+      );
+      service.prefetchRandomTopics();
+      var spins = 0;
+      while (spins++ < 60) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      expect(service.hasWarmRandomTopic, isFalse);
+    });
+  });
+
   group('failures', () {
     test('turns a transport failure into an actionable message', () async {
       final service = WikidataService(
