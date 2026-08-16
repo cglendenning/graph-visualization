@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:constellation/models/node_category.dart';
-import 'package:constellation/services/graph_repository.dart';
+import 'package:perihelion/models/node_category.dart';
+import 'package:perihelion/services/graph_repository.dart';
 
 /// Guards the hand-authored asset. The UI assumes six satellites are always
 /// available and that no edge dead-ends, so those assumptions are checked
@@ -59,12 +59,39 @@ void main() {
       final node = repo.node(id);
       expect(node.name, isNotEmpty);
       expect(node.tagline, isNotEmpty);
-      expect(node.summary.length, greaterThan(40));
       expect(node.facts, isNotEmpty);
       for (final f in node.facts) {
         expect(f.label, isNotEmpty);
         expect(f.value, isNotEmpty);
       }
+    }
+  });
+
+  test('every node names a Wikipedia article to fetch prose from', () {
+    // Prose is no longer bundled, so a node without a resolvable article
+    // would show an error where its summary belongs.
+    for (final id in repo.nodeIds) {
+      final title = repo.node(id).wikipediaTitle;
+      expect(title, isNotEmpty, reason: '$id has no wikipedia title');
+      expect(title.trim(), title, reason: '$id title has stray whitespace');
+      expect(title, isNot(contains('#')), reason: '$id points at a fragment');
+      expect(title, isNot(startsWith('http')), reason: '$id is a url, not a title');
+    }
+  });
+
+  test('no two nodes point at the same Wikipedia article', () {
+    final titles = repo.nodeIds.map((id) => repo.node(id).wikipediaTitle);
+    expect(titles.toSet(), hasLength(repo.nodeCount));
+  });
+
+  test('the asset bundles no prose, keeping the shipped data public domain',
+      () {
+    for (final node in raw['nodes'] as List<dynamic>) {
+      expect(
+        (node as Map<String, dynamic>).containsKey('summary'),
+        isFalse,
+        reason: '${node['id']} still bundles CC BY-SA prose',
+      );
     }
   });
 

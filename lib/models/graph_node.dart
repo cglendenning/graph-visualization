@@ -20,7 +20,7 @@ class GraphNode {
     required this.name,
     required this.category,
     required this.tagline,
-    required this.summary,
+    required this.wikipediaTitle,
     required this.facts,
   });
 
@@ -28,7 +28,13 @@ class GraphNode {
   final String name;
   final NodeCategory category;
   final String tagline;
-  final String summary;
+
+  /// Canonical English Wikipedia article title, verified at build time.
+  ///
+  /// Prose is not bundled: the detail screen fetches the lead section from
+  /// this article at runtime, which keeps the shipped asset public domain.
+  final String wikipediaTitle;
+
   final List<NodeFact> facts;
 
   factory GraphNode.fromJson(Map<String, dynamic> json) => GraphNode(
@@ -36,7 +42,7 @@ class GraphNode {
         name: json['name'] as String,
         category: NodeCategory.fromId(json['category'] as String),
         tagline: json['tagline'] as String,
-        summary: json['summary'] as String,
+        wikipediaTitle: json['wikipedia'] as String,
         facts: (json['facts'] as List<dynamic>)
             .map((f) => NodeFact.fromJson(f as Map<String, dynamic>))
             .toList(growable: false),

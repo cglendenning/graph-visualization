@@ -11,7 +11,7 @@
 					<key>kind</key>
 					<string>software-package</string>
 					<key>url</key>
-					<string>https://cglendenning.github.io/graph-visualization/constellation.ipa</string>
+					<string>https://cglendenning.github.io/graph-visualization/perihelion.ipa</string>
 				</dict>
 				<dict>
 					<key>kind</key>
@@ -33,15 +33,15 @@
 			<key>metadata</key>
 			<dict>
 				<key>bundle-identifier</key>
-				<string>com.craigglendenning.constellation</string>
+				<string>com.craigglendenning.perihelion</string>
 				<key>bundle-version</key>
-				<string>1.0.0</string>
+				<string>1.1.0</string>
 				<key>kind</key>
 				<string>software</string>
 				<key>platform-identifier</key>
 				<string>com.apple.platform.iphoneos</string>
 				<key>title</key>
-				<string>Constellation</string>
+				<string>Perihelion</string>
 			</dict>
 		</dict>
 	</array>

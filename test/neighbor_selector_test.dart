@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:constellation/services/graph_repository.dart';
-import 'package:constellation/services/neighbor_selector.dart';
+import 'package:perihelion/services/graph_repository.dart';
+import 'package:perihelion/services/neighbor_selector.dart';
 
 import 'support/fake_graph.dart';
 

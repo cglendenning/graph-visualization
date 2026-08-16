@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Constellation — install</title>
+<title>Perihelion — install</title>
 <style>
   :root {
     --void: #05070C;
@@ -12,6 +12,7 @@
     --aqua-dim: #2E7F94;
     --ice: #DCE9F5;
     --muted: #6E93A3;
+    --amber: #FFB259;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -59,7 +60,6 @@
     text-decoration: none;
     font-weight: 600;
     font-size: 1.05rem;
-    letter-spacing: .01em;
     box-shadow: 0 0 34px rgba(86,232,255,.18);
     transition: transform .12s ease, box-shadow .2s ease;
   }
@@ -70,8 +70,19 @@
     color: var(--aqua-dim);
     max-width: 24rem;
   }
+  .heads-up {
+    margin: 2rem auto 0;
+    max-width: 26rem;
+    text-align: left;
+    font-size: .82rem;
+    line-height: 1.65;
+    color: var(--muted);
+    border-left: 2px solid var(--amber);
+    padding: .1rem 0 .1rem .9rem;
+  }
+  .heads-up b { color: var(--ice); font-weight: 600; }
   .telemetry {
-    margin: 3.5rem 0 0;
+    margin: 3rem 0 0;
     display: grid;
     grid-template-columns: auto 1fr;
     gap: .55rem 1.5rem;
@@ -98,35 +109,53 @@
                 text-transform: uppercase; }
   .how ol { margin: 0; padding-left: 1.15rem; }
   .how li { margin-bottom: .35rem; }
+  .credits {
+    margin-top: 2.5rem;
+    border-top: 1px solid rgba(86,232,255,.14);
+    padding-top: 1.5rem;
+    font-size: .74rem;
+    line-height: 1.7;
+    color: var(--aqua-dim);
+    text-align: left;
+  }
+  .credits a { color: var(--muted); }
 </style>
 </head>
 <body>
 <main>
-  <img class="mark" src="icon-512.png" alt="Constellation icon">
-  <h1>Constellation</h1>
+  <img class="mark" src="icon-512.png" alt="Perihelion icon">
+  <h1>Perihelion</h1>
   <p class="tagline">Traverse a knowledge graph, one node at a time.</p>
 
   <a class="install" href="itms-services://?action=download-manifest&amp;url=https://cglendenning.github.io/graph-visualization/manifest.plist">Install on iPhone</a>
 
   <p class="note">Open this page in Safari on the iPhone 12&nbsp;mini this build was signed for. The install prompt will not appear on a desktop browser.</p>
 
+  <p class="heads-up"><b>This replaces Constellation, it does not upgrade it.</b> The app was renamed, so it carries a new bundle identifier and installs alongside the old one. Delete Constellation from your home screen after this finishes.</p>
+
   <dl class="telemetry">
-    <dt>Version</dt><dd>1.0.0 (1)</dd>
-    <dt>Size</dt><dd>6.7 MB</dd>
-    <dt>Bundle</dt><dd>com.craigglendenning.constellation</dd>
+    <dt>Version</dt><dd>1.1.0 (2)</dd>
+    <dt>Bundle</dt><dd>com.craigglendenning.perihelion</dd>
     <dt>Min iOS</dt><dd>13.0</dd>
     <dt>Signing</dt><dd>Development · MCALPSQ5P5</dd>
     <dt>Graph</dt><dd>140 nodes · 8 categories</dd>
+    <dt>Bundled data</dt><dd>CC0 / public domain</dd>
   </dl>
 
   <div class="how">
-    <strong>After installing</strong>
+    <strong>What changed in 1.1.0</strong>
     <ol>
-      <li>Tap a satellite to make it the new centre.</li>
-      <li>Tap the centre circle for the full record.</li>
-      <li>The node you came from always stays on screen, opposite your direction of travel.</li>
-      <li>The tick ring counts connections; the arc counts how far you have travelled.</li>
+      <li>Renamed from Constellation to Perihelion.</li>
+      <li>Summaries are no longer bundled. The detail screen fetches the lead section of the matching Wikipedia article when you open it.</li>
+      <li>The rest of the screen — facts, connections, tagline — renders instantly and never waits on the network.</li>
+      <li>Offline, the summary block explains itself and offers a retry; everything else still works.</li>
     </ol>
+  </div>
+
+  <div class="credits">
+    Article summaries are fetched at runtime from Wikipedia and shown verbatim under
+    <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, credited in the app to the article they came from.
+    Nothing under that licence is bundled into the app; the shipped graph — every node, relation and fact — is original work or public domain.
   </div>
 </main>
 </body>

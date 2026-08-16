@@ -52,8 +52,7 @@ Map<String, dynamic> _node(
       'name': name,
       'category': category,
       'tagline': 'Tagline for $name',
-      'summary': 'A summary of $name that is long enough to look like prose '
-          'rather than a placeholder string.',
+      'wikipedia': name.replaceAll(' ', '_'),
       'facts': [
         {'label': 'Label', 'value': 'Value'},
       ],

@@ -10,6 +10,7 @@ import '../painters/edge_filament_painter.dart';
 import '../painters/instrument_painter.dart';
 import '../services/graph_repository.dart';
 import '../services/traversal_session.dart';
+import '../services/wikipedia_service.dart';
 import '../theme/hud_palette.dart';
 import '../widgets/hud_readout.dart';
 import '../widgets/node_circle.dart';
@@ -51,9 +52,16 @@ class _Placement {
 }
 
 class GraphScreen extends StatefulWidget {
-  const GraphScreen({super.key, required this.repository});
+  const GraphScreen({
+    super.key,
+    required this.repository,
+    required this.wikipediaService,
+  });
 
   final GraphRepository repository;
+
+  /// Held for the session so revisiting a node does not refetch its extract.
+  final WikipediaService wikipediaService;
 
   @override
   State<GraphScreen> createState() => _GraphScreenState();
@@ -135,6 +143,7 @@ class _GraphScreenState extends State<GraphScreen>
         node: _to.center,
         degree: _to.degree,
         neighbors: widget.repository.neighborsOf(_to.center.id),
+        wikipediaService: widget.wikipediaService,
       ),
     );
   }

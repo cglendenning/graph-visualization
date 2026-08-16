@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../models/graph_node.dart';
+import '../services/wikipedia_service.dart';
 import '../theme/hud_palette.dart';
 import '../widgets/node_circle.dart';
+import '../widgets/wikipedia_section.dart';
 
 /// Everything the graph knows about one node.
 ///
@@ -15,22 +17,26 @@ class NodeDetailScreen extends StatelessWidget {
     required this.node,
     required this.degree,
     required this.neighbors,
+    required this.wikipediaService,
   });
 
   final GraphNode node;
   final int degree;
   final List<Neighbor> neighbors;
+  final WikipediaService wikipediaService;
 
   static Route<void> route({
     required GraphNode node,
     required int degree,
     required List<Neighbor> neighbors,
+    required WikipediaService wikipediaService,
   }) =>
       CupertinoPageRoute<void>(
         builder: (_) => NodeDetailScreen(
           node: node,
           degree: degree,
           neighbors: neighbors,
+          wikipediaService: wikipediaService,
         ),
       );
 
@@ -87,13 +93,10 @@ class NodeDetailScreen extends StatelessWidget {
                     const SizedBox(height: 28),
                     _Rule(hue: hue),
                     const SizedBox(height: 24),
-                    Text(
-                      node.summary,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        height: 1.62,
-                        color: Color(0xFFB9CBD6),
-                      ),
+                    WikipediaSection(
+                      service: wikipediaService,
+                      title: node.wikipediaTitle,
+                      hue: hue,
                     ),
                     const SizedBox(height: 30),
                     _SectionLabel('RECORD'),

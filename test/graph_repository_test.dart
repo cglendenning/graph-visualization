@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:constellation/models/node_category.dart';
-import 'package:constellation/services/graph_repository.dart';
+import 'package:perihelion/models/node_category.dart';
+import 'package:perihelion/services/graph_repository.dart';
 
 import 'support/fake_graph.dart';
 

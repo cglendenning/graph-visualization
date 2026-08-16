@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:constellation/models/rosette_layout.dart';
-import 'package:constellation/services/graph_repository.dart';
-import 'package:constellation/services/traversal_session.dart';
+import 'package:perihelion/models/rosette_layout.dart';
+import 'package:perihelion/services/graph_repository.dart';
+import 'package:perihelion/services/traversal_session.dart';
 
 import 'support/fake_graph.dart';
 

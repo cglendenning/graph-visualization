@@ -3,28 +3,32 @@ import 'package:flutter/services.dart';
 
 import 'screens/graph_screen.dart';
 import 'services/graph_repository.dart';
+import 'services/wikipedia_service.dart';
 import 'theme/hud_palette.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
-  runApp(const ConstellationApp());
+  runApp(const PerihelionApp());
 }
 
-class ConstellationApp extends StatefulWidget {
-  const ConstellationApp({super.key});
+class PerihelionApp extends StatefulWidget {
+  const PerihelionApp({super.key});
 
   @override
-  State<ConstellationApp> createState() => _ConstellationAppState();
+  State<PerihelionApp> createState() => _PerihelionAppState();
 }
 
-class _ConstellationAppState extends State<ConstellationApp> {
+class _PerihelionAppState extends State<PerihelionApp> {
   late final Future<GraphRepository> _repository = GraphRepository.load();
+
+  /// One instance for the session, so its extract cache survives navigation.
+  final WikipediaService _wikipedia = WikipediaService();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Constellation',
+      title: 'Perihelion',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
@@ -42,7 +46,10 @@ class _ConstellationAppState extends State<ConstellationApp> {
           if (!snapshot.hasData) {
             return const _BootMessage(text: 'LOADING GRAPH');
           }
-          return GraphScreen(repository: snapshot.requireData);
+          return GraphScreen(
+            repository: snapshot.requireData,
+            wikipediaService: _wikipedia,
+          );
         },
       ),
     );

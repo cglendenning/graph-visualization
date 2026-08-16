@@ -1,11 +1,11 @@
 {
-  "version": 1,
+  "version": 2,
   "categories": ["person", "place", "work", "event", "concept", "thing", "movement", "organization"],
   "nodes": [
     {
       "id": "vienna", "name": "Vienna", "category": "place",
       "tagline": "Imperial capital, incubator of modernism",
-      "summary": "For six centuries the seat of the Habsburgs, Vienna entered the twentieth century as a city where music, psychoanalysis, painting and logic were all being rebuilt at once. Its coffee houses put physicists, composers and philosophers at the same tables, which is why so many modern ideas carry a Viennese accent.",
+      "wikipedia": "Vienna",
       "facts": [
         {"label": "Country", "value": "Austria"},
         {"label": "On the", "value": "Danube"},
@@ -30,7 +30,7 @@
     {
       "id": "gustav-mahler", "name": "Gustav Mahler", "category": "person",
       "tagline": "Composer who stretched the symphony to its limit",
-      "summary": "Mahler ran the Vienna Court Opera by day and wrote enormous symphonies in summer huts, treating the form as something that should contain the whole world. His harmonic restlessness handed the next generation the door out of tonality.",
+      "wikipedia": "Gustav Mahler",
       "facts": [
         {"label": "Lived", "value": "1860 – 1911"},
         {"label": "Symphonies", "value": "Nine complete, a tenth unfinished"},
@@ -49,7 +49,7 @@
     {
       "id": "sigmund-freud", "name": "Sigmund Freud", "category": "person",
       "tagline": "Mapped the mind as something that hides from itself",
-      "summary": "Working from a consulting room at Berggasse 19, Freud proposed that the greater part of mental life is unconscious and reachable only obliquely, through dreams, slips and free association. Whether or not the theory held, the vocabulary it produced is now inseparable from how people describe themselves.",
+      "wikipedia": "Sigmund Freud",
       "facts": [
         {"label": "Lived", "value": "1856 – 1939"},
         {"label": "Address", "value": "Berggasse 19, Vienna"},
@@ -68,7 +68,7 @@
     {
       "id": "gustav-klimt", "name": "Gustav Klimt", "category": "person",
       "tagline": "Gold leaf, ornament and unsettling eroticism",
-      "summary": "Klimt broke from the academic establishment to lead the Vienna Secession, then spent his gold period fusing Byzantine mosaic surfaces with frankly sexual subject matter. The decorative brilliance was always doing serious work: it made the disquieting content beautiful enough to look at.",
+      "wikipedia": "Gustav Klimt",
       "facts": [
         {"label": "Lived", "value": "1862 – 1918"},
         {"label": "Gold period", "value": "c. 1899 – 1910"},
@@ -87,7 +87,7 @@
     {
       "id": "vienna-secession", "name": "Vienna Secession", "category": "movement",
       "tagline": "To every age its art, to art its freedom",
-      "summary": "In 1897 a group of artists walked out of Vienna's conservative artists' association and built their own exhibition hall with that motto over the door. The Secession made room for art nouveau, symbolism and modern design in a city whose official taste was still historicist.",
+      "wikipedia": "Vienna Secession",
       "facts": [
         {"label": "Founded", "value": "1897"},
         {"label": "Motto", "value": "Der Zeit ihre Kunst, der Kunst ihre Freiheit"},
@@ -106,7 +106,7 @@
     {
       "id": "congress-of-vienna", "name": "Congress of Vienna", "category": "event",
       "tagline": "Europe redrawn after Napoleon",
-      "summary": "For nine months the powers that had defeated Napoleon met in Vienna to rebuild the map of Europe around a balance of power. The settlement was reactionary and it held: no general European war followed for ninety-nine years.",
+      "wikipedia": "Congress of Vienna",
       "facts": [
         {"label": "Ran", "value": "September 1814 – June 1815"},
         {"label": "Convened by", "value": "Klemens von Metternich"},
@@ -125,7 +125,7 @@
     {
       "id": "wiener-schnitzel", "name": "Wiener Schnitzel", "category": "thing",
       "tagline": "A veal cutlet with a contested passport",
-      "summary": "Pounded thin, breaded and fried until the coating puffs away from the meat, the schnitzel is Vienna's most exported object. A persistent story has it arriving from Milan with Field Marshal Radetzky, which food historians have never been able to substantiate.",
+      "wikipedia": "Wiener schnitzel",
       "facts": [
         {"label": "Protected term", "value": "Must be veal to be called Wiener Schnitzel"},
         {"label": "Coating", "value": "Flour, egg, breadcrumb"},
@@ -144,7 +144,7 @@
     {
       "id": "habsburg-monarchy", "name": "Habsburg Monarchy", "category": "organization",
       "tagline": "The dynasty that married its way across Europe",
-      "summary": "From a minor Swiss castle the Habsburgs accumulated crowns for six hundred years, largely by arranging marriages rather than winning battles. The multi-ethnic empire they assembled dissolved in 1918, leaving behind a dozen nation states and one very large bureaucracy.",
+      "wikipedia": "Habsburg monarchy",
       "facts": [
         {"label": "Span", "value": "1273 – 1918"},
         {"label": "Motto", "value": "Let others wage war; you, happy Austria, marry"},
@@ -163,7 +163,7 @@
     {
       "id": "ludwig-wittgenstein", "name": "Ludwig Wittgenstein", "category": "person",
       "tagline": "Twice decided he had finished philosophy",
-      "summary": "Heir to one of Vienna's great fortunes, Wittgenstein gave the money away and wrote a book he believed had solved every philosophical problem, then returned twenty years later to dismantle it. Both the early and the late work turn on the same suspicion: that language quietly sets the limits of thought.",
+      "wikipedia": "Ludwig Wittgenstein",
       "facts": [
         {"label": "Lived", "value": "1889 – 1951"},
         {"label": "Family", "value": "Viennese steel fortune; Brahms visited the house"},
@@ -182,7 +182,7 @@
     {
       "id": "arnold-schoenberg", "name": "Arnold Schoenberg", "category": "person",
       "tagline": "Abolished the home key, then built a new law",
-      "summary": "Self-taught and stubborn, Schoenberg followed late-Romantic chromaticism until tonality gave out, then spent a decade devising the twelve-tone method to organise what was left. He insisted he had not destroyed tradition but continued it by the only honest route available.",
+      "wikipedia": "Arnold Schoenberg",
       "facts": [
         {"label": "Lived", "value": "1874 – 1951"},
         {"label": "Method", "value": "Twelve-tone technique, from 1921"},
@@ -201,7 +201,7 @@
     {
       "id": "the-interpretation-of-dreams", "name": "The Interpretation of Dreams", "category": "work",
       "tagline": "The book that gave the unconscious a grammar",
-      "summary": "Freud argued that dreams are disguised wish fulfilments, and that the disguise follows rules — condensation, displacement, symbolism — which can be read backwards. It sold six hundred copies in eight years and then changed the century.",
+      "wikipedia": "The Interpretation of Dreams",
       "facts": [
         {"label": "Published", "value": "November 1899, dated 1900"},
         {"label": "First printing", "value": "600 copies, eight years to sell"},
@@ -220,7 +220,7 @@
     {
       "id": "the-kiss", "name": "The Kiss", "category": "work",
       "tagline": "Two figures dissolving into gold",
-      "summary": "Klimt's most reproduced canvas sets a kneeling couple on a flowering ledge, their bodies almost lost inside a single gilded cloak patterned with rectangles for him and circles for her. The Austrian state bought it before it was even finished.",
+      "wikipedia": "The Kiss (Klimt)",
       "facts": [
         {"label": "Painted", "value": "1907 – 1908"},
         {"label": "Medium", "value": "Oil and gold leaf on canvas"},
@@ -239,7 +239,7 @@
     {
       "id": "psychoanalysis", "name": "Psychoanalysis", "category": "concept",
       "tagline": "Treatment by talking, on the theory that the patient does not know what they mean",
-      "summary": "Psychoanalysis holds that symptoms carry meaning, that the meaning is hidden from the person carrying it, and that a long conversation under particular rules can recover it. Its scientific status has been contested for a century; its cultural penetration has not.",
+      "wikipedia": "Psychoanalysis",
       "facts": [
         {"label": "Emerged", "value": "1890s, Vienna"},
         {"label": "Method", "value": "Free association, transference, dream analysis"},
@@ -258,7 +258,7 @@
     {
       "id": "atonality", "name": "Atonality", "category": "concept",
       "tagline": "Music with no home to return to",
-      "summary": "Atonal music abandons the key centre that had organised Western music for three hundred years, so no note is more at rest than any other. Listeners lose the sense of departure and homecoming, which is exactly the effect its composers were after.",
+      "wikipedia": "Atonality",
       "facts": [
         {"label": "Emerged", "value": "c. 1908"},
         {"label": "Successor system", "value": "Twelve-tone serialism"},
@@ -277,7 +277,7 @@
     {
       "id": "symphony-no-2-resurrection", "name": "Symphony No. 2, Resurrection", "category": "work",
       "tagline": "Eighty minutes ending in a choir and full organ",
-      "summary": "Mahler opens with a funeral rite and spends five movements arguing his way to an answer, arriving at a setting of Klopstock's resurrection ode for chorus, soloists and every instrument available. He conceived the ending at another conductor's funeral, when the choir began to sing.",
+      "wikipedia": "Symphony No. 2 (Mahler)",
       "facts": [
         {"label": "Composed", "value": "1888 – 1894"},
         {"label": "Duration", "value": "About 80 minutes"},
@@ -296,7 +296,7 @@
     {
       "id": "bratislava", "name": "Bratislava", "category": "place",
       "tagline": "The only capital that borders two countries",
-      "summary": "Fifty-five kilometres downstream from Vienna, Bratislava spent three centuries as Pressburg, the coronation city of Hungary, before becoming the capital of Slovakia. No two national capitals in the world sit closer together.",
+      "wikipedia": "Bratislava",
       "facts": [
         {"label": "Country", "value": "Slovakia"},
         {"label": "Borders", "value": "Austria and Hungary, at the city limits"},
@@ -315,7 +315,7 @@
     {
       "id": "otto-wagner", "name": "Otto Wagner", "category": "person",
       "tagline": "Told Vienna that necessity is the only master of art",
-      "summary": "Wagner began as a historicist and ended as the architect who gave Vienna its metro stations, its postal savings bank and a manifesto arguing that nothing unpractical can be beautiful. His aluminium bolts, left proudly visible, are usually counted as the start of modern architecture in the city.",
+      "wikipedia": "Otto Wagner",
       "facts": [
         {"label": "Lived", "value": "1841 – 1918"},
         {"label": "Manifesto", "value": "Modern Architecture, 1896"},
@@ -334,7 +334,7 @@
     {
       "id": "tractatus-logico-philosophicus", "name": "Tractatus Logico-Philosophicus", "category": "work",
       "tagline": "Seven numbered propositions, then silence",
-      "summary": "Written largely in the trenches and in an Italian prison camp, the Tractatus argues that meaningful language pictures facts, and that ethics, aesthetics and the meaning of life therefore cannot be said at all. It closes by telling the reader to throw the book away.",
+      "wikipedia": "Tractatus Logico-Philosophicus",
       "facts": [
         {"label": "Published", "value": "1921"},
         {"label": "Structure", "value": "Seven propositions, decimally nested"},
@@ -353,7 +353,7 @@
     {
       "id": "entropy", "name": "Entropy", "category": "concept",
       "tagline": "The reason the past is different from the future",
-      "summary": "Entropy counts how many microscopic arrangements would look the same from outside, and it tends to increase simply because disordered arrangements vastly outnumber ordered ones. It is the only fundamental quantity in physics that distinguishes forwards from backwards in time.",
+      "wikipedia": "Entropy",
       "facts": [
         {"label": "Boltzmann's formula", "value": "S = k log W"},
         {"label": "On his gravestone", "value": "Yes, in Vienna's Central Cemetery"},
@@ -373,7 +373,7 @@
     {
       "id": "ludwig-boltzmann", "name": "Ludwig Boltzmann", "category": "person",
       "tagline": "Explained heat with atoms nobody would admit existed",
-      "summary": "Boltzmann derived the laws of heat from the statistics of countless invisible particles, at a time when senior colleagues denied atoms were real. He fought that opposition for thirty years and hanged himself in 1906, shortly before the experiments that settled the question in his favour.",
+      "wikipedia": "Ludwig Boltzmann",
       "facts": [
         {"label": "Lived", "value": "1844 – 1906"},
         {"label": "Born and died", "value": "Vienna; Duino, near Trieste"},
@@ -392,7 +392,7 @@
     {
       "id": "thermodynamics", "name": "Thermodynamics", "category": "concept",
       "tagline": "Four laws that no engine has ever broken",
-      "summary": "Thermodynamics began as an attempt to work out the best possible steam engine and ended as the most durable framework in physics, indifferent to what matter is actually made of. Einstein singled it out as the one theory he was convinced would never be overthrown.",
+      "wikipedia": "Thermodynamics",
       "facts": [
         {"label": "Laws", "value": "Four, numbered from zero"},
         {"label": "Born from", "value": "Steam engine efficiency, 1824"},
@@ -411,7 +411,7 @@
     {
       "id": "information-theory", "name": "Information Theory", "category": "concept",
       "tagline": "Meaning is irrelevant to the engineering problem",
-      "summary": "Shannon showed that any message can be measured in bits, that every channel has a hard capacity, and that clever coding can push error to zero right up to that limit. Setting meaning aside was the move that made the whole thing tractable.",
+      "wikipedia": "Information theory",
       "facts": [
         {"label": "Founded", "value": "1948"},
         {"label": "Unit", "value": "The bit"},
@@ -431,7 +431,7 @@
     {
       "id": "claude-shannon", "name": "Claude Shannon", "category": "person",
       "tagline": "Founded the information age, then built juggling machines",
-      "summary": "Shannon's master's thesis showed that electrical switches could do Boolean logic, which is the foundation of every digital circuit since; eleven years later he invented information theory more or less single-handedly. He spent his later years riding a unicycle down the corridors of Bell Labs.",
+      "wikipedia": "Claude Shannon",
       "facts": [
         {"label": "Lived", "value": "1916 – 2001"},
         {"label": "Master's thesis", "value": "1937, called the most important of the century"},
@@ -451,7 +451,7 @@
     {
       "id": "bell-labs", "name": "Bell Labs", "category": "organization",
       "tagline": "A monopoly's research arm that kept inventing the future",
-      "summary": "Funded by the profits of the American telephone monopoly and largely shielded from quarterly pressure, Bell Labs produced the transistor, the laser, the solar cell, Unix, C and information theory. Nine Nobel Prizes came out of the building.",
+      "wikipedia": "Bell Labs",
       "facts": [
         {"label": "Founded", "value": "1925"},
         {"label": "Nobel Prizes", "value": "Nine"},
@@ -470,7 +470,7 @@
     {
       "id": "alan-turing", "name": "Alan Turing", "category": "person",
       "tagline": "Defined the computer before one existed",
-      "summary": "To settle a question in mathematical logic Turing invented an imaginary machine that reads and writes symbols on a tape, and in doing so defined computation itself. He then broke German naval cipher traffic at Bletchley Park, and was prosecuted by the country he had helped save.",
+      "wikipedia": "Alan Turing",
       "facts": [
         {"label": "Lived", "value": "1912 – 1954"},
         {"label": "Defining paper", "value": "On Computable Numbers, 1936"},
@@ -490,7 +490,7 @@
     {
       "id": "bletchley-park", "name": "Bletchley Park", "category": "place",
       "tagline": "A country house where the war was quietly shortened",
-      "summary": "Ten thousand people, three quarters of them women, worked in huts around a Buckinghamshire mansion decoding German signals traffic. The secret held for thirty years, which is why almost none of them were ever thanked.",
+      "wikipedia": "Bletchley Park",
       "facts": [
         {"label": "Active", "value": "1939 – 1946"},
         {"label": "Staff at peak", "value": "About 10,000, roughly 75% women"},
@@ -509,7 +509,7 @@
     {
       "id": "enigma-machine", "name": "Enigma Machine", "category": "thing",
       "tagline": "A typewriter whose wiring changed with every keystroke",
-      "summary": "Enigma scrambled each letter through a set of rotors that advanced after every press, giving an astronomical number of settings. Its fatal flaw was small and absolute: no letter could ever encipher to itself.",
+      "wikipedia": "Enigma machine",
       "facts": [
         {"label": "In service", "value": "1920s – 1945"},
         {"label": "Possible settings", "value": "Around 158 quintillion"},
@@ -528,7 +528,7 @@
     {
       "id": "turing-machine", "name": "Turing Machine", "category": "concept",
       "tagline": "A tape, a head, and everything computable",
-      "summary": "The machine is deliberately absurd as engineering — an infinite paper tape, one symbol at a time — and precisely right as mathematics, because anything any computer can ever do, it can do too. It also fixes the boundary: some questions no machine will ever answer.",
+      "wikipedia": "Turing machine",
       "facts": [
         {"label": "Proposed", "value": "1936"},
         {"label": "Parts", "value": "Infinite tape, read-write head, state table"},
@@ -547,7 +547,7 @@
     {
       "id": "maxwells-demon", "name": "Maxwell's Demon", "category": "concept",
       "tagline": "A thought experiment that took 120 years to kill",
-      "summary": "Maxwell imagined a tiny being sorting fast molecules from slow ones through a trapdoor, apparently creating a temperature difference from nothing and breaking the second law. The resolution came only in 1961: the demon must erase its memory, and erasing information costs exactly the missing entropy.",
+      "wikipedia": "Maxwell's demon",
       "facts": [
         {"label": "Proposed", "value": "1867, in a letter"},
         {"label": "Apparently violates", "value": "The second law of thermodynamics"},
@@ -566,7 +566,7 @@
     {
       "id": "james-clerk-maxwell", "name": "James Clerk Maxwell", "category": "person",
       "tagline": "Wrote light into four equations",
-      "summary": "Maxwell unified electricity and magnetism, and found that his equations predicted waves travelling at exactly the measured speed of light — so light was electromagnetism. He also produced the first colour photograph and the statistical treatment of gases.",
+      "wikipedia": "James Clerk Maxwell",
       "facts": [
         {"label": "Lived", "value": "1831 – 1879"},
         {"label": "Equations", "value": "Four, published 1865"},
@@ -585,7 +585,7 @@
     {
       "id": "transistor", "name": "Transistor", "category": "thing",
       "tagline": "The switch that made everything else small",
-      "summary": "A sliver of doped semiconductor that lets one current control another, the transistor replaced the hot, fragile vacuum tube and then shrank without apparent limit. Essentially every digital device is a very large number of them arranged carefully.",
+      "wikipedia": "Transistor",
       "facts": [
         {"label": "Invented", "value": "December 1947"},
         {"label": "Inventors", "value": "Bardeen, Brattain, Shockley"},
@@ -604,7 +604,7 @@
     {
       "id": "john-von-neumann", "name": "John von Neumann", "category": "person",
       "tagline": "Contributed foundationally to about six fields at once",
-      "summary": "Von Neumann rebuilt the foundations of quantum mechanics, invented game theory, designed the stored-program computer architecture and worked on the implosion lens for the atomic bomb. Colleagues who were themselves geniuses described his speed as belonging to a different species.",
+      "wikipedia": "John von Neumann",
       "facts": [
         {"label": "Lived", "value": "1903 – 1957"},
         {"label": "Born", "value": "Budapest"},
@@ -624,7 +624,7 @@
     {
       "id": "manhattan-project", "name": "Manhattan Project", "category": "event",
       "tagline": "Physics turned into industry, in secret, in three years",
-      "summary": "A hundred and thirty thousand people and two billion dollars went into building the first nuclear weapons, most of them with no idea what they were making. The scientific problem was hard; the industrial problem of producing enough fissile material was harder.",
+      "wikipedia": "Manhattan Project",
       "facts": [
         {"label": "Ran", "value": "1942 – 1946"},
         {"label": "Employed", "value": "About 130,000 people"},
@@ -643,7 +643,7 @@
     {
       "id": "los-alamos", "name": "Los Alamos", "category": "place",
       "tagline": "A boys' school on a mesa, requisitioned",
-      "summary": "Oppenheimer chose a remote New Mexico mesa he had loved as a teenager, and the army built a town there that did not officially exist. For three years its residents shared a single postal box number.",
+      "wikipedia": "Los Alamos, New Mexico",
       "facts": [
         {"label": "State", "value": "New Mexico"},
         {"label": "Altitude", "value": "2,231 m"},
@@ -662,7 +662,7 @@
     {
       "id": "robert-oppenheimer", "name": "J. Robert Oppenheimer", "category": "person",
       "tagline": "Built the bomb, then argued against the next one",
-      "summary": "A theoretical physicist of wide but unfocused brilliance, Oppenheimer turned out to be an extraordinary director of other people's work. After the war he opposed the hydrogen bomb, and in 1954 a security hearing stripped him of his clearance and his influence.",
+      "wikipedia": "J. Robert Oppenheimer",
       "facts": [
         {"label": "Lived", "value": "1904 – 1967"},
         {"label": "Read", "value": "Sanskrit, for pleasure"},
@@ -681,7 +681,7 @@
     {
       "id": "a-mathematical-theory-of-communication", "name": "A Mathematical Theory of Communication", "category": "work",
       "tagline": "A single paper that created a field entire",
-      "summary": "Shannon's 1948 paper defined the bit, proved how much a noisy channel can carry, and showed that reliable communication is possible right up to that limit. Unusually for a founding document, it left very little for anyone else to clean up.",
+      "wikipedia": "A Mathematical Theory of Communication",
       "facts": [
         {"label": "Published", "value": "July and October 1948"},
         {"label": "Journal", "value": "Bell System Technical Journal"},
@@ -700,7 +700,7 @@
     {
       "id": "florence", "name": "Florence", "category": "place",
       "tagline": "A banking town that bought the Renaissance",
-      "summary": "Wool money and then banking money gave Florence a merchant class with taste, competitive vanity and the funds to indulge both. Within a century a city of sixty thousand people produced Brunelleschi, Donatello, Botticelli, Leonardo, Michelangelo and Machiavelli.",
+      "wikipedia": "Florence",
       "facts": [
         {"label": "Country", "value": "Italy, on the Arno"},
         {"label": "Currency", "value": "The florin, Europe's reserve coin"},
@@ -722,7 +722,7 @@
     {
       "id": "medici-family", "name": "The Medici", "category": "organization",
       "tagline": "Bankers who bought art until it became power",
-      "summary": "The Medici built the largest bank in Europe and spent the proceeds on buildings, sculpture and scholars, discovering that cultural patronage converts neatly into political authority. Four Medici became popes and two became queens of France.",
+      "wikipedia": "House of Medici",
       "facts": [
         {"label": "Prominent", "value": "1434 – 1737"},
         {"label": "Founded", "value": "The Medici Bank, 1397"},
@@ -742,7 +742,7 @@
     {
       "id": "leonardo-da-vinci", "name": "Leonardo da Vinci", "category": "person",
       "tagline": "Finished almost nothing, understood almost everything",
-      "summary": "Leonardo left a small number of paintings and thousands of notebook pages on anatomy, water, flight, geology and optics, written backwards in mirror script. He was so reluctant to declare a work finished that he carried the Mona Lisa around for sixteen years.",
+      "wikipedia": "Leonardo da Vinci",
       "facts": [
         {"label": "Lived", "value": "1452 – 1519"},
         {"label": "Finished paintings", "value": "Fewer than twenty survive"},
@@ -762,7 +762,7 @@
     {
       "id": "michelangelo", "name": "Michelangelo", "category": "person",
       "tagline": "Insisted he was a sculptor, even on the scaffold",
-      "summary": "Michelangelo carved the David at twenty-six, then spent four years on his back painting a ceiling he had not wanted to paint, complaining in verse the whole time. He worked for seven popes and outlived most of his rivals by decades.",
+      "wikipedia": "Michelangelo",
       "facts": [
         {"label": "Lived", "value": "1475 – 1564"},
         {"label": "Age at the David", "value": "26 when he began"},
@@ -782,7 +782,7 @@
     {
       "id": "sistine-chapel", "name": "Sistine Chapel", "category": "place",
       "tagline": "Where popes are elected, under 300 painted figures",
-      "summary": "The chapel is the pope's own, and its ceiling carries Michelangelo's nine scenes from Genesis across a shallow vault he had to invent a scaffold to reach. Cardinals still lock themselves inside it to choose a successor.",
+      "wikipedia": "Sistine Chapel",
       "facts": [
         {"label": "Built", "value": "1473 – 1481"},
         {"label": "Ceiling", "value": "Over 300 figures, 1508 – 1512"},
@@ -801,7 +801,7 @@
     {
       "id": "linear-perspective", "name": "Linear Perspective", "category": "concept",
       "tagline": "A geometry that puts the viewer in one exact place",
-      "summary": "Perspective converts three dimensions to two by projecting everything toward a single vanishing point, which means a picture assumes one particular eye in one particular spot. Brunelleschi demonstrated it with a mirror and a peephole around 1415, and painting was never the same.",
+      "wikipedia": "Perspective (graphical)",
       "facts": [
         {"label": "Demonstrated", "value": "c. 1415, by Brunelleschi"},
         {"label": "Codified in", "value": "Alberti's On Painting, 1435"},
@@ -821,7 +821,7 @@
     {
       "id": "filippo-brunelleschi", "name": "Filippo Brunelleschi", "category": "person",
       "tagline": "Goldsmith who solved a dome nobody could build",
-      "summary": "Florence had left a hole in its cathedral for decades because no one knew how to span it without centring. Brunelleschi won the commission with a scheme involving a double shell and a herringbone brick pattern, and refused to explain the details to anyone.",
+      "wikipedia": "Filippo Brunelleschi",
       "facts": [
         {"label": "Lived", "value": "1377 – 1446"},
         {"label": "Trained as", "value": "A goldsmith"},
@@ -840,7 +840,7 @@
     {
       "id": "florence-cathedral-dome", "name": "The Dome of Florence Cathedral", "category": "thing",
       "tagline": "Four million bricks, no scaffolding from below",
-      "summary": "The largest masonry dome ever raised, built as two shells with a herringbone bond that let each ring support itself as it went up. Six hundred years later, nobody has built a bigger one out of brick.",
+      "wikipedia": "Florence Cathedral",
       "facts": [
         {"label": "Built", "value": "1420 – 1436"},
         {"label": "Diameter", "value": "45.5 m"},
@@ -860,7 +860,7 @@
     {
       "id": "mona-lisa", "name": "Mona Lisa", "category": "work",
       "tagline": "A merchant's wife, stolen into fame",
-      "summary": "Leonardo's portrait of Lisa Gherardini was admired but not singular until an Italian handyman walked out of the Louvre with it in 1911. The two years it spent missing, and the newspapers that ran the empty wall, made it the most famous painting on earth.",
+      "wikipedia": "Mona Lisa",
       "facts": [
         {"label": "Painted", "value": "c. 1503 – 1519"},
         {"label": "Sitter", "value": "Lisa Gherardini, a silk merchant's wife"},
@@ -879,7 +879,7 @@
     {
       "id": "david-sculpture", "name": "David", "category": "work",
       "tagline": "Seventeen feet of marble that two sculptors had abandoned",
-      "summary": "The block had sat in a cathedral yard for thirty-five years, badly begun and thought ruined, when Michelangelo took it on. He carved the moment before the fight rather than after it, and Florence read the tense boy facing a giant as a portrait of itself.",
+      "wikipedia": "David",
       "facts": [
         {"label": "Carved", "value": "1501 – 1504"},
         {"label": "Height", "value": "5.17 m"},
@@ -898,7 +898,7 @@
     {
       "id": "italian-renaissance", "name": "Italian Renaissance", "category": "movement",
       "tagline": "Europe reading its own ruins with new attention",
-      "summary": "Beginning in Florence and spreading through the peninsula, the Renaissance recovered classical texts and forms and applied them to painting, architecture, politics and the idea of a person. It was less a rebirth than a very productive misreading of antiquity.",
+      "wikipedia": "Italian Renaissance",
       "facts": [
         {"label": "Ran", "value": "c. 1400 – 1600"},
         {"label": "Began in", "value": "Florence"},
@@ -919,7 +919,7 @@
     {
       "id": "humanism", "name": "Humanism", "category": "concept",
       "tagline": "Study the human things, in the original language",
-      "summary": "Renaissance humanism was a curriculum before it was a philosophy: grammar, rhetoric, poetry, history and moral philosophy, read in the original Greek and Latin. Its quiet radicalism was the assumption that a well-formed human life is worth studying on its own terms.",
+      "wikipedia": "Humanism",
       "facts": [
         {"label": "Curriculum", "value": "The studia humanitatis, five subjects"},
         {"label": "Early figure", "value": "Petrarch, who hunted lost manuscripts"},
@@ -939,7 +939,7 @@
     {
       "id": "niccolo-machiavelli", "name": "Niccolò Machiavelli", "category": "person",
       "tagline": "Described politics as it is and was hated for it",
-      "summary": "A senior Florentine official until the Medici returned, Machiavelli was tortured, exiled to a farm, and wrote a short book of advice for the men who had ruined him. He claimed only to be reporting how power actually behaves, which is precisely why the book still offends.",
+      "wikipedia": "Niccolò Machiavelli",
       "facts": [
         {"label": "Lived", "value": "1469 – 1527"},
         {"label": "Role", "value": "Second Chancellor of the Florentine Republic"},
@@ -959,7 +959,7 @@
     {
       "id": "the-prince", "name": "The Prince", "category": "work",
       "tagline": "Written to get a job, banned within decades",
-      "summary": "Twenty-six short chapters on acquiring and keeping a state, dedicated to a Medici in the hope of employment that never came. It was placed on the Index of Prohibited Books in 1559 and has never stopped being read.",
+      "wikipedia": "The Prince",
       "facts": [
         {"label": "Written", "value": "1513, published 1532"},
         {"label": "Chapters", "value": "26"},
@@ -978,7 +978,7 @@
     {
       "id": "rome", "name": "Rome", "category": "place",
       "tagline": "The city everything in Europe eventually refers back to",
-      "summary": "Capital of an empire, then of a church, Rome spent the Middle Ages as a ruin field grazed by cattle and the Renaissance as a quarry and a model. Its buildings taught Brunelleschi how to span a dome and taught Europe what monumentality looks like.",
+      "wikipedia": "Rome",
       "facts": [
         {"label": "Founded", "value": "Traditionally 753 BC"},
         {"label": "Imperial peak population", "value": "About one million"},
@@ -999,7 +999,7 @@
     {
       "id": "vitruvian-man", "name": "Vitruvian Man", "category": "work",
       "tagline": "A body squared and circled at once",
-      "summary": "Leonardo's pen drawing tests an ancient claim that a well-proportioned man fits both a circle and a square, and finds that he does — but only if the two shapes have different centres. The correction is the whole point of the sheet.",
+      "wikipedia": "Vitruvian Man",
       "facts": [
         {"label": "Drawn", "value": "c. 1490"},
         {"label": "Medium", "value": "Pen and ink on paper, 34.6 × 25.5 cm"},
@@ -1018,7 +1018,7 @@
     {
       "id": "codex-leicester", "name": "Codex Leicester", "category": "work",
       "tagline": "Seventy-two pages on water, bought by a software magnate",
-      "summary": "Leonardo's notebook on the movement of water, the moon and fossils, written in mirror script on eighteen folded sheets. Bill Gates bought it in 1994 for thirty million dollars, making it the most expensive book ever sold.",
+      "wikipedia": "Codex Leicester",
       "facts": [
         {"label": "Written", "value": "1508 – 1510"},
         {"label": "Pages", "value": "72"},
@@ -1037,7 +1037,7 @@
     {
       "id": "silk-road", "name": "Silk Road", "category": "concept",
       "tagline": "Not a road, and not mostly silk",
-      "summary": "The name covers a shifting web of overland and sea routes across Eurasia along which goods, religions, technologies and diseases all travelled. Almost nobody walked the whole length; goods passed hand to hand, marking up at every exchange.",
+      "wikipedia": "Silk Road",
       "facts": [
         {"label": "Active", "value": "c. 130 BC – 1450s AD"},
         {"label": "Named", "value": "1877, by Ferdinand von Richthofen"},
@@ -1058,7 +1058,7 @@
     {
       "id": "samarkand", "name": "Samarkand", "category": "place",
       "tagline": "Crossroads of everything, repeatedly destroyed",
-      "summary": "One of the oldest continuously inhabited cities in Central Asia, Samarkand sat where the routes from China, India and Persia met. Genghis Khan levelled it; Timur rebuilt it as an imperial capital and filled it with tiled domes.",
+      "wikipedia": "Samarkand",
       "facts": [
         {"label": "Country", "value": "Uzbekistan"},
         {"label": "Founded", "value": "c. 700 BC"},
@@ -1078,7 +1078,7 @@
     {
       "id": "marco-polo", "name": "Marco Polo", "category": "person",
       "tagline": "Either the greatest traveller or the greatest storyteller",
-      "summary": "A Venetian merchant who claimed seventeen years in the service of Kublai Khan and dictated the account in a Genoese prison. Sceptics note that he never mentions tea, chopsticks or the Great Wall; his book still sent Columbus east by going west.",
+      "wikipedia": "Marco Polo",
       "facts": [
         {"label": "Lived", "value": "c. 1254 – 1324"},
         {"label": "Away", "value": "24 years"},
@@ -1098,7 +1098,7 @@
     {
       "id": "venice", "name": "Venice", "category": "place",
       "tagline": "A republic built on mud and other people's cargo",
-      "summary": "Venice had no land, no farms and no natural resources, so it built ships and became the hinge between Europe and the East for five centuries. Its printing industry later made it the publishing capital of Europe.",
+      "wikipedia": "Venice",
       "facts": [
         {"label": "Founded", "value": "Traditionally 421 AD"},
         {"label": "Republic lasted", "value": "1,100 years, to 1797"},
@@ -1120,7 +1120,7 @@
     {
       "id": "paper", "name": "Paper", "category": "thing",
       "tagline": "A Chinese secret that took a thousand years to reach Europe",
-      "summary": "Invented in Han China from rags and bark, papermaking spread west slowly — reportedly through prisoners taken at the Battle of Talas in 751. Cheap writing material had to exist before printing could mean anything.",
+      "wikipedia": "Paper",
       "facts": [
         {"label": "Invented", "value": "c. 105 AD, credited to Cai Lun"},
         {"label": "Reached Samarkand", "value": "751 AD"},
@@ -1140,7 +1140,7 @@
     {
       "id": "printing-press", "name": "Printing Press", "category": "thing",
       "tagline": "Made copying cheaper than remembering",
-      "summary": "Gutenberg combined movable metal type, oil-based ink and a converted wine press into a system that could produce identical pages at speed. Within fifty years Europe held twenty million printed books, and no authority could control what people read.",
+      "wikipedia": "Printing press",
       "facts": [
         {"label": "Introduced", "value": "c. 1450, Mainz"},
         {"label": "Books in Europe by 1500", "value": "Around 20 million"},
@@ -1161,7 +1161,7 @@
     {
       "id": "johannes-gutenberg", "name": "Johannes Gutenberg", "category": "person",
       "tagline": "Went bankrupt printing the most valuable book in the world",
-      "summary": "A goldsmith by training, Gutenberg solved the metallurgy of casting reusable type and the chemistry of ink that would stick to it. His financier sued him the year the Bible was finished and took the press, the type and the profits.",
+      "wikipedia": "Johannes Gutenberg",
       "facts": [
         {"label": "Lived", "value": "c. 1400 – 1468"},
         {"label": "Trained as", "value": "A goldsmith"},
@@ -1180,7 +1180,7 @@
     {
       "id": "gutenberg-bible", "name": "Gutenberg Bible", "category": "work",
       "tagline": "The first great book off a European press, and still beautiful",
-      "summary": "Set in forty-two lines a column in a type designed to imitate the best manuscript hands, the Bible was intended to be indistinguishable from handwork and better than most of it. Forty-nine copies survive, twenty-one of them complete.",
+      "wikipedia": "Gutenberg Bible",
       "facts": [
         {"label": "Printed", "value": "c. 1455, Mainz"},
         {"label": "Copies made", "value": "About 180"},
@@ -1200,7 +1200,7 @@
     {
       "id": "protestant-reformation", "name": "Protestant Reformation", "category": "event",
       "tagline": "A theological dispute that broke a continent",
-      "summary": "Luther's objection to the sale of indulgences opened into a wholesale challenge to papal authority, and printing carried it faster than any suppression could follow. The result was a century of religious war and a permanently divided Europe.",
+      "wikipedia": "Reformation",
       "facts": [
         {"label": "Began", "value": "31 October 1517"},
         {"label": "Trigger", "value": "Indulgences sold to rebuild St Peter's"},
@@ -1220,7 +1220,7 @@
     {
       "id": "martin-luther", "name": "Martin Luther", "category": "person",
       "tagline": "A monk who would not take it back",
-      "summary": "Luther expected an academic debate about indulgences and got a summons to recant before the Emperor, which he refused. Hidden in a castle afterwards, he translated the New Testament into German in eleven weeks and largely invented the modern written language in the process.",
+      "wikipedia": "Martin Luther",
       "facts": [
         {"label": "Lived", "value": "1483 – 1546"},
         {"label": "At Worms", "value": "1521, refused to recant"},
@@ -1240,7 +1240,7 @@
     {
       "id": "ninety-five-theses", "name": "Ninety-Five Theses", "category": "work",
       "tagline": "Debating points that became a manifesto",
-      "summary": "Written in Latin for a university audience, the theses attack the sale of indulgences on mostly technical grounds. Translated, printed and distributed within weeks by people Luther had not asked, they became something else entirely.",
+      "wikipedia": "Ninety-five Theses",
       "facts": [
         {"label": "Dated", "value": "31 October 1517"},
         {"label": "Language", "value": "Latin, for scholars"},
@@ -1259,7 +1259,7 @@
     {
       "id": "movable-type", "name": "Movable Type", "category": "concept",
       "tagline": "Reusable letters, cast to a thousandth of an inch",
-      "summary": "The idea is old — China had ceramic type by 1040 and Korea cast metal type before Europe — but alphabetic scripts, with a few dozen characters, made it economic in a way thousands of Chinese characters did not. The hard part was never the idea; it was casting identical letters cheaply.",
+      "wikipedia": "Movable Type",
       "facts": [
         {"label": "Ceramic type", "value": "China, c. 1040, Bi Sheng"},
         {"label": "Metal type", "value": "Korea, by 1234"},
@@ -1279,7 +1279,7 @@
     {
       "id": "constantinople", "name": "Constantinople", "category": "place",
       "tagline": "The city that held for a thousand years and then did not",
-      "summary": "Founded as the eastern capital of Rome, Constantinople survived every siege until Ottoman cannon breached its walls in 1453. Its scholars scattered west with their Greek manuscripts, arriving in Italy at exactly the moment Italy was ready to read them.",
+      "wikipedia": "Constantinople",
       "facts": [
         {"label": "Founded", "value": "330 AD, by Constantine"},
         {"label": "Walls", "value": "The Theodosian Walls, unbreached for 800 years"},
@@ -1299,7 +1299,7 @@
     {
       "id": "spice-trade", "name": "Spice Trade", "category": "concept",
       "tagline": "Dried plant matter worth more than its weight in silver",
-      "summary": "Pepper, cloves, nutmeg and cinnamon grew in a few small places and were wanted everywhere, which made the middlemen rich and the endpoints desperate. Wanting to cut out the middle is what launched the European voyages of exploration.",
+      "wikipedia": "Spice trade",
       "facts": [
         {"label": "Nutmeg source", "value": "The Banda Islands, and nowhere else"},
         {"label": "Markup", "value": "Often 1,000% end to end"},
@@ -1319,7 +1319,7 @@
     {
       "id": "compass", "name": "Magnetic Compass", "category": "thing",
       "tagline": "A needle that let ships leave the coast",
-      "summary": "Chinese diviners used lodestone spoons long before anyone sailed by them; by the twelfth century the floating needle had reached European ships. Before it, sailing meant staying within sight of land or waiting for clear skies.",
+      "wikipedia": "Compass",
       "facts": [
         {"label": "First described", "value": "China, 11th century, for navigation"},
         {"label": "In Europe", "value": "By 1190"},
@@ -1338,7 +1338,7 @@
     {
       "id": "book-of-the-marvels-of-the-world", "name": "The Travels of Marco Polo", "category": "work",
       "tagline": "Called Il Milione — the million lies",
-      "summary": "Dictated in prison to a professional writer of chivalric romances, the book describes paper money, coal, an imperial postal system and cities of unimaginable size. Contemporaries read it as fiction; Columbus took his annotated copy to sea.",
+      "wikipedia": "The Travels of Marco Polo",
       "facts": [
         {"label": "Dictated", "value": "1298, in a Genoese prison"},
         {"label": "Nickname", "value": "Il Milione"},
@@ -1357,7 +1357,7 @@
     {
       "id": "kublai-khan", "name": "Kublai Khan", "category": "person",
       "tagline": "A Mongol who governed China as a Chinese emperor",
-      "summary": "Genghis Khan's grandson completed the conquest of China and then, unusually, settled down to rule it, founding the Yuan dynasty and building a capital where Beijing now stands. His two attempted invasions of Japan were both broken by typhoons.",
+      "wikipedia": "Kublai Khan",
       "facts": [
         {"label": "Lived", "value": "1215 – 1294"},
         {"label": "Founded", "value": "The Yuan dynasty, 1271"},
@@ -1376,7 +1376,7 @@
     {
       "id": "new-orleans", "name": "New Orleans", "category": "place",
       "tagline": "French, Spanish, African and Caribbean, in one port",
-      "summary": "A city that changed hands repeatedly and absorbed everyone who passed through, New Orleans had brass bands, Caribbean rhythm, opera and the blues within walking distance of each other. Jazz is what happened when they stopped staying separate.",
+      "wikipedia": "New Orleans",
       "facts": [
         {"label": "Founded", "value": "1718, by the French"},
         {"label": "Sold to the US", "value": "1803, Louisiana Purchase"},
@@ -1396,7 +1396,7 @@
     {
       "id": "louis-armstrong", "name": "Louis Armstrong", "category": "person",
       "tagline": "Turned a collective music into a soloist's art",
-      "summary": "Armstrong's playing on the Hot Five and Hot Seven records established that a jazz performance could be built around one improvising voice, and his phrasing changed how everyone after him played and sang. He grew up in poverty in New Orleans and learned cornet in a home for delinquent boys.",
+      "wikipedia": "Louis Armstrong",
       "facts": [
         {"label": "Lived", "value": "1901 – 1971"},
         {"label": "Learned cornet", "value": "In the Colored Waif's Home"},
@@ -1416,7 +1416,7 @@
     {
       "id": "jazz", "name": "Jazz", "category": "movement",
       "tagline": "American music that reinvents itself every decade",
-      "summary": "Jazz emerged in the early twentieth century from blues, ragtime and brass band traditions, and its defining commitment is that the performance is composed while it happens. It has changed its language so completely and so often that its eras barely sound related.",
+      "wikipedia": "Jazz",
       "facts": [
         {"label": "Emerged", "value": "c. 1900 – 1920"},
         {"label": "Core practice", "value": "Improvisation over a shared framework"},
@@ -1437,7 +1437,7 @@
     {
       "id": "miles-davis", "name": "Miles Davis", "category": "person",
       "tagline": "Kept walking away from music he had just perfected",
-      "summary": "Davis was central to bebop, cool jazz, modal jazz and jazz-rock fusion, abandoning each style at roughly the moment others mastered it. He played fewer notes than his contemporaries and made the space around them the point.",
+      "wikipedia": "Miles Davis",
       "facts": [
         {"label": "Lived", "value": "1926 – 1991"},
         {"label": "Studied at", "value": "Juilliard, briefly, then quit for 52nd Street"},
@@ -1458,7 +1458,7 @@
     {
       "id": "kind-of-blue", "name": "Kind of Blue", "category": "work",
       "tagline": "Recorded almost entirely in first takes, from sketches",
-      "summary": "Davis brought scales rather than chord charts to the studio and gave the band no rehearsal, so what was released is largely the sound of six musicians reading something for the first time. It is the best-selling jazz record ever made.",
+      "wikipedia": "Kind of Blue",
       "facts": [
         {"label": "Recorded", "value": "March and April 1959, two sessions"},
         {"label": "Preparation", "value": "Modal sketches handed out in the studio"},
@@ -1477,7 +1477,7 @@
     {
       "id": "modal-jazz", "name": "Modal Jazz", "category": "concept",
       "tagline": "Fewer chords, more room",
-      "summary": "Instead of navigating a fast-moving chord sequence, modal players stay on a single scale for many bars, which shifts the challenge from running changes to inventing melody. It was a direct reaction to bebop's harmonic density.",
+      "wikipedia": "Modal jazz",
       "facts": [
         {"label": "Emerged", "value": "Late 1950s"},
         {"label": "Theory source", "value": "George Russell's Lydian Chromatic Concept"},
@@ -1496,7 +1496,7 @@
     {
       "id": "john-coltrane", "name": "John Coltrane", "category": "person",
       "tagline": "Practised until the horn stopped being an obstacle",
-      "summary": "Coltrane worked through bebop, hard bop, modal playing and finally free jazz in barely fifteen years, driven by a religious sense of purpose and a legendary appetite for practice. He got clean in 1957 and said the rest of his playing was a thanksgiving.",
+      "wikipedia": "John Coltrane",
       "facts": [
         {"label": "Lived", "value": "1926 – 1967"},
         {"label": "Practice", "value": "Reportedly reed in mouth even when not playing"},
@@ -1516,7 +1516,7 @@
     {
       "id": "a-love-supreme", "name": "A Love Supreme", "category": "work",
       "tagline": "A four-part prayer, recorded in one session",
-      "summary": "Coltrane's suite moves from Acknowledgement through Resolution and Pursuance to Psalm, the last of which is a wordless recitation of a poem he printed in the sleeve notes. He described it as an offering, and played it live only a handful of times.",
+      "wikipedia": "A Love Supreme",
       "facts": [
         {"label": "Recorded", "value": "9 December 1964, one session"},
         {"label": "Movements", "value": "Four"},
@@ -1535,7 +1535,7 @@
     {
       "id": "bebop", "name": "Bebop", "category": "movement",
       "tagline": "Made deliberately too hard to dance to",
-      "summary": "Developed in after-hours clubs by musicians tired of playing dance arrangements, bebop took the tempos up, the chords sideways and the audience out of the equation. It converted jazz from popular entertainment into art music, with everything that cost.",
+      "wikipedia": "Bebop",
       "facts": [
         {"label": "Emerged", "value": "Early 1940s, Harlem after-hours clubs"},
         {"label": "Architects", "value": "Charlie Parker, Dizzy Gillespie, Thelonious Monk"},
@@ -1555,7 +1555,7 @@
     {
       "id": "charlie-parker", "name": "Charlie Parker", "category": "person",
       "tagline": "Reharmonised everything and died at thirty-four",
-      "summary": "Parker worked out that you could improvise on the upper intervals of a chord and build new melodies over old song forms, which is essentially the grammar of bebop. Heroin killed him at thirty-four; the coroner estimated his age at around sixty.",
+      "wikipedia": "Charlie Parker",
       "facts": [
         {"label": "Lived", "value": "1920 – 1955"},
         {"label": "Nickname", "value": "Bird"},
@@ -1575,7 +1575,7 @@
     {
       "id": "improvisation", "name": "Improvisation", "category": "concept",
       "tagline": "Composing at the speed of performance",
-      "summary": "Improvisation is not the absence of preparation but its concealment: years of internalised vocabulary deployed in real time against a shared framework. It was standard practice in European music too, until the nineteenth century quietly wrote it out.",
+      "wikipedia": "Improvisation",
       "facts": [
         {"label": "In jazz", "value": "The central act, not an ornament"},
         {"label": "Once standard in", "value": "Baroque and classical performance"},
@@ -1595,7 +1595,7 @@
     {
       "id": "blue-note-records", "name": "Blue Note Records", "category": "organization",
       "tagline": "Paid musicians to rehearse, which nobody else did",
-      "summary": "Founded by two German refugees, Blue Note recorded hard bop with unusual care — paid rehearsal time, Rudy Van Gelder's engineering, and Reid Miles's sleeve design. The look and the sound are still being imitated.",
+      "wikipedia": "Blue Note Records",
       "facts": [
         {"label": "Founded", "value": "1939, by Alfred Lion and Francis Wolff"},
         {"label": "Unusual practice", "value": "Paid rehearsal sessions"},
@@ -1614,7 +1614,7 @@
     {
       "id": "trumpet", "name": "Trumpet", "category": "thing",
       "tagline": "Three valves, and nothing to hide behind",
-      "summary": "Valves arrived in the 1830s and gave the trumpet every note, but the instrument still demands the player produce the pitch with their own lips before the machine helps. It is the loudest voice in the band and the least forgiving.",
+      "wikipedia": "Trumpet",
       "facts": [
         {"label": "Valves invented", "value": "c. 1818"},
         {"label": "Tubing", "value": "About 1.5 m, coiled"},
@@ -1633,7 +1633,7 @@
     {
       "id": "saxophone", "name": "Saxophone", "category": "thing",
       "tagline": "Invented for orchestras that never wanted it",
-      "summary": "Adolphe Sax patented a brass instrument with a reed to bridge woodwind and brass, and European orchestras largely ignored it. American dance bands and then jazz adopted it wholesale, making it the sound of a music invented after its inventor died.",
+      "wikipedia": "Saxophone",
       "facts": [
         {"label": "Patented", "value": "1846, by Adolphe Sax"},
         {"label": "Family", "value": "Woodwind — it has a reed, despite the brass"},
@@ -1652,7 +1652,7 @@
     {
       "id": "duke-ellington", "name": "Duke Ellington", "category": "person",
       "tagline": "Composed for specific people, not for instruments",
-      "summary": "Ellington wrote thousands of pieces for a band he kept together for half a century, tailoring parts to the particular sound of particular players. He called his music American rather than jazz and treated the orchestra itself as his instrument.",
+      "wikipedia": "Duke Ellington",
       "facts": [
         {"label": "Lived", "value": "1899 – 1974"},
         {"label": "Compositions", "value": "Over 1,000"},
@@ -1671,7 +1671,7 @@
     {
       "id": "harlem", "name": "Harlem", "category": "place",
       "tagline": "Where a migration became a renaissance",
-      "summary": "Black Americans moving north filled a few square miles of upper Manhattan and produced, within two decades, a literary and musical flowering that renamed itself the Harlem Renaissance. Bebop was invented in its after-hours clubs a generation later.",
+      "wikipedia": "Harlem",
       "facts": [
         {"label": "Location", "value": "Upper Manhattan, New York"},
         {"label": "Great Migration", "value": "Six million people north, 1910 – 1970"},
@@ -1691,7 +1691,7 @@
     {
       "id": "the-blues", "name": "The Blues", "category": "movement",
       "tagline": "Twelve bars that hold almost all American music",
-      "summary": "Emerging from work songs, spirituals and field hollers in the Mississippi Delta, the blues fixed a form so durable that jazz, rock, soul and country all still run on it. Its flattened notes sit between the piano's keys, which is why written notation never quite captures it.",
+      "wikipedia": "Blues",
       "facts": [
         {"label": "Emerged", "value": "Late 19th century, Mississippi Delta"},
         {"label": "Standard form", "value": "12 bars, three chords, AAB lyric"},
@@ -1711,7 +1711,7 @@
     {
       "id": "apollo-11", "name": "Apollo 11", "category": "event",
       "tagline": "Four days out, twenty-one hours down, and back",
-      "summary": "On 20 July 1969 a lunar module with less computing power than a modern doorbell landed two men on the Moon with about twenty-five seconds of fuel remaining. Six hundred million people watched, which was then a fifth of everyone alive.",
+      "wikipedia": "Apollo 11",
       "facts": [
         {"label": "Landed", "value": "20 July 1969, 20:17 UTC"},
         {"label": "Fuel remaining", "value": "About 25 seconds' worth"},
@@ -1732,7 +1732,7 @@
     {
       "id": "saturn-v", "name": "Saturn V", "category": "thing",
       "tagline": "Still the most powerful machine ever flown successfully",
-      "summary": "Thirty-six storeys tall and burning fifteen tonnes of propellant a second at liftoff, the Saturn V flew thirteen times and never lost a crew. Its first stage alone produced thirty-five million newtons of thrust.",
+      "wikipedia": "Saturn V",
       "facts": [
         {"label": "Height", "value": "110.6 m"},
         {"label": "Thrust at liftoff", "value": "35 million newtons"},
@@ -1752,7 +1752,7 @@
     {
       "id": "wernher-von-braun", "name": "Wernher von Braun", "category": "person",
       "tagline": "Built rockets for two governments, one of them criminal",
-      "summary": "Von Braun developed the V-2 using concentration camp labour, surrendered to the Americans in 1945, and twenty-four years later his Saturn V put men on the Moon. He remains the clearest case in the twentieth century of a talent whose usefulness outran any accounting for its cost.",
+      "wikipedia": "Wernher von Braun",
       "facts": [
         {"label": "Lived", "value": "1912 – 1977"},
         {"label": "Earlier work", "value": "The V-2 ballistic missile"},
@@ -1772,7 +1772,7 @@
     {
       "id": "the-moon", "name": "The Moon", "category": "place",
       "tagline": "Close enough to reach, far enough to be a project",
-      "summary": "The Moon is a quarter of Earth's diameter and probably formed when something Mars-sized hit the young planet. It keeps one face turned toward us, and its pull is what makes Earth's tides and stabilises the tilt that gives us seasons.",
+      "wikipedia": "Moon",
       "facts": [
         {"label": "Distance", "value": "384,400 km on average"},
         {"label": "Formation", "value": "Giant impact, about 4.5 billion years ago"},
@@ -1792,7 +1792,7 @@
     {
       "id": "john-f-kennedy", "name": "John F. Kennedy", "category": "person",
       "tagline": "Set a deadline he would not live to see met",
-      "summary": "Facing a run of Soviet firsts, Kennedy chose a goal far enough out that the United States could start from behind and still win, and told Congress in 1961 that America would land a man on the Moon before the decade was out. He was privately unenthusiastic about spaceflight itself.",
+      "wikipedia": "John F. Kennedy",
       "facts": [
         {"label": "Lived", "value": "1917 – 1963"},
         {"label": "Moon speech to Congress", "value": "25 May 1961"},
@@ -1811,7 +1811,7 @@
     {
       "id": "cold-war", "name": "Cold War", "category": "event",
       "tagline": "Forty years of not quite fighting",
-      "summary": "Two nuclear-armed blocs spent four decades competing everywhere except in direct combat with each other — through proxies, espionage, sport, and spaceflight. The absence of a third world war is either the system working or a very long run of luck.",
+      "wikipedia": "Cold War",
       "facts": [
         {"label": "Ran", "value": "1947 – 1991"},
         {"label": "Peak arsenals", "value": "About 64,000 warheads, 1986"},
@@ -1832,7 +1832,7 @@
     {
       "id": "sputnik-1", "name": "Sputnik 1", "category": "thing",
       "tagline": "A polished sphere that beeped, and terrified Washington",
-      "summary": "Eighty-three kilograms of aluminium with four aerials and a radio transmitter, Sputnik did nothing but circle the Earth and beep for three weeks. That was sufficient: anything that could put it up there could put a warhead anywhere.",
+      "wikipedia": "Sputnik 1",
       "facts": [
         {"label": "Launched", "value": "4 October 1957"},
         {"label": "Mass", "value": "83.6 kg"},
@@ -1852,7 +1852,7 @@
     {
       "id": "sergei-korolev", "name": "Sergei Korolev", "category": "person",
       "tagline": "The Chief Designer, whose name was a state secret",
-      "summary": "Korolev spent six years in the gulag, including months in a Kolyma gold mine, then went on to build the rocket that launched Sputnik and Gagarin. The Soviet state refused to name him publicly in case the West assassinated him; he was identified only in his obituary.",
+      "wikipedia": "Sergei Korolev",
       "facts": [
         {"label": "Lived", "value": "1907 – 1966"},
         {"label": "Imprisoned", "value": "1938 – 1944, on false charges"},
@@ -1872,7 +1872,7 @@
     {
       "id": "neil-armstrong", "name": "Neil Armstrong", "category": "person",
       "tagline": "Took manual control with the fuel running out",
-      "summary": "A test pilot before he was an astronaut, Armstrong flew the lunar module past a boulder field by hand while alarms sounded and fuel ran down. He gave almost no interviews afterwards and spent much of his later life teaching engineering in Ohio.",
+      "wikipedia": "Neil Armstrong",
       "facts": [
         {"label": "Lived", "value": "1930 – 2012"},
         {"label": "Before NASA", "value": "X-15 test pilot, 78 combat missions in Korea"},
@@ -1891,7 +1891,7 @@
     {
       "id": "nasa", "name": "NASA", "category": "organization",
       "tagline": "Founded in a panic, ten months after Sputnik",
-      "summary": "Congress created a civilian space agency in 1958 specifically because the Soviet Union had embarrassed the United States in orbit. At its Apollo peak it consumed more than four percent of the federal budget.",
+      "wikipedia": "NASA",
       "facts": [
         {"label": "Founded", "value": "29 July 1958"},
         {"label": "Peak budget", "value": "4.4% of US federal spending, 1966"},
@@ -1911,7 +1911,7 @@
     {
       "id": "orbital-mechanics", "name": "Orbital Mechanics", "category": "concept",
       "tagline": "To catch something ahead of you, slow down",
-      "summary": "Motion under gravity is governed by rules that consistently defy intuition: thrusting forward raises your orbit and makes you slower, and the cheapest route between two points is rarely direct. Everything from rendezvous to interplanetary transfer follows from Newton and a great deal of arithmetic.",
+      "wikipedia": "Orbital mechanics",
       "facts": [
         {"label": "Foundation", "value": "Kepler's laws, then Newton's gravitation"},
         {"label": "Counterintuitive rule", "value": "Speed up to slow down"},
@@ -1931,7 +1931,7 @@
     {
       "id": "baikonur-cosmodrome", "name": "Baikonur Cosmodrome", "category": "place",
       "tagline": "Named after a town 320 km away, deliberately",
-      "summary": "The Soviet launch complex sits on the Kazakh steppe, and was given the name of a distant mining settlement to mislead anyone trying to locate it. Russia still leases it from Kazakhstan and launches from it today.",
+      "wikipedia": "Baikonur Cosmodrome",
       "facts": [
         {"label": "Country", "value": "Kazakhstan"},
         {"label": "Opened", "value": "1955"},
@@ -1950,7 +1950,7 @@
     {
       "id": "yuri-gagarin", "name": "Yuri Gagarin", "category": "person",
       "tagline": "First man in space, and then too valuable to fly",
-      "summary": "A foundry worker's son, Gagarin orbited the Earth once in 108 minutes and returned a global celebrity. The Soviet state then largely grounded him as too politically precious to risk, and he died in a training jet crash at thirty-four.",
+      "wikipedia": "Yuri Gagarin",
       "facts": [
         {"label": "Lived", "value": "1934 – 1968"},
         {"label": "Flight", "value": "Vostok 1, 12 April 1961"},
@@ -1969,7 +1969,7 @@
     {
       "id": "rocket-equation", "name": "Tsiolkovsky Rocket Equation", "category": "concept",
       "tagline": "Why rockets are almost entirely fuel",
-      "summary": "The equation says velocity change depends on exhaust speed and the logarithm of the mass ratio, and the logarithm is what hurts: every extra bit of speed costs exponentially more propellant. Staging exists purely to cheat this, by throwing away empty tanks.",
+      "wikipedia": "Tsiolkovsky rocket equation",
       "facts": [
         {"label": "Published", "value": "1903, by Tsiolkovsky"},
         {"label": "Form", "value": "Δv = ve · ln(m0/mf)"},
@@ -1988,7 +1988,7 @@
     {
       "id": "konstantin-tsiolkovsky", "name": "Konstantin Tsiolkovsky", "category": "person",
       "tagline": "Worked out spaceflight alone, deaf, in a log house",
-      "summary": "Almost entirely self-taught after scarlet fever left him deaf at ten, Tsiolkovsky derived the rocket equation, proposed multistage rockets, liquid propellants, airlocks and space stations — decades before anyone could build any of it. He was a provincial schoolteacher the whole time.",
+      "wikipedia": "Konstantin Tsiolkovsky",
       "facts": [
         {"label": "Lived", "value": "1857 – 1935"},
         {"label": "Deaf from", "value": "Age 10, scarlet fever"},
@@ -2007,7 +2007,7 @@
     {
       "id": "kennedy-space-center", "name": "Kennedy Space Center", "category": "place",
       "tagline": "Built on a barrier island for the spin of the Earth",
-      "summary": "Launching eastward from as close to the equator as the continental United States allows gives a free boost from Earth's rotation, and the Atlantic gives somewhere safe for spent stages to fall. Its assembly building is one of the largest enclosed volumes on the planet.",
+      "wikipedia": "Kennedy Space Center",
       "facts": [
         {"label": "Location", "value": "Merritt Island, Florida"},
         {"label": "Chosen for", "value": "Low latitude and an ocean downrange"},
@@ -2027,7 +2027,7 @@
     {
       "id": "apollo-guidance-computer", "name": "Apollo Guidance Computer", "category": "thing",
       "tagline": "Two kilobytes of RAM, and it never failed in flight",
-      "summary": "Built around newly available integrated circuits and programmed in rope memory literally woven by hand, the AGC had less capability than a modern washing machine. During the Apollo 11 descent it detected its own overload and shed low-priority tasks rather than crashing, which is why the landing continued.",
+      "wikipedia": "Apollo Guidance Computer",
       "facts": [
         {"label": "RAM", "value": "2 kilobytes"},
         {"label": "Program storage", "value": "36 KB of hand-woven core rope memory"},
@@ -2047,7 +2047,7 @@
     {
       "id": "margaret-hamilton", "name": "Margaret Hamilton", "category": "person",
       "tagline": "Coined 'software engineering' to be taken seriously",
-      "summary": "Hamilton led the team that wrote the Apollo onboard flight software, and insisted on error-handling routines that colleagues thought unnecessary because astronauts would never make mistakes. Those routines saved the Apollo 11 landing.",
+      "wikipedia": "Margaret Hamilton (software engineer)",
       "facts": [
         {"label": "Born", "value": "1936"},
         {"label": "Role", "value": "Director of software engineering, MIT Instrumentation Lab"},
@@ -2066,7 +2066,7 @@
     {
       "id": "charles-darwin", "name": "Charles Darwin", "category": "person",
       "tagline": "Sat on the idea for twenty years",
-      "summary": "Darwin worked out natural selection in the late 1830s and then spent two decades on barnacles, pigeons and correspondence, assembling evidence and delaying publication. A letter from Wallace in 1858 outlining the same theory forced his hand.",
+      "wikipedia": "Charles Darwin",
       "facts": [
         {"label": "Lived", "value": "1809 – 1882"},
         {"label": "Voyage", "value": "Five years aboard HMS Beagle, 1831 – 1836"},
@@ -2086,7 +2086,7 @@
     {
       "id": "hms-beagle", "name": "HMS Beagle", "category": "thing",
       "tagline": "A survey brig with a spare berth for a gentleman",
-      "summary": "The Beagle's real job was charting South American coastlines; Darwin came along largely so the captain would have someone of his own class to dine with. The voyage was meant to last two years and took five.",
+      "wikipedia": "HMS Beagle",
       "facts": [
         {"label": "Class", "value": "Cherokee-class brig-sloop, 27.5 m"},
         {"label": "Second voyage", "value": "1831 – 1836"},
@@ -2105,7 +2105,7 @@
     {
       "id": "galapagos-islands", "name": "Galápagos Islands", "category": "place",
       "tagline": "Close enough to colonise, far enough to diverge",
-      "summary": "Volcanic and never connected to the mainland, the Galápagos were reached by a few lucky castaway species that then evolved separately on each island. Darwin did not label his finches carefully and had to reconstruct which island each came from later.",
+      "wikipedia": "Galápagos Islands",
       "facts": [
         {"label": "Location", "value": "965 km west of Ecuador"},
         {"label": "Origin", "value": "Volcanic, never joined to a continent"},
@@ -2124,7 +2124,7 @@
     {
       "id": "natural-selection", "name": "Natural Selection", "category": "concept",
       "tagline": "No designer required, only time and death",
-      "summary": "If organisms vary, if variation is inherited, and if more are born than can survive, then the variants that happen to survive better will become more common. The mechanism is almost trivially simple; its consequences took a century to work out fully.",
+      "wikipedia": "Natural selection",
       "facts": [
         {"label": "Requires", "value": "Variation, inheritance, differential survival"},
         {"label": "Independently found by", "value": "Darwin and Wallace"},
@@ -2144,7 +2144,7 @@
     {
       "id": "on-the-origin-of-species", "name": "On the Origin of Species", "category": "work",
       "tagline": "Sold out on the first day, and argued about ever since",
-      "summary": "Darwin called it an abstract of a much longer book he never finished, and wrote it for a general reader rather than for specialists. It presents one long argument and mentions human evolution almost not at all.",
+      "wikipedia": "On the Origin of Species",
       "facts": [
         {"label": "Published", "value": "24 November 1859"},
         {"label": "First printing", "value": "1,250 copies, sold out at once"},
@@ -2164,7 +2164,7 @@
     {
       "id": "alfred-russel-wallace", "name": "Alfred Russel Wallace", "category": "person",
       "tagline": "Had the same idea in a fever, and posted it to Darwin",
-      "summary": "Wallace funded his expeditions by selling specimens, and worked out natural selection while ill in the Malay Archipelago. He sent the paper to Darwin, of all people, for comment — and then generously spent the rest of his life calling the theory Darwinism.",
+      "wikipedia": "Alfred Russel Wallace",
       "facts": [
         {"label": "Lived", "value": "1823 – 1913"},
         {"label": "Collected", "value": "Over 125,000 specimens"},
@@ -2183,7 +2183,7 @@
     {
       "id": "dna", "name": "DNA", "category": "thing",
       "tagline": "A four-letter chemical that copies itself",
-      "summary": "Deoxyribonucleic acid stores genetic information in the order of four bases along a sugar-phosphate backbone, paired so that each strand specifies the other. That pairing is the copying mechanism, which is why the structure explained heredity the moment it was seen.",
+      "wikipedia": "DNA",
       "facts": [
         {"label": "Structure found", "value": "1953"},
         {"label": "Bases", "value": "Adenine, thymine, guanine, cytosine"},
@@ -2204,7 +2204,7 @@
     {
       "id": "rosalind-franklin", "name": "Rosalind Franklin", "category": "person",
       "tagline": "Took the picture the model was built from",
-      "summary": "An expert in X-ray diffraction, Franklin produced the image that showed DNA was helical and worked out key structural parameters. Her data reached Watson and Crick without her knowledge; she died at thirty-seven, four years before the Nobel that could not be awarded posthumously.",
+      "wikipedia": "Rosalind Franklin",
       "facts": [
         {"label": "Lived", "value": "1920 – 1958"},
         {"label": "At", "value": "King's College London, from 1951"},
@@ -2223,7 +2223,7 @@
     {
       "id": "photo-51", "name": "Photograph 51", "category": "work",
       "tagline": "An X-shaped smudge that gave away the whole structure",
-      "summary": "A diffraction image of hydrated DNA fibres, exposed for sixty-two hours, whose distinctive X pattern is the signature of a helix. Watson was shown it without Franklin's permission and later wrote that his mouth fell open.",
+      "wikipedia": "Photo 51",
       "facts": [
         {"label": "Taken", "value": "May 1952"},
         {"label": "Exposure", "value": "62 hours"},
@@ -2242,7 +2242,7 @@
     {
       "id": "james-watson", "name": "James Watson", "category": "person",
       "tagline": "Twenty-four, ambitious, and in the right room",
-      "summary": "Watson arrived in Cambridge determined to solve DNA and found in Crick someone equally willing to build models rather than run experiments. His memoir of the discovery is candid to the point of self-incrimination, particularly about Franklin.",
+      "wikipedia": "James Watson",
       "facts": [
         {"label": "Born", "value": "1928"},
         {"label": "Age at the discovery", "value": "24"},
@@ -2261,7 +2261,7 @@
     {
       "id": "francis-crick", "name": "Francis Crick", "category": "person",
       "tagline": "Talked constantly, and was usually right",
-      "summary": "Crick came to biology from physics, having spent the war designing mines, and brought a physicist's willingness to reason from structure. He later formulated the central dogma of molecular biology and then moved on to consciousness.",
+      "wikipedia": "Francis Crick",
       "facts": [
         {"label": "Lived", "value": "1916 – 2004"},
         {"label": "War work", "value": "Designing naval mines"},
@@ -2280,7 +2280,7 @@
     {
       "id": "x-ray-crystallography", "name": "X-ray Crystallography", "category": "concept",
       "tagline": "Read the shadow, infer the shape",
-      "summary": "Fire X-rays at an ordered solid and the scattered beams interfere, producing a pattern of spots from which the arrangement of atoms can be reconstructed. It is an indirect method requiring considerable mathematics, and it has resolved most of the structures in biology.",
+      "wikipedia": "X-ray crystallography",
       "facts": [
         {"label": "Founded", "value": "1912 – 1913, by the Braggs"},
         {"label": "Principle", "value": "Bragg's law, nλ = 2d sin θ"},
@@ -2300,7 +2300,7 @@
     {
       "id": "double-helix", "name": "Double Helix", "category": "concept",
       "tagline": "Two strands, running opposite ways, each the other's template",
-      "summary": "The structure is two sugar-phosphate backbones winding around a common axis with paired bases inside, and the pairing is specific: A with T, G with C. Watson and Crick's paper noted, with famous understatement, that this immediately suggests a copying mechanism.",
+      "wikipedia": "Nucleic acid double helix",
       "facts": [
         {"label": "Published", "value": "25 April 1953, in Nature"},
         {"label": "Paper length", "value": "One page"},
@@ -2320,7 +2320,7 @@
     {
       "id": "gregor-mendel", "name": "Gregor Mendel", "category": "person",
       "tagline": "Solved heredity in a monastery garden, and nobody noticed",
-      "summary": "Mendel crossed tens of thousands of pea plants and found that traits are inherited as discrete units in fixed ratios, publishing in 1866 in a journal nobody influential read. The work was rediscovered independently in 1900, sixteen years after his death.",
+      "wikipedia": "Gregor Mendel",
       "facts": [
         {"label": "Lived", "value": "1822 – 1884"},
         {"label": "Plants grown", "value": "About 28,000 pea plants"},
@@ -2339,7 +2339,7 @@
     {
       "id": "heredity", "name": "Heredity", "category": "concept",
       "tagline": "Why offspring resemble parents, but not exactly",
-      "summary": "Before Mendel, inheritance was assumed to blend, which would dilute any new variation away within a few generations and quietly destroy Darwin's theory. Discrete particulate inheritance solves that, and DNA turned out to be what the particles are made of.",
+      "wikipedia": "Heredity",
       "facts": [
         {"label": "Blending theory", "value": "Dominant before 1900, and fatal to Darwin"},
         {"label": "Mendel's insight", "value": "Traits inherit as discrete units"},
@@ -2359,7 +2359,7 @@
     {
       "id": "cambridge", "name": "Cambridge", "category": "place",
       "tagline": "A market town with an unreasonable number of Nobel Prizes",
-      "summary": "The university's Cavendish Laboratory alone produced the electron, the neutron, the structure of DNA and the splitting of the atom. Darwin studied here, Maxwell and Rutherford ran the lab, Wittgenstein taught philosophy and Turing was a fellow of King's.",
+      "wikipedia": "Cambridge",
       "facts": [
         {"label": "University founded", "value": "1209"},
         {"label": "Cavendish Laboratory", "value": "Opened 1874"},
@@ -2381,7 +2381,7 @@
     {
       "id": "kings-college-london", "name": "King's College London", "category": "place",
       "tagline": "Had the data, and lost the race by a few weeks",
-      "summary": "Franklin and Wilkins were doing the experimental work on DNA that Cambridge was only modelling, and the two labs had an uneasy agreement not to compete. The photograph that settled the structure was taken here and interpreted a hundred kilometres away.",
+      "wikipedia": "King's College London",
       "facts": [
         {"label": "Founded", "value": "1829"},
         {"label": "DNA work", "value": "Franklin and Wilkins, 1951 – 1953"},
@@ -2400,7 +2400,7 @@
     {
       "id": "alexandria", "name": "Alexandria", "category": "place",
       "tagline": "A Greek city on an Egyptian shore, built to be a capital",
-      "summary": "Founded by Alexander and built up by the Ptolemies, Alexandria was for three centuries the intellectual centre of the Mediterranean, with a library, a research institute and state salaries for scholars. Euclid taught here, Eratosthenes measured the Earth here, and Ptolemy wrote here.",
+      "wikipedia": "Alexandria",
       "facts": [
         {"label": "Founded", "value": "331 BC"},
         {"label": "Country", "value": "Egypt, on the Mediterranean"},
@@ -2422,7 +2422,7 @@
     {
       "id": "library-of-alexandria", "name": "Library of Alexandria", "category": "thing",
       "tagline": "Confiscated every book that came through the port",
-      "summary": "The Ptolemies pursued completeness aggressively: ships docking at Alexandria were searched for scrolls, which were copied, with the library keeping the originals. It did not burn down in a single dramatic fire so much as decline over centuries of funding cuts and neglect.",
+      "wikipedia": "Library of Alexandria",
       "facts": [
         {"label": "Founded", "value": "c. 285 BC"},
         {"label": "Holdings", "value": "Perhaps 400,000 scrolls at peak"},
@@ -2442,7 +2442,7 @@
     {
       "id": "euclid", "name": "Euclid", "category": "person",
       "tagline": "Almost nothing is known about him, and it hardly matters",
-      "summary": "Euclid gathered the mathematics of his predecessors into a single deductive structure so well organised that it was still a school textbook two thousand years later. Of the man himself, essentially nothing survives beyond that he taught at Alexandria.",
+      "wikipedia": "Euclid",
       "facts": [
         {"label": "Active", "value": "c. 300 BC"},
         {"label": "Known biography", "value": "Almost none"},
@@ -2462,7 +2462,7 @@
     {
       "id": "elements-euclid", "name": "Euclid's Elements", "category": "work",
       "tagline": "Second only to the Bible in editions printed",
-      "summary": "Thirteen books that begin with five postulates and build the whole of classical geometry by deduction alone. Its method — assume as little as possible, then prove everything else — became the model for what a rigorous argument looks like in any field.",
+      "wikipedia": "Euclid's Elements",
       "facts": [
         {"label": "Written", "value": "c. 300 BC"},
         {"label": "Books", "value": "13"},
@@ -2482,7 +2482,7 @@
     {
       "id": "geometry", "name": "Geometry", "category": "concept",
       "tagline": "Earth-measuring, which stopped being about the Earth",
-      "summary": "Geometry began as practical surveying in Egypt and Mesopotamia and became, in Greek hands, the first body of knowledge derived entirely by proof from stated assumptions. When the fifth postulate was finally dropped in the 1800s, entirely consistent non-Euclidean geometries appeared — one of which turned out to describe real space.",
+      "wikipedia": "Geometry",
       "facts": [
         {"label": "Name means", "value": "Earth measurement"},
         {"label": "Made deductive by", "value": "The Greeks, c. 600 – 300 BC"},
@@ -2503,7 +2503,7 @@
     {
       "id": "ptolemy", "name": "Claudius Ptolemy", "category": "person",
       "tagline": "Wrong about the centre, right about almost everything else",
-      "summary": "Ptolemy built a geometric model that predicted planetary positions accurately enough to remain in use for fourteen centuries, at the cost of putting the Earth at the centre and adding epicycles to make it work. He also produced the standard atlas of the ancient world, with coordinates.",
+      "wikipedia": "Ptolemy",
       "facts": [
         {"label": "Active", "value": "c. 100 – 170 AD, Alexandria"},
         {"label": "Model", "value": "Geocentric, with epicycles and equants"},
@@ -2523,7 +2523,7 @@
     {
       "id": "almagest", "name": "Almagest", "category": "work",
       "tagline": "Kept by its Arabic nickname, 'the greatest'",
-      "summary": "Ptolemy's astronomical treatise contains a star catalogue, a model for each planet and the mathematics to predict where anything will be. Europe knew it for centuries only through Arabic translations, which is why it goes by an Arabic name.",
+      "wikipedia": "Almagest",
       "facts": [
         {"label": "Written", "value": "c. 150 AD"},
         {"label": "Books", "value": "13"},
@@ -2543,7 +2543,7 @@
     {
       "id": "alexander-the-great", "name": "Alexander the Great", "category": "person",
       "tagline": "Never lost a battle, died at thirty-two",
-      "summary": "In thirteen years Alexander took an empire stretching from Greece to the Punjab, founding cities as he went and spreading Greek language and thought across the ancient world. He left no succession plan, and his generals spent forty years dismantling what he built.",
+      "wikipedia": "Alexander the Great",
       "facts": [
         {"label": "Lived", "value": "356 – 323 BC"},
         {"label": "Tutor", "value": "Aristotle"},
@@ -2563,7 +2563,7 @@
     {
       "id": "nile", "name": "The Nile", "category": "place",
       "tagline": "A river that made a civilisation by flooding on schedule",
-      "summary": "The Nile's annual flood deposited fertile silt with enough regularity that Egyptian agriculture, taxation, surveying and calendar all organised themselves around it. Predicting the flood was a state function, and re-measuring the fields afterwards is one origin of geometry.",
+      "wikipedia": "Nile",
       "facts": [
         {"label": "Length", "value": "About 6,650 km"},
         {"label": "Flows", "value": "South to north"},
@@ -2582,7 +2582,7 @@
     {
       "id": "ancient-egypt", "name": "Ancient Egypt", "category": "concept",
       "tagline": "Three thousand years of continuity, then a very long silence",
-      "summary": "Egyptian civilisation persisted with recognisable institutions, religion and script for longer than the span between its end and today. When the script finally fell out of use in the fourth century AD, the ability to read it vanished for fourteen hundred years.",
+      "wikipedia": "Ancient Egypt",
       "facts": [
         {"label": "Span", "value": "c. 3100 – 30 BC"},
         {"label": "Writing", "value": "Hieroglyphic, from c. 3200 BC"},
@@ -2603,7 +2603,7 @@
     {
       "id": "rosetta-stone", "name": "Rosetta Stone", "category": "thing",
       "tagline": "A tax decree that unlocked a civilisation",
-      "summary": "A fragment of a fairly routine priestly decree, inscribed in hieroglyphic, demotic and Greek — and because scholars could read the Greek, it gave them a parallel text. French soldiers found it in a wall; the British took it two years later.",
+      "wikipedia": "Rosetta Stone",
       "facts": [
         {"label": "Carved", "value": "196 BC"},
         {"label": "Found", "value": "July 1799, at Rashid, by French soldiers"},
@@ -2622,7 +2622,7 @@
     {
       "id": "jean-francois-champollion", "name": "Jean-François Champollion", "category": "person",
       "tagline": "Taught himself Coptic to read a language nobody spoke",
-      "summary": "Champollion realised that hieroglyphs were neither purely pictorial nor purely alphabetic but both at once, and that Coptic — still used liturgically — preserved the underlying language. He announced the breakthrough in 1822 and reportedly fainted afterwards.",
+      "wikipedia": "Jean-François Champollion",
       "facts": [
         {"label": "Lived", "value": "1790 – 1832"},
         {"label": "Breakthrough", "value": "14 September 1822"},
@@ -2641,7 +2641,7 @@
     {
       "id": "hieroglyphs", "name": "Hieroglyphs", "category": "concept",
       "tagline": "Pictures that are also sounds, and sometimes both at once",
-      "summary": "Egyptian hieroglyphic writing mixes signs standing for sounds, signs standing for things, and signs that silently specify which meaning is intended. Europe assumed for centuries that the pictures were mystical symbols, which is precisely why nobody could read them.",
+      "wikipedia": "Egyptian hieroglyphs",
       "facts": [
         {"label": "In use", "value": "c. 3200 BC – 394 AD"},
         {"label": "Signs", "value": "About 1,000 in common use"},
@@ -2661,7 +2661,7 @@
     {
       "id": "napoleon-bonaparte", "name": "Napoleon Bonaparte", "category": "person",
       "tagline": "Rearranged Europe twice and lost it twice",
-      "summary": "An artillery officer who became emperor, Napoleon reformed law, administration and education across the continent while fighting almost continuously for fifteen years. His invasion of Russia destroyed his army, and the peace made after his fall was designed specifically to prevent anyone like him again.",
+      "wikipedia": "Napoleon",
       "facts": [
         {"label": "Lived", "value": "1769 – 1821"},
         {"label": "Emperor", "value": "1804 – 1814, and 100 days in 1815"},
@@ -2683,7 +2683,7 @@
     {
       "id": "egyptian-campaign", "name": "French Campaign in Egypt", "category": "event",
       "tagline": "A military failure that founded a discipline",
-      "summary": "Napoleon took 167 scholars along with his army, and while the fleet was destroyed and the campaign collapsed, the scientists catalogued Egypt in twenty-three volumes. The expedition lost the war and started Egyptology.",
+      "wikipedia": "French invasion of Egypt and Syria",
       "facts": [
         {"label": "Ran", "value": "1798 – 1801"},
         {"label": "Scholars taken", "value": "167"},
@@ -2703,7 +2703,7 @@
     {
       "id": "lighthouse-of-alexandria", "name": "Lighthouse of Alexandria", "category": "thing",
       "tagline": "Stood for 1,600 years, then three earthquakes",
-      "summary": "Built on the island of Pharos, the lighthouse was among the tallest structures in the world and gave several languages their word for lighthouse. Earthquakes brought it down in stages; its blocks were reused in a fort that still stands on the site.",
+      "wikipedia": "Lighthouse of Alexandria",
       "facts": [
         {"label": "Built", "value": "c. 280 BC"},
         {"label": "Height", "value": "Perhaps 100 – 130 m"},
@@ -2722,7 +2722,7 @@
     {
       "id": "eratosthenes", "name": "Eratosthenes", "category": "person",
       "tagline": "Measured the planet with a stick and a shadow",
-      "summary": "Told that the sun cast no shadow in a well at Syene at noon on the solstice, while it clearly did in Alexandria, Eratosthenes measured that angle and worked out the Earth's circumference to within a few percent. He was also chief librarian at Alexandria, and invented a still-used method for finding primes.",
+      "wikipedia": "Eratosthenes",
       "facts": [
         {"label": "Lived", "value": "c. 276 – 194 BC"},
         {"label": "Role", "value": "Chief librarian at Alexandria"},
@@ -2742,7 +2742,7 @@
     {
       "id": "circumference-of-earth", "name": "Circumference of the Earth", "category": "concept",
       "tagline": "Known to within a few percent, 2,200 years ago",
-      "summary": "Eratosthenes assumed the Earth was a sphere and the sun's rays parallel, measured a shadow angle of about 7.2 degrees, and scaled up by the distance between two Egyptian cities. Ptolemy later adopted a smaller figure, and that error is part of why Columbus thought Asia was reachable.",
+      "wikipedia": "Earth's circumference",
       "facts": [
         {"label": "Measured", "value": "c. 240 BC"},
         {"label": "Result", "value": "About 250,000 stadia"},
