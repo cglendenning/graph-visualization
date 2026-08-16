@@ -134,7 +134,7 @@
   <p class="heads-up"><b>This replaces Constellation, it does not upgrade it.</b> The app was renamed, so it carries a new bundle identifier and installs alongside the old one. Delete Constellation from your home screen after this finishes.</p>
 
   <dl class="telemetry">
-    <dt>Version</dt><dd>2.4.1 (12)</dd>
+    <dt>Version</dt><dd>2.4.2 (13)</dd>
     <dt>Bundle</dt><dd>com.craigglendenning.perihelion</dd>
     <dt>Min iOS</dt><dd>13.0</dd>
     <dt>Signing</dt><dd>Development · MCALPSQ5P5</dd>
@@ -143,12 +143,11 @@
   </dl>
 
   <div class="how">
-    <strong>What changed in 2.4.1</strong>
+    <strong>What changed in 2.4.2</strong>
       <ol>
-        <li>Fixed &ldquo;New topic&rdquo; ignoring the filter. It drew a purely random article, which was almost never about what you asked for, so the rosette came back empty.</li>
-        <li>With a filter on, a new topic now comes from Wikidata&rsquo;s search index &mdash; enter &ldquo;electric guitar&rdquo; and you land on electric guitar, not cryptanalysis.</li>
-        <li>Applying a filter where nothing matches now moves you somewhere it does, instead of stranding you on a dead end.</li>
-        <li>Clearing the filter returns to unconstrained random topics.</li>
+        <li>Fixed keyword filters returning almost nothing. Searching &ldquo;food&rdquo; from the food article produced one satellite; it now produces six.</li>
+        <li>A keyword is already a strong constraint, so the notability bar and the must-have-its-own-article rule no longer stack on top of it.</li>
+        <li>Filtered searches look across many more of a topic&rsquo;s properties.</li>
       </ol>
   </div>
 

@@ -177,14 +177,19 @@ class WikidataService {
       List<int>.generate(a.length, (i) => i).every((i) => a[i] == b[i]);
 
   /// When a keyword filter is on, most properties return nothing, so the
-  /// search has to look at more of them. Fewer per query keeps the request
-  /// under the URL ceiling; more rounds make up the coverage.
-  static const int filteredPropertiesSampled = 8;
-  static const int filteredMaxRounds = 4;
-
-  /// A keyword is already a strong constraint, so the notability bar is
-  /// lowered — insisting on both would usually leave the rosette empty.
-  static const List<int> filteredNotabilityTiers = [12, 0, 0, 0];
+  /// search has to look at far more of them.
+  ///
+  /// A keyword is already a strong constraint. Stacking the notability bar
+  /// and the must-have-an-article rule on top of it left almost nothing
+  /// alive: searching "food" from the food article returned one satellite.
+  /// Under a filter those two are dropped and the coverage widened instead.
+  /// Ten, not more: the keyword clause is repeated per property, and twelve
+  /// pushes the request past the URL ceiling, where it gets trimmed straight
+  /// back down again. Coverage comes from more rounds instead — each query
+  /// stays sub-second, so six of them is still quick.
+  static const int filteredPropertiesSampled = 10;
+  static const int filteredMaxRounds = 6;
+  static const List<int> filteredNotabilityTiers = [0, 0, 0, 0, 0, 0];
 
   // ---------------------------------------------------------------- queries
 
@@ -515,7 +520,9 @@ LIMIT 200''';
       final rows = await _neighborRows(
         qid,
         slice,
-        requireArticle: true,
+        // Under a filter the text match is doing the selecting, so insisting
+        // the neighbour also have its own article is one constraint too many.
+        requireArticle: !isFiltered,
         minSitelinks: tiers[round],
       );
       _absorb(rows, qid, chosen, taken);
