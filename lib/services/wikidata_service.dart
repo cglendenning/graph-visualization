@@ -149,6 +149,17 @@ class WikidataService {
   static final RegExp _qid = RegExp(r'^Q\d+$');
   static final RegExp _pid = RegExp(r'^P\d+$');
 
+  /// Titles from Wikipedia's own namespaces — project pages, categories,
+  /// templates and the like.
+  ///
+  /// Some carry no "instance of" statement at all, so filtering by type
+  /// cannot catch them; the prefix always gives them away.
+  static final RegExp _namespacedTitle = RegExp(
+    r'^(Wikipedia|Category|Portal|Template|Help|Module|Draft|MediaWiki|Talk|'
+    r'File|Book|Special|Wikt|User)\s*:',
+    caseSensitive: false,
+  );
+
   // ------------------------------------------------------------ the theme
 
   /// Items inside the active theme, as Wikidata ids.
@@ -682,6 +693,8 @@ SELECT ?pd ?dir ?other ?otherLabel ?propLabel ?type WHERE {
   wd:${seed.node.qid} ?pd ?other .
   ?prop wikibase:directClaim ?pd .
   ?sl schema:about ?other ; schema:isPartOf <https://en.wikipedia.org/> .
+  FILTER NOT EXISTS { ?other wdt:P31 ?internal .
+    VALUES ?internal { ${wikimediaInternalTypes.map((q) => 'wd:$q').join(' ')} } }
   OPTIONAL { ?other wdt:P31 ?type }
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
@@ -786,7 +799,9 @@ LIMIT 600''';
     for (final row in rows) {
       final other = _localName(_value(row, 'other') ?? '');
       if (!_qid.hasMatch(other) || other == centerQid) continue;
-      final key = '${_localName(_value(row, 'pd') ?? '')}|${_value(row, 'dir')}';
+      final pid = _localName(_value(row, 'pd') ?? '');
+      if (blockedProperties.contains(pid)) continue;
+      final key = '$pid|${_value(row, 'dir')}';
       (grouped[key] ??= []).add(row);
       final type = _value(row, 'type');
       if (type != null) (types[other] ??= []).add(_localName(type));
@@ -829,6 +844,8 @@ LIMIT 600''';
       final label = _value(row, 'otherLabel');
       // An unlabelled item shows as a bare Q-number, which is not worth a seat.
       if (label == null || label == qid) continue;
+      // Nor is a page from Wikipedia's own scaffolding a topic.
+      if (_namespacedTitle.hasMatch(label)) continue;
       if (freshCategoryOnly) {
         final category = WikidataCategoryMap.forTypes(types[qid] ?? const []);
         if (onScreen.contains(category)) continue;

@@ -19,6 +19,7 @@ const _entity = 'http://www.wikidata.org/entity/';
 
 void main() {
   mainThemed();
+  mainScaffolding();
   mainReadiness();
   group('WikidataService queries', () {
     test('sends SPARQL as a json-formatted GET', () {
@@ -897,6 +898,63 @@ void mainReadiness() {
       final service = WikidataService(fetcher: themedWorld);
       expect(service.hasReadyDraw('Q1741'), isFalse);
       expect(service.hasWarmRandomTopic, isFalse);
+    });
+  });
+}
+
+void mainScaffolding() {
+  group('Wikipedia scaffolding is never a topic', () {
+    Future<String> stubWithFurniture(Uri url) async {
+      final q = url.queryParameters['query']!;
+      if (q.contains('SELECT DISTINCT ?pd')) {
+        return _bindings([_row({'pd': '${_wd}P31', 'dir': 'out'})]);
+      }
+      return _bindings([
+        for (final e in [
+          // All on an unblocked property, so only the namespace guard can
+          // exclude them — that is what this test is for.
+          ['Q1', 'Wikipedia:Vital articles/Level/4', 'P155'],
+          ['Q2', 'Category:Battles', 'P155'],
+          ['Q3', 'Portal:Military history', 'P155'],
+          ['Q4', 'Template:Infobox', 'P155'],
+          ['Q5', 'Encyclopaedia Britannica', 'P1343'], // blocked property
+          ['Q6', 'war', 'P155'], // the only real topic
+        ])
+          {
+            'pd': {'value': '$_wd${e[2]}'},
+            'dir': {'value': 'out'},
+            'other': {'value': '$_entity${e[0]}'},
+            'otherLabel': {'value': e[1]},
+            'propLabel': {'value': 'subclass of'},
+          },
+      ]);
+    }
+
+    test('drops project, category, portal and template pages', () async {
+      final service =
+          WikidataService(fetcher: stubWithFurniture, random: Random(2));
+      final n = await service.sampleNeighbors('Q999');
+      final labels = n.map((x) => x.node.label).toList();
+      expect(labels, isNot(contains('Wikipedia:Vital articles/Level/4')));
+      expect(labels, isNot(contains('Category:Battles')));
+      expect(labels, isNot(contains('Portal:Military history')));
+      expect(labels, isNot(contains('Template:Infobox')));
+    });
+
+    test('honours the property blocklist wherever rows are absorbed',
+        () async {
+      // The second-hop query builds its own SPARQL and used to skip this.
+      final service =
+          WikidataService(fetcher: stubWithFurniture, random: Random(2));
+      final n = await service.sampleNeighbors('Q999');
+      expect(n.map((x) => x.node.label), isNot(contains('Encyclopaedia Britannica')));
+    });
+
+    test('keeps the real topic', () async {
+      final service =
+          WikidataService(fetcher: stubWithFurniture, random: Random(2));
+      final n = await service.sampleNeighbors('Q999');
+      expect(n.map((x) => x.node.label), contains('war'));
     });
   });
 }
