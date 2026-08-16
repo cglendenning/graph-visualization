@@ -363,6 +363,31 @@ void main() {
       expect(n.map((x) => x.node.qid), isNot(contains('Q100')));
     });
 
+    test('bounds how many queries one rosette may run', () async {
+      // Regression: an unbounded slice loop chained a dozen queries for a
+      // well-connected topic, and the jump looked like it had frozen.
+      var calls = 0;
+      final service = WikidataService(
+        fetcher: (url) async {
+          calls++;
+          if (url.queryParameters['query']!.contains('SELECT DISTINCT ?pd')) {
+            return _bindings([
+              for (var i = 0; i < 120; i++)
+                _row({'pd': '${_wd}P${1000 + i}', 'dir': 'out'}),
+            ]);
+          }
+          // Every neighbour query comes back empty, the worst case for the
+          // fill loop.
+          return _bindings([]);
+        },
+        random: Random(2),
+      );
+      await service.sampleNeighbors('Q1741');
+      // properties + two rounds + one relaxed pass. No second hop, because
+      // nothing was seated to hop from.
+      expect(calls, lessThanOrEqualTo(4));
+    });
+
     test('returns nothing when the item has no usable properties', () async {
       final service = WikidataService(
         fetcher: (_) async => _bindings([

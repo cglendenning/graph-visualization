@@ -49,8 +49,19 @@ class WikidataService {
 
   /// Properties are sampled well beyond the number of seats, because a
   /// property can hold only statements whose targets have no article and so
-  /// contribute nothing after filtering.
-  static const int propertiesSampled = seatCount * 2;
+  /// contribute nothing after filtering. Widened rather than repeated: one
+  /// larger query costs far less than several small ones in sequence.
+  static const int propertiesSampled = 18;
+
+  /// Slices of the property list to try before giving up on the neat path.
+  ///
+  /// Without this a well-connected topic could run a dozen queries back to
+  /// back, each a second or two, and the jump would appear to hang.
+  static const int maxRounds = 2;
+
+  /// Total time one rosette may spend querying before it settles for what it
+  /// already has. A partly filled rosette beats a spinner.
+  static const Duration sampleBudget = Duration(seconds: 14);
 
   /// Properties that describe Wikimedia's own bookkeeping rather than the
   /// subject, plus a few that are true but never interesting to look at.
@@ -170,10 +181,12 @@ SELECT DISTINCT ?pd ?dir WHERE {
       wd:$qid ?pd ?o . ?prop wikibase:directClaim ?pd .
       FILTER(isIRI(?o))
     }
+    LIMIT 100
   } UNION {
     SELECT DISTINCT ?pd ("in" AS ?dir) WHERE {
       ?s ?pd wd:$qid . ?prop wikibase:directClaim ?pd .
     }
+    LIMIT 100
   }
 }
 LIMIT 200''';
@@ -213,12 +226,17 @@ LIMIT 200''';
 
     final chosen = <WikidataNeighbor>[];
     final taken = <String>{};
+    final clock = Stopwatch()..start();
 
-    // Successive slices, because a slice can come back empty when none of
-    // its targets have an article of their own.
-    for (var cursor = 0;
-        cursor < preferred.length && chosen.length < seatCount;
-        cursor += propertiesSampled) {
+    // A couple of slices, because one can come back empty when none of its
+    // targets have an article of their own. Strictly bounded: chaining a
+    // dozen queries is what made a jump look like it had frozen.
+    for (var round = 0, cursor = 0;
+        round < maxRounds &&
+            cursor < preferred.length &&
+            chosen.length < seatCount &&
+            clock.elapsed < sampleBudget;
+        round++, cursor += propertiesSampled) {
       final slice =
           preferred.skip(cursor).take(propertiesSampled).toList(growable: false);
       final rows = await _neighborRows(qid, slice, requireArticle: true);
@@ -228,25 +246,24 @@ LIMIT 200''';
     // Last resort for a thinly connected topic: drop the requirement that a
     // neighbour have its own article, and let the blocked properties back in.
     // A duller satellite beats an empty seat.
-    if (chosen.length < seatCount) {
+    if (chosen.length < seatCount && clock.elapsed < sampleBudget) {
       final fallback = List<PropertyLink>.of(all)..shuffle(_random);
       final rows = await _neighborRows(
         qid,
-        fallback.take(propertiesSampled * 2).toList(growable: false),
+        fallback.take(propertiesSampled).toList(growable: false),
         requireArticle: false,
       );
       _absorb(rows, qid, chosen, taken);
     }
 
     // A stub — a hamlet, a minor species — can genuinely hold fewer than six
-    // statements. Rather than leave seats empty, step out one further hop
-    // through a neighbour already on screen. These are labelled "via …" so
-    // the rosette never claims a direct relationship it does not have.
-    if (chosen.length < seatCount && chosen.isNotEmpty) {
-      for (final seed in List<WikidataNeighbor>.of(chosen)) {
-        if (chosen.length == seatCount) break;
-        await _fillFromSecondHop(seed, qid, chosen, taken);
-      }
+    // statements. Step out one hop through a neighbour already on screen.
+    // One seed, one query: listing a neighbour's properties can take ten
+    // seconds on its own if that neighbour happens to be a country.
+    if (chosen.length < seatCount &&
+        chosen.isNotEmpty &&
+        clock.elapsed < sampleBudget) {
+      await _fillFromSecondHop(chosen.first, qid, chosen, taken);
     }
 
     return chosen.take(seatCount).toList(growable: false);
@@ -258,17 +275,18 @@ LIMIT 200''';
     List<WikidataNeighbor> chosen,
     Set<String> taken,
   ) async {
-    final links = (await propertiesFor(seed.node.qid))
-        .where((link) => !blockedProperties.contains(link.pid))
-        .toList()
-      ..shuffle(_random);
-    if (links.isEmpty) return;
-
-    final rows = await _neighborRows(
-      seed.node.qid,
-      links.take(propertiesSampled).toList(growable: false),
-      requireArticle: true,
-    );
+    // Outgoing statements only. The incoming direction is the expensive one,
+    // and a stub's neighbour is reached purely to borrow a few extra seats.
+    final rows = await _select('''
+SELECT ?pd ?dir ?other ?otherLabel ?propLabel ?type WHERE {
+  BIND("out" AS ?dir)
+  wd:${seed.node.qid} ?pd ?other .
+  ?prop wikibase:directClaim ?pd .
+  ?sl schema:about ?other ; schema:isPartOf <https://en.wikipedia.org/> .
+  OPTIONAL { ?other wdt:P31 ?type }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+LIMIT 60''');
 
     final staged = <WikidataNeighbor>[];
     _absorb(rows, seed.node.qid, staged, {...taken, centerQid});

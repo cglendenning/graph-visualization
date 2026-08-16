@@ -134,7 +134,7 @@
   <p class="heads-up"><b>This replaces Constellation, it does not upgrade it.</b> The app was renamed, so it carries a new bundle identifier and installs alongside the old one. Delete Constellation from your home screen after this finishes.</p>
 
   <dl class="telemetry">
-    <dt>Version</dt><dd>2.1.0 (6)</dd>
+    <dt>Version</dt><dd>2.1.1 (7)</dd>
     <dt>Bundle</dt><dd>com.craigglendenning.perihelion</dd>
     <dt>Min iOS</dt><dd>13.0</dd>
     <dt>Signing</dt><dd>Development · MCALPSQ5P5</dd>
@@ -143,12 +143,12 @@
   </dl>
 
   <div class="how">
-    <strong>What changed in 2.1.0</strong>
+    <strong>What changed in 2.1.1</strong>
       <ol>
-        <li>Always six satellites. Sparse topics used to show one or two; seats are now filled in layers until all six are taken.</li>
-        <li>The six favour a spread of the colour-coded categories before repeating one.</li>
-        <li>Launch prefers a topic connected enough to fill the rosette, rather than opening on a stub.</li>
-        <li>A topic too thin to fill six reaches one hop further through a neighbour, labelled &ldquo;via&nbsp;&hellip;&rdquo; so no false relationship is implied.</li>
+        <li>Fixed tapping a satellite hanging and then failing. Filling the rosette could chain a dozen or more queries; it is now capped at three or four with an overall time limit.</li>
+        <li>Listing a topic&rsquo;s properties is bounded, taking a large subject like United States from 10.3s to 0.8s.</li>
+        <li>A jump now takes roughly two to six seconds.</li>
+        <li>Still always six satellites, still favouring a spread of categories.</li>
       </ol>
   </div>
 
