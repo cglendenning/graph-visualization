@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(adb -s * logcat *)",
+      "Bash(adb logcat *)",
+      "Bash(otool *)",
+      "Bash(sips -g *)",
+      "Bash(adb devices)",
+      "Bash(adb devices *)",
+      "Bash(host *)",
+      "Bash(firebase functions:log *)",
+      "Bash(plutil -p *)",
+      "Bash(plutil -lint *)",
+      "Bash(go vet *)",
+      "Bash(flutter doctor)",
+      "Bash(flutter doctor *)"
+    ]
+  }
+}
