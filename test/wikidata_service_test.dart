@@ -130,19 +130,23 @@ void main() {
   });
 
   group('propertiesFor', () {
-    test('keeps direction and drops blocked properties', () async {
+    test('keeps direction, and keeps blocked properties for the fallback',
+        () async {
+      // Blocked properties stay in this list and are filtered when sampling,
+      // so a thinly connected topic can still fall back on them rather than
+      // leave a seat empty.
       final service = WikidataService(
         fetcher: (_) async => _bindings([
           _row({'pd': '${_wd}P19', 'dir': 'in'}),
           _row({'pd': '${_wd}P36', 'dir': 'out'}),
-          _row({'pd': '${_wd}P31', 'dir': 'out'}), // blocked
-          _row({'pd': '${_wd}P910', 'dir': 'out'}), // blocked
+          _row({'pd': '${_wd}P31', 'dir': 'out'}),
         ]),
       );
       final links = await service.propertiesFor('Q1741');
-      expect(links, hasLength(2));
+      expect(links, hasLength(3));
       expect(links, contains(const PropertyLink(pid: 'P19', incoming: true)));
       expect(links, contains(const PropertyLink(pid: 'P36', incoming: false)));
+      expect(links, contains(const PropertyLink(pid: 'P31', incoming: false)));
     });
 
     test('caches, since an item\'s property set does not move', () async {
@@ -256,6 +260,107 @@ void main() {
         },
       );
       expect(await service.sampleNeighbors('Q1741'), isEmpty);
+    });
+
+    test('fills all six from one rich property when others are sparse',
+        () async {
+      // The bug this guards: a topic where only one property returns rows
+      // used to show a single satellite.
+      final service = WikidataService(
+        fetcher: (url) async {
+          if (url.queryParameters['query']!.contains('SELECT DISTINCT ?pd')) {
+            return _bindings([_row({'pd': '${_wd}P19', 'dir': 'in'})]);
+          }
+          return _bindings([
+            for (var i = 0; i < 12; i++)
+              _row({
+                'pd': '${_wd}P19', 'dir': 'in',
+                'other': '${_entity}Q${500 + i}',
+                'otherLabel': 'Person $i', 'propLabel': 'place of birth',
+                'type': '${_entity}Q5',
+              }),
+          ]);
+        },
+        random: Random(3),
+      );
+      final n = await service.sampleNeighbors('Q1741');
+      expect(n, hasLength(6));
+      expect(n.map((x) => x.node.qid).toSet(), hasLength(6));
+    });
+
+    test('prefers a fresh category before repeating one', () async {
+      final service = WikidataService(
+        fetcher: (url) async {
+          if (url.queryParameters['query']!.contains('SELECT DISTINCT ?pd')) {
+            return _bindings([
+              _row({'pd': '${_wd}P19', 'dir': 'in'}),
+              _row({'pd': '${_wd}P36', 'dir': 'out'}),
+            ]);
+          }
+          return _bindings([
+            // Three people under one property, one place under another.
+            for (var i = 0; i < 3; i++)
+              _row({
+                'pd': '${_wd}P19', 'dir': 'in', 'other': '${_entity}Q${60 + i}',
+                'otherLabel': 'Person $i', 'propLabel': 'place of birth',
+                'type': '${_entity}Q5',
+              }),
+            _row({
+              'pd': '${_wd}P36', 'dir': 'out', 'other': '${_entity}Q40',
+              'otherLabel': 'Austria', 'propLabel': 'capital of',
+              'type': '${_entity}Q6256',
+            }),
+          ]);
+        },
+        random: Random(5),
+      );
+      final n = await service.sampleNeighbors('Q1741');
+      final categories = n.map((x) => x.node.category).toList();
+      // Both categories must appear before either is doubled up.
+      expect(categories.take(2).toSet(), hasLength(2));
+      expect(categories, contains(NodeCategory.place));
+      expect(categories, contains(NodeCategory.person));
+    });
+
+    test('steps out a second hop when a stub cannot fill six on its own',
+        () async {
+      // Ninette, Manitoba: six properties, one usable neighbour. The empty
+      // seats are filled through that neighbour and labelled as such.
+      final service = WikidataService(
+        fetcher: (url) async {
+          final q = url.queryParameters['query']!;
+          if (q.contains('SELECT DISTINCT ?pd')) {
+            return _bindings([
+              _row({'pd': '${_wd}P131', 'dir': 'out'}),
+            ]);
+          }
+          if (q.contains('wd:Q100')) {
+            return _bindings([
+              _row({
+                'pd': '${_wd}P131', 'dir': 'out', 'other': '${_entity}Q200',
+                'otherLabel': 'Manitoba', 'propLabel': 'located in',
+                'type': '${_entity}Q515',
+              }),
+            ]);
+          }
+          return _bindings([
+            for (var i = 0; i < 6; i++)
+              _row({
+                'pd': '${_wd}P131', 'dir': 'out',
+                'other': '${_entity}Q${300 + i}',
+                'otherLabel': 'Neighbour $i', 'propLabel': 'located in',
+                'type': '${_entity}Q5',
+              }),
+          ]);
+        },
+        random: Random(11),
+      );
+      final n = await service.sampleNeighbors('Q100');
+      expect(n, hasLength(6));
+      expect(n.first.node.label, 'Manitoba');
+      // Second-hop seats say so rather than implying a direct statement.
+      expect(n.skip(1).every((x) => x.relation == 'via Manitoba'), isTrue);
+      expect(n.map((x) => x.node.qid), isNot(contains('Q100')));
     });
 
     test('returns nothing when the item has no usable properties', () async {

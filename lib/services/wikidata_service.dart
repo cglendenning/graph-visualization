@@ -182,59 +182,153 @@ LIMIT 200''';
     final links = <PropertyLink>[];
     for (final row in rows) {
       final pid = _localName(_value(row, 'pd') ?? '');
-      if (!_pid.hasMatch(pid) || blockedProperties.contains(pid)) continue;
+      if (!_pid.hasMatch(pid)) continue;
+      // Blocked properties are kept here and filtered when sampling, so the
+      // last-resort pass can still reach them rather than leaving a seat empty.
       links.add(PropertyLink(pid: pid, incoming: _value(row, 'dir') == 'in'));
     }
     _propertyCache[qid] = links;
     return links;
   }
 
-  /// Draws up to six neighbours, at most one per property.
+  /// Draws six neighbours, as varied as the data allows.
   ///
-  /// Randomised twice over — which properties are drawn, and which of each
-  /// property's rows is taken — so the same centre yields a different rosette
-  /// each time it is visited.
+  /// Filling all six matters more than any single preference, so the seats
+  /// are filled in descending order of pickiness:
+  ///
+  ///  1. one per property, each a category not yet on screen
+  ///  2. one per property, any category
+  ///  3. anything left over, so a rich property can cover for sparse ones
+  ///
+  /// If the drawn properties still cannot fill six, another slice of the
+  /// property list is drawn, and finally the filters themselves are relaxed.
   Future<List<WikidataNeighbor>> sampleNeighbors(String qid) async {
-    final links = await propertiesFor(qid);
+    final all = await propertiesFor(qid);
+    if (all.isEmpty) return const [];
+
+    final preferred = all
+        .where((link) => !blockedProperties.contains(link.pid))
+        .toList()
+      ..shuffle(_random);
+
+    final chosen = <WikidataNeighbor>[];
+    final taken = <String>{};
+
+    // Successive slices, because a slice can come back empty when none of
+    // its targets have an article of their own.
+    for (var cursor = 0;
+        cursor < preferred.length && chosen.length < seatCount;
+        cursor += propertiesSampled) {
+      final slice =
+          preferred.skip(cursor).take(propertiesSampled).toList(growable: false);
+      final rows = await _neighborRows(qid, slice, requireArticle: true);
+      _absorb(rows, qid, chosen, taken);
+    }
+
+    // Last resort for a thinly connected topic: drop the requirement that a
+    // neighbour have its own article, and let the blocked properties back in.
+    // A duller satellite beats an empty seat.
+    if (chosen.length < seatCount) {
+      final fallback = List<PropertyLink>.of(all)..shuffle(_random);
+      final rows = await _neighborRows(
+        qid,
+        fallback.take(propertiesSampled * 2).toList(growable: false),
+        requireArticle: false,
+      );
+      _absorb(rows, qid, chosen, taken);
+    }
+
+    // A stub — a hamlet, a minor species — can genuinely hold fewer than six
+    // statements. Rather than leave seats empty, step out one further hop
+    // through a neighbour already on screen. These are labelled "via …" so
+    // the rosette never claims a direct relationship it does not have.
+    if (chosen.length < seatCount && chosen.isNotEmpty) {
+      for (final seed in List<WikidataNeighbor>.of(chosen)) {
+        if (chosen.length == seatCount) break;
+        await _fillFromSecondHop(seed, qid, chosen, taken);
+      }
+    }
+
+    return chosen.take(seatCount).toList(growable: false);
+  }
+
+  Future<void> _fillFromSecondHop(
+    WikidataNeighbor seed,
+    String centerQid,
+    List<WikidataNeighbor> chosen,
+    Set<String> taken,
+  ) async {
+    final links = (await propertiesFor(seed.node.qid))
+        .where((link) => !blockedProperties.contains(link.pid))
+        .toList()
+      ..shuffle(_random);
+    if (links.isEmpty) return;
+
+    final rows = await _neighborRows(
+      seed.node.qid,
+      links.take(propertiesSampled).toList(growable: false),
+      requireArticle: true,
+    );
+
+    final staged = <WikidataNeighbor>[];
+    _absorb(rows, seed.node.qid, staged, {...taken, centerQid});
+
+    for (final hop in staged) {
+      if (chosen.length == seatCount) return;
+      if (hop.node.qid == centerQid || taken.contains(hop.node.qid)) continue;
+      taken.add(hop.node.qid);
+      chosen.add(WikidataNeighbor(
+        node: hop.node,
+        relation: 'via ${seed.node.label}',
+        incoming: false,
+      ));
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> _neighborRows(
+    String qid,
+    List<PropertyLink> links, {
+    required bool requireArticle,
+  }) async {
     if (links.isEmpty) return const [];
 
-    final pool = List<PropertyLink>.of(links)..shuffle(_random);
-    final picked = pool.take(propertiesSampled).toList(growable: false);
-
-    final blocks = picked.map((link) {
+    final blocks = links.map((link) {
       final pattern = link.incoming
           ? '?other wdt:${link.pid} wd:$qid .'
           : 'wd:$qid wdt:${link.pid} ?other .';
+      final article = requireArticle
+          ? '?sl${link.pid}${link.incoming ? 'i' : 'o'} schema:about ?other ; '
+              'schema:isPartOf <https://en.wikipedia.org/> .'
+          : 'FILTER(isIRI(?other))';
       return '''
   {
     SELECT ?pd ?dir ?other WHERE {
       BIND(wdt:${link.pid} AS ?pd) BIND("${link.incoming ? 'in' : 'out'}" AS ?dir)
       $pattern
-      ?sl${link.pid} schema:about ?other ; schema:isPartOf <https://en.wikipedia.org/> .
+      $article
     }
     LIMIT $candidatesPerProperty
   }''';
     }).join('\n  UNION');
 
-    final query = '''
+    return _select('''
 SELECT ?pd ?dir ?other ?otherLabel ?propLabel ?type WHERE {
 $blocks
   ?prop wikibase:directClaim ?pd .
   OPTIONAL { ?other wdt:P31 ?type }
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
-LIMIT 400''';
-
-    final rows = await _select(query);
-    return _toNeighbors(rows, qid);
+LIMIT 600''');
   }
 
-  List<WikidataNeighbor> _toNeighbors(
+  /// Adds whatever [rows] can contribute to [chosen], in the three passes
+  /// described on [sampleNeighbors].
+  void _absorb(
     List<Map<String, dynamic>> rows,
     String centerQid,
+    List<WikidataNeighbor> chosen,
+    Set<String> taken,
   ) {
-    // Group by property so a single property cannot take every seat, and
-    // collect P31 values that arrived across several rows.
     final grouped = <String, List<Map<String, dynamic>>>{};
     final types = <String, List<String>>{};
     for (final row in rows) {
@@ -245,33 +339,66 @@ LIMIT 400''';
       final type = _value(row, 'type');
       if (type != null) (types[other] ??= []).add(_localName(type));
     }
+    if (grouped.isEmpty) return;
 
-    final result = <WikidataNeighbor>[];
-    final taken = <String>{};
-    for (final entry in grouped.entries) {
-      final candidates = entry.value
-          .where((r) => !taken.contains(_localName(_value(r, 'other')!)))
-          .toList();
-      if (candidates.isEmpty) continue;
-      final row = candidates[_random.nextInt(candidates.length)];
-      final qid = _localName(_value(row, 'other')!);
-      taken.add(qid);
+    final groups = grouped.values.toList()..shuffle(_random);
 
-      final label = _value(row, 'otherLabel') ?? qid;
-      if (label == qid) continue; // unlabelled item, nothing to show
-      result.add(WikidataNeighbor(
-        node: WikidataNode(
-          qid: qid,
-          label: label,
-          description: '',
-          category: WikidataCategoryMap.forTypes(types[qid] ?? const []),
-        ),
-        relation: _value(row, 'propLabel') ?? 'related to',
-        incoming: _value(row, 'dir') == 'in',
-      ));
-      if (result.length == seatCount) break;
+    for (final group in groups) {
+      if (chosen.length == seatCount) return;
+      _take(group, types, chosen, taken, freshCategoryOnly: true);
     }
-    return result;
+    for (final group in groups) {
+      if (chosen.length == seatCount) return;
+      _take(group, types, chosen, taken, freshCategoryOnly: false);
+    }
+    for (final group in groups) {
+      while (chosen.length < seatCount &&
+          _take(group, types, chosen, taken, freshCategoryOnly: false)) {
+        // Keep drawing from this property until it runs dry.
+      }
+      if (chosen.length == seatCount) return;
+    }
+  }
+
+  /// Seats one neighbour from [group] if it can. Returns whether it did.
+  bool _take(
+    List<Map<String, dynamic>> group,
+    Map<String, List<String>> types,
+    List<WikidataNeighbor> chosen,
+    Set<String> taken, {
+    required bool freshCategoryOnly,
+  }) {
+    final onScreen = chosen.map((n) => n.node.category).toSet();
+
+    final candidates = <Map<String, dynamic>>[];
+    for (final row in group) {
+      final qid = _localName(_value(row, 'other') ?? '');
+      if (taken.contains(qid)) continue;
+      final label = _value(row, 'otherLabel');
+      // An unlabelled item shows as a bare Q-number, which is not worth a seat.
+      if (label == null || label == qid) continue;
+      if (freshCategoryOnly) {
+        final category = WikidataCategoryMap.forTypes(types[qid] ?? const []);
+        if (onScreen.contains(category)) continue;
+      }
+      candidates.add(row);
+    }
+    if (candidates.isEmpty) return false;
+
+    final row = candidates[_random.nextInt(candidates.length)];
+    final qid = _localName(_value(row, 'other')!);
+    taken.add(qid);
+    chosen.add(WikidataNeighbor(
+      node: WikidataNode(
+        qid: qid,
+        label: _value(row, 'otherLabel')!,
+        description: '',
+        category: WikidataCategoryMap.forTypes(types[qid] ?? const []),
+      ),
+      relation: _value(row, 'propLabel') ?? 'related to',
+      incoming: _value(row, 'dir') == 'in',
+    ));
+    return true;
   }
 
   // ------------------------------------------------------------- plumbing

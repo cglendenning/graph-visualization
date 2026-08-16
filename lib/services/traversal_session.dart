@@ -61,11 +61,31 @@ class TraversalSession {
 
   String? get previousQid => _history.isEmpty ? null : _history.last;
 
-  /// Lands on a random topic drawn from the whole of Wikipedia.
+  /// How many random topics to try before settling for the best of them.
+  ///
+  /// Most articles fill all six seats first time. A stub about a village or
+  /// a minor species may not, and landing on one is a poor way to open.
+  static const int startAttempts = 4;
+
+  /// Lands on a random topic drawn from the whole of Wikipedia, preferring
+  /// one connected enough to fill every seat.
   Future<void> start() async {
-    final qid = await _service.randomStartQid();
+    RosetteState? best;
+    for (var attempt = 0; attempt < startAttempts; attempt++) {
+      final candidate = await _build(
+        await _service.randomStartQid(),
+        arrivedFrom: null,
+      );
+      if (candidate.occupied.length == RosetteLayout.seatCount) {
+        best = candidate;
+        break;
+      }
+      if (best == null || candidate.occupied.length > best.occupied.length) {
+        best = candidate;
+      }
+    }
     _history.clear();
-    _rosette = await _build(qid, arrivedFrom: null);
+    _rosette = best;
   }
 
   /// Re-centres on a satellite, keeping a way back to where the user was.

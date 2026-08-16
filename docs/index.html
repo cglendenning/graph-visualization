@@ -134,7 +134,7 @@
   <p class="heads-up"><b>This replaces Constellation, it does not upgrade it.</b> The app was renamed, so it carries a new bundle identifier and installs alongside the old one. Delete Constellation from your home screen after this finishes.</p>
 
   <dl class="telemetry">
-    <dt>Version</dt><dd>2.0.0 (5)</dd>
+    <dt>Version</dt><dd>2.1.0 (6)</dd>
     <dt>Bundle</dt><dd>com.craigglendenning.perihelion</dd>
     <dt>Min iOS</dt><dd>13.0</dd>
     <dt>Signing</dt><dd>Development · MCALPSQ5P5</dd>
@@ -143,12 +143,12 @@
   </dl>
 
   <div class="how">
-    <strong>What changed in 2.0.0</strong>
+    <strong>What changed in 2.1.0</strong>
       <ol>
-        <li>The bundled graph is gone. Every topic and every relationship is now read live from Wikidata, so any of its 122 million items can appear.</li>
-        <li>Launch lands on a random Wikipedia article rather than one of 140 hand-written nodes.</li>
-        <li>The six satellites are a random draw from the topic&rsquo;s properties, so returning to a topic shows a different six.</li>
-        <li>Needs a network connection. Drawing a rosette takes roughly two seconds.</li>
+        <li>Always six satellites. Sparse topics used to show one or two; seats are now filled in layers until all six are taken.</li>
+        <li>The six favour a spread of the colour-coded categories before repeating one.</li>
+        <li>Launch prefers a topic connected enough to fill the rosette, rather than opening on a stub.</li>
+        <li>A topic too thin to fill six reaches one hop further through a neighbour, labelled &ldquo;via&nbsp;&hellip;&rdquo; so no false relationship is implied.</li>
       </ol>
   </div>
 
