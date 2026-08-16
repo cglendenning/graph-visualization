@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../models/graph_node.dart';
+import '../models/wikidata_node.dart';
 import '../services/wikipedia_service.dart';
 import '../theme/hud_palette.dart';
 import '../widgets/node_circle.dart';
 import '../widgets/wikipedia_section.dart';
 import 'about_screen.dart';
 
-/// Everything the graph knows about one node.
+/// Everything currently known about one item.
 ///
 /// Pushed with a Cupertino route so the edge swipe back works without any
 /// extra handling — getting out is meant to be effortless.
@@ -19,23 +19,18 @@ class NodeDetailScreen extends StatelessWidget {
     required this.degree,
     required this.neighbors,
     required this.wikipediaService,
-    required this.nodeCount,
   });
 
-  final GraphNode node;
+  final WikidataNode node;
   final int degree;
-  final List<Neighbor> neighbors;
+  final List<WikidataNeighbor> neighbors;
   final WikipediaService wikipediaService;
 
-  /// Size of the whole graph, reported on the sources screen.
-  final int nodeCount;
-
   static Route<void> route({
-    required GraphNode node,
+    required WikidataNode node,
     required int degree,
-    required List<Neighbor> neighbors,
+    required List<WikidataNeighbor> neighbors,
     required WikipediaService wikipediaService,
-    required int nodeCount,
   }) =>
       CupertinoPageRoute<void>(
         builder: (_) => NodeDetailScreen(
@@ -43,7 +38,6 @@ class NodeDetailScreen extends StatelessWidget {
           degree: degree,
           neighbors: neighbors,
           wikipediaService: wikipediaService,
-          nodeCount: nodeCount,
         ),
       );
 
@@ -66,18 +60,15 @@ class NodeDetailScreen extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(24, 4, 24, 48),
                   children: [
                     Center(
-                      child: Hero(
-                        tag: 'node-${node.id}',
-                        child: NodeCircle(
-                          radius: _heroRadius,
-                          hue: hue,
-                          frosted: true,
-                        ),
+                      child: NodeCircle(
+                        radius: _heroRadius,
+                        hue: hue,
+                        frosted: true,
                       ),
                     ),
                     const SizedBox(height: 26),
                     Text(
-                      node.name,
+                      node.label,
                       textAlign: TextAlign.center,
                       style: HudPalette.nodeName.copyWith(
                         fontSize: 27,
@@ -86,17 +77,19 @@ class NodeDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Center(child: _CategoryChip(node: node, degree: degree)),
-                    const SizedBox(height: 20),
-                    Text(
-                      node.tagline,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14.5,
-                        height: 1.4,
-                        color: hue.withValues(alpha: 0.85),
-                        fontStyle: FontStyle.italic,
+                    if (node.description.isNotEmpty) ...[
+                      const SizedBox(height: 20),
+                      Text(
+                        node.description,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14.5,
+                          height: 1.4,
+                          color: hue.withValues(alpha: 0.85),
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
-                    ),
+                    ],
                     const SizedBox(height: 28),
                     _Rule(hue: hue),
                     const SizedBox(height: 24),
@@ -106,12 +99,8 @@ class NodeDetailScreen extends StatelessWidget {
                       hue: hue,
                     ),
                     const SizedBox(height: 30),
-                    _SectionLabel('RECORD'),
-                    const SizedBox(height: 14),
-                    for (final fact in node.facts) _FactRow(fact: fact),
-                    const SizedBox(height: 26),
                     _SectionLabel(
-                      'CONNECTIONS  ·  ${neighbors.length.toString().padLeft(2, '0')}',
+                      'ON SCREEN  ·  ${neighbors.length.toString().padLeft(2, '0')}',
                     ),
                     const SizedBox(height: 14),
                     for (final n in neighbors) _ConnectionRow(neighbor: n),
@@ -121,8 +110,8 @@ class NodeDetailScreen extends StatelessWidget {
                     Center(
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
-                        onTap: () => Navigator.of(context)
-                            .push(AboutScreen.route(nodeCount: nodeCount)),
+                        onTap: () =>
+                            Navigator.of(context).push(AboutScreen.route()),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 6),
                           child: Text(
@@ -163,11 +152,8 @@ class _CloseBar extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  CupertinoIcons.chevron_left,
-                  size: 16,
-                  color: HudPalette.aquaDim,
-                ),
+                Icon(CupertinoIcons.chevron_left,
+                    size: 16, color: HudPalette.aquaDim),
                 SizedBox(width: 5),
                 Text('GRAPH', style: HudPalette.telemetry),
               ],
@@ -182,7 +168,7 @@ class _CloseBar extends StatelessWidget {
 class _CategoryChip extends StatelessWidget {
   const _CategoryChip({required this.node, required this.degree});
 
-  final GraphNode node;
+  final WikidataNode node;
   final int degree;
 
   @override
@@ -196,7 +182,7 @@ class _CategoryChip extends StatelessWidget {
         color: hue.withValues(alpha: 0.07),
       ),
       child: Text(
-        '${node.category.label}  ·  DEG ${degree.toString().padLeft(2, '0')}',
+        '${node.category.label}  ·  ${node.qid}  ·  DEG ${degree.toString().padLeft(2, '0')}',
         style: HudPalette.telemetry.copyWith(color: hue),
       ),
     );
@@ -235,50 +221,10 @@ class _SectionLabel extends StatelessWidget {
       Text(text, style: HudPalette.telemetry.copyWith(letterSpacing: 2.2));
 }
 
-class _FactRow extends StatelessWidget {
-  const _FactRow({required this.fact});
-
-  final NodeFact fact;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 104,
-            child: Text(
-              fact.label,
-              style: const TextStyle(
-                fontSize: 12.5,
-                height: 1.4,
-                color: Color(0xFF6E8794),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              fact.value,
-              style: const TextStyle(
-                fontSize: 13.5,
-                height: 1.4,
-                color: Color(0xFFCFDFE9),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _ConnectionRow extends StatelessWidget {
   const _ConnectionRow({required this.neighbor});
 
-  final Neighbor neighbor;
+  final WikidataNeighbor neighbor;
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +254,7 @@ class _ConnectionRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  neighbor.node.name,
+                  neighbor.node.label,
                   style: const TextStyle(
                     fontSize: 14,
                     height: 1.3,
@@ -317,7 +263,7 @@ class _ConnectionRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  neighbor.relation.toUpperCase(),
+                  neighbor.phrasing.toUpperCase(),
                   style: HudPalette.relation.copyWith(fontSize: 9),
                 ),
               ],

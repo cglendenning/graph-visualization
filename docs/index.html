@@ -134,31 +134,28 @@
   <p class="heads-up"><b>This replaces Constellation, it does not upgrade it.</b> The app was renamed, so it carries a new bundle identifier and installs alongside the old one. Delete Constellation from your home screen after this finishes.</p>
 
   <dl class="telemetry">
-    <dt>Version</dt><dd>1.2.0 (4)</dd>
+    <dt>Version</dt><dd>2.0.0 (5)</dd>
     <dt>Bundle</dt><dd>com.craigglendenning.perihelion</dd>
     <dt>Min iOS</dt><dd>13.0</dd>
     <dt>Signing</dt><dd>Development · MCALPSQ5P5</dd>
-    <dt>Graph</dt><dd>140 nodes · 8 categories</dd>
-    <dt>Bundled data</dt><dd>CC0 / public domain</dd>
+    <dt>Graph</dt><dd>Live Wikidata · 122M items</dd>
+    <dt>Network</dt><dd>Required · Wikidata + Wikipedia</dd>
   </dl>
 
   <div class="how">
-    <strong>What changed in 1.2.0</strong>
-    <ol>
-      <li>The sixth satellite is now reserved for the neighbour that shares least with the centre, so every screen offers a way out of the current subject rather than six variations on it.</li>
-      <li>Tangential links were the weakest in the graph and were being filtered out; their weights are floored so they compete.</li>
-      <li>Renamed from Constellation to Perihelion.</li>
-      <li>Summaries are no longer bundled. The detail screen fetches the lead section of the matching Wikipedia article when you open it.</li>
-      <li>The rest of the screen — facts, connections, tagline — renders instantly and never waits on the network.</li>
-      <li>Offline, the summary block explains itself and offers a retry; everything else still works.</li>
-      <li>Added a Sources &amp; Licences screen, reachable from the bottom of any node, carrying the open-source copyright notices the bundled packages require.</li>
-    </ol>
+    <strong>What changed in 2.0.0</strong>
+      <ol>
+        <li>The bundled graph is gone. Every topic and every relationship is now read live from Wikidata, so any of its 122 million items can appear.</li>
+        <li>Launch lands on a random Wikipedia article rather than one of 140 hand-written nodes.</li>
+        <li>The six satellites are a random draw from the topic&rsquo;s properties, so returning to a topic shows a different six.</li>
+        <li>Needs a network connection. Drawing a rosette takes roughly two seconds.</li>
+      </ol>
   </div>
 
   <div class="credits">
     Article summaries are fetched at runtime from Wikipedia and shown verbatim under
     <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, credited in the app to the article they came from.
-    Nothing under that licence is bundled into the app; the shipped graph — every node, relation and fact — is original work or public domain.
+    Topics and relationships come from Wikidata under CC0, a public domain dedication. Nothing under a share-alike licence is bundled into the app.
   </div>
 </main>
 </body>

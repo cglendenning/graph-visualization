@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'screens/graph_screen.dart';
-import 'services/graph_repository.dart';
+import 'services/wikidata_service.dart';
 import 'services/wikipedia_service.dart';
 import 'theme/hud_palette.dart';
 
@@ -20,9 +20,8 @@ class PerihelionApp extends StatefulWidget {
 }
 
 class _PerihelionAppState extends State<PerihelionApp> {
-  late final Future<GraphRepository> _repository = GraphRepository.load();
-
-  /// One instance for the session, so its extract cache survives navigation.
+  /// One instance each for the session, so their caches survive navigation.
+  final WikidataService _wikidata = WikidataService();
   final WikipediaService _wikipedia = WikipediaService();
 
   @override
@@ -35,46 +34,11 @@ class _PerihelionAppState extends State<PerihelionApp> {
         scaffoldBackgroundColor: HudPalette.voidBlack,
         useMaterial3: true,
       ),
-      home: FutureBuilder<GraphRepository>(
-        future: _repository,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return _BootMessage(
-              text: 'GRAPH FAILED TO LOAD\n${snapshot.error}',
-            );
-          }
-          if (!snapshot.hasData) {
-            return const _BootMessage(text: 'LOADING GRAPH');
-          }
-          return GraphScreen(
-            repository: snapshot.requireData,
-            wikipediaService: _wikipedia,
-          );
-        },
+      home: GraphScreen(
+        wikidata: _wikidata,
+        wikipediaService: _wikipedia,
       ),
     );
   }
 }
 
-class _BootMessage extends StatelessWidget {
-  const _BootMessage({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: HudPalette.voidBlack,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: HudPalette.telemetry,
-          ),
-        ),
-      ),
-    );
-  }
-}

@@ -11,14 +11,10 @@ import '../theme/hud_palette.dart';
 /// Flutter's licence registry — BSD-3-Clause, MIT and Apache-2.0 all require
 /// those notices to travel with a binary distribution.
 class AboutScreen extends StatelessWidget {
-  const AboutScreen({super.key, required this.nodeCount});
+  const AboutScreen({super.key});
 
-  final int nodeCount;
-
-  static Route<void> route({required int nodeCount}) =>
-      CupertinoPageRoute<void>(
-        builder: (_) => AboutScreen(nodeCount: nodeCount),
-      );
+  static Route<void> route() =>
+      CupertinoPageRoute<void>(builder: (_) => const AboutScreen());
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +47,18 @@ class AboutScreen extends StatelessWidget {
                     const SizedBox(height: 30),
                     const _Label('THE GRAPH'),
                     const SizedBox(height: 12),
-                    _Body(
-                      '$nodeCount nodes, their categories, relationships and '
-                      'facts were written for this app. Facts themselves are '
-                      'not owned by anyone; the wording, the choice of links '
-                      'and their weights are original work.',
+                    const _Body(
+                      'Nothing is bundled. Every topic, every relationship and '
+                      'every label is read live from Wikidata, which releases '
+                      'its structured data under CC0 — a public domain '
+                      'dedication with no conditions attached.',
+                    ),
+                    const SizedBox(height: 12),
+                    const _Body(
+                      'The six satellites are a random draw. Most topics carry '
+                      'far more than six statements, so each visit samples a '
+                      'different set of properties and returning to a topic '
+                      'will not repeat what you saw before.',
                     ),
                     const SizedBox(height: 26),
                     const _Label('ARTICLE SUMMARIES'),

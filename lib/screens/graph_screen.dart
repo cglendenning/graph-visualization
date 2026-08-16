@@ -3,13 +3,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../models/graph_node.dart';
 import '../models/node_category.dart';
 import '../models/rosette_layout.dart';
+import '../models/wikidata_node.dart';
 import '../painters/edge_filament_painter.dart';
 import '../painters/instrument_painter.dart';
-import '../services/graph_repository.dart';
 import '../services/traversal_session.dart';
+import '../services/wikidata_service.dart';
 import '../services/wikipedia_service.dart';
 import '../theme/hud_palette.dart';
 import '../widgets/hud_readout.dart';
@@ -28,9 +28,7 @@ class _Slot {
   final Offset position;
   final double radius;
   final bool isCenter;
-
-  /// Null for the centre node, which has no relation to itself.
-  final Neighbor? neighbor;
+  final WikidataNeighbor? neighbor;
 }
 
 class _Placement {
@@ -43,24 +41,22 @@ class _Placement {
     required this.neighbor,
   });
 
-  final GraphNode node;
+  final WikidataNode node;
   final Offset position;
   final double radius;
   final double opacity;
   final bool isCenter;
-  final Neighbor? neighbor;
+  final WikidataNeighbor? neighbor;
 }
 
 class GraphScreen extends StatefulWidget {
   const GraphScreen({
     super.key,
-    required this.repository,
+    required this.wikidata,
     required this.wikipediaService,
   });
 
-  final GraphRepository repository;
-
-  /// Held for the session so revisiting a node does not refetch its extract.
+  final WikidataService wikidata;
   final WikipediaService wikipediaService;
 
   @override
@@ -77,24 +73,21 @@ class _GraphScreenState extends State<GraphScreen>
   late final TraversalSession _session;
   late final AnimationController _controller;
 
-  /// The rosette being left behind. Null when nothing is in flight.
   RosetteState? _from;
-  late RosetteState _to;
+  RosetteState? _to;
 
+  bool _busy = true;
+  String? _error;
   bool _hintVisible = true;
 
   @override
   void initState() {
     super.initState();
-    _session = TraversalSession(
-      repository: widget.repository,
-      startId: widget.repository.randomNodeId(Random()),
-    );
-    _to = _session.rosette;
+    _session = TraversalSession(service: widget.wikidata);
     _controller = AnimationController(vsync: this, duration: _transition)
       ..addListener(_onTick)
       ..addStatusListener(_onStatus);
-    _controller.forward();
+    _load(() => _session.start());
   }
 
   void _onTick() => setState(() {});
@@ -113,45 +106,69 @@ class _GraphScreenState extends State<GraphScreen>
 
   bool get _inFlight => _controller.isAnimating;
 
-  void _recenterOn(String nodeId) {
-    if (_inFlight) return;
-    HapticFeedback.lightImpact();
+  /// Runs one navigation step, holding the outgoing rosette on screen until
+  /// the new one has arrived so the canvas never blanks out mid-jump.
+  Future<void> _load(Future<void> Function() step) async {
     setState(() {
-      _from = _to;
-      _session.jumpTo(nodeId);
-      _to = _session.rosette;
-      _hintVisible = false;
+      _busy = true;
+      _error = null;
     });
-    _controller.forward(from: 0);
+    try {
+      final outgoing = _to;
+      await step();
+      if (!mounted) return;
+      setState(() {
+        _from = outgoing;
+        _to = _session.rosette;
+        _busy = false;
+      });
+      _controller.forward(from: 0);
+    } on Object catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _busy = false;
+        _error = error is WikidataUnavailable
+            ? error.message
+            : 'Could not reach Wikidata. Check your connection.';
+      });
+    }
+  }
+
+  void _recenterOn(String qid) {
+    if (_inFlight || _busy) return;
+    HapticFeedback.lightImpact();
+    _hintVisible = false;
+    _load(() => _session.jumpTo(qid));
   }
 
   void _stepBack() {
-    if (_inFlight || !_session.canGoBack) return;
+    if (_inFlight || _busy || !_session.canGoBack) return;
     HapticFeedback.lightImpact();
-    setState(() {
-      _from = _to;
-      _session.goBack();
-      _to = _session.rosette;
-    });
-    _controller.forward(from: 0);
+    _load(() => _session.goBack());
+  }
+
+  void _reroll() {
+    if (_inFlight || _busy) return;
+    HapticFeedback.lightImpact();
+    _load(() => _session.start());
   }
 
   void _openDetail() {
-    if (_inFlight) return;
+    final current = _to;
+    if (_inFlight || _busy || current == null) return;
     Navigator.of(context).push(
       NodeDetailScreen.route(
-        node: _to.center,
-        degree: _to.degree,
-        neighbors: widget.repository.neighborsOf(_to.center.id),
+        node: current.center,
+        degree: current.degree,
+        neighbors: current.occupied.toList(growable: false),
         wikipediaService: widget.wikipediaService,
-        nodeCount: widget.repository.nodeCount,
       ),
     );
   }
 
-  _Slot? _slotIn(RosetteState? state, String id, Offset center, double orbit) {
+  _Slot? _slotIn(RosetteState? state, String qid, Offset center, double orbit) {
     if (state == null) return null;
-    if (state.center.id == id) {
+    if (state.center.qid == qid) {
       return _Slot(
         position: center,
         radius: _centerRadius,
@@ -159,7 +176,7 @@ class _GraphScreenState extends State<GraphScreen>
         neighbor: null,
       );
     }
-    final seat = state.seatOf(id);
+    final seat = state.seatOf(qid);
     if (seat == null) return null;
     return _Slot(
       position: RosetteLayout.positionForSeat(seat, center, orbit),
@@ -169,39 +186,50 @@ class _GraphScreenState extends State<GraphScreen>
     );
   }
 
-  /// Arriving nodes hold back until the movement is mostly resolved, so the
-  /// eye follows the re-centring instead of a general shimmer.
   double _arriveOpacity(double t) =>
       Curves.easeOut.transform(((t - 0.38) / 0.62).clamp(0.0, 1.0));
 
   double _departOpacity(double t) =>
       1.0 - Curves.easeIn.transform((t / 0.42).clamp(0.0, 1.0));
 
+  WikidataNode? _nodeFor(String qid) {
+    for (final state in [_to, _from]) {
+      if (state == null) continue;
+      if (state.center.qid == qid) return state.center;
+      for (final n in state.occupied) {
+        if (n.node.qid == qid) return n.node;
+      }
+    }
+    return null;
+  }
+
   List<_Placement> _placements(Offset center, double orbit, double t) {
     final ids = <String>{
-      _to.center.id,
-      ..._to.occupied.map((n) => n.node.id),
-      if (_from != null) _from!.center.id,
-      if (_from != null) ..._from!.occupied.map((n) => n.node.id),
+      if (_to != null) _to!.center.qid,
+      if (_to != null) ..._to!.occupied.map((n) => n.node.qid),
+      if (_from != null) _from!.center.qid,
+      if (_from != null) ..._from!.occupied.map((n) => n.node.qid),
     };
 
     final placements = <_Placement>[];
-    for (final id in ids) {
-      final a = _slotIn(_from, id, center, orbit);
-      final b = _slotIn(_to, id, center, orbit);
+    for (final qid in ids) {
+      final node = _nodeFor(qid);
+      if (node == null) continue;
+      final a = _slotIn(_from, qid, center, orbit);
+      final b = _slotIn(_to, qid, center, orbit);
 
       if (a != null && b != null) {
         placements.add(_Placement(
-          node: _nodeFor(id),
+          node: node,
           position: Offset.lerp(a.position, b.position, t)!,
-          radius: lerpDouble(a.radius, b.radius, t),
+          radius: _lerp(a.radius, b.radius, t),
           opacity: 1,
           isCenter: t < 0.5 ? a.isCenter : b.isCenter,
           neighbor: b.neighbor ?? a.neighbor,
         ));
       } else if (b != null) {
         placements.add(_Placement(
-          node: _nodeFor(id),
+          node: node,
           position: b.position,
           radius: b.radius,
           opacity: _arriveOpacity(t),
@@ -210,7 +238,7 @@ class _GraphScreenState extends State<GraphScreen>
         ));
       } else if (a != null) {
         placements.add(_Placement(
-          node: _nodeFor(id),
+          node: node,
           position: a.position,
           radius: a.radius,
           opacity: _departOpacity(t),
@@ -220,7 +248,6 @@ class _GraphScreenState extends State<GraphScreen>
       }
     }
 
-    // Centre last so it sits above the filaments and its neighbours.
     placements.sort((x, y) {
       if (x.isCenter == y.isCenter) return 0;
       return x.isCenter ? 1 : -1;
@@ -228,27 +255,28 @@ class _GraphScreenState extends State<GraphScreen>
     return placements;
   }
 
-  GraphNode _nodeFor(String id) => widget.repository.node(id);
-
-  static double lerpDouble(double a, double b, double t) => a + (b - a) * t;
+  static double _lerp(double a, double b, double t) => a + (b - a) * t;
 
   List<EdgeFilament> _filaments(
     RosetteState state,
     Map<String, _Placement> byId,
     double opacity,
   ) {
-    final hub = byId[state.center.id];
+    final hub = byId[state.center.qid];
     if (hub == null || opacity <= 0.01) return const [];
     return [
       for (final n in state.occupied)
-        if (byId[n.node.id] case final target?)
+        if (byId[n.node.qid] case final target?)
           EdgeFilament(
             hub: hub.position,
             hubRadius: hub.radius,
             target: target.position,
             targetRadius: target.radius,
             hue: n.node.category.color,
-            weight: n.weight,
+            // Live statements carry no strength, so every filament is drawn
+            // the same. Nothing here should imply a ranking that Wikidata
+            // does not actually provide.
+            weight: 0.62,
             opacity: opacity * target.opacity,
           ),
     ];
@@ -257,7 +285,8 @@ class _GraphScreenState extends State<GraphScreen>
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
-    final hue = _to.center.category.color;
+    final current = _to;
+    final hue = current?.center.category.color ?? HudPalette.aqua;
 
     return Scaffold(
       backgroundColor: HudPalette.voidBlack,
@@ -267,29 +296,35 @@ class _GraphScreenState extends State<GraphScreen>
           child: Column(
             children: [
               _TopBar(
-                previousName: _session.canGoBack
-                    ? widget.repository.node(_session.history.last).name
-                    : null,
+                canGoBack: _session.canGoBack && !_busy,
                 onBack: _stepBack,
+                onReroll: _busy ? null : _reroll,
               ),
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
+                    if (_error != null) {
+                      return _Failure(message: _error!, onRetry: _reroll);
+                    }
+                    if (current == null) {
+                      return const _Booting();
+                    }
                     final size = constraints.biggest;
                     final center = Offset(size.width / 2, size.height * 0.47);
                     final orbit = min(
                       size.width / 2 - _satelliteRadius - 22,
                       size.height * 0.40,
                     );
-                    return _buildCanvas(center, orbit, size);
+                    return _buildCanvas(center, orbit);
                   },
                 ),
               ),
               _Footer(
                 depth: _session.depth,
-                degree: _to.degree,
-                category: _to.center.category,
-                hintVisible: _hintVisible && _session.depth == 0,
+                degree: current?.degree ?? 0,
+                category: current?.center.category ?? NodeCategory.concept,
+                busy: _busy,
+                hintVisible: _hintVisible && _session.depth == 0 && !_busy,
                 bottomInset: media.padding.bottom,
               ),
             ],
@@ -299,60 +334,50 @@ class _GraphScreenState extends State<GraphScreen>
     );
   }
 
-  Widget _buildCanvas(Offset center, double orbit, Size size) {
+  Widget _buildCanvas(Offset center, double orbit) {
     final t = Curves.easeInOutCubic.transform(_controller.value);
     final placements = _placements(center, orbit, t);
-    final byId = {for (final p in placements) p.node.id: p};
+    final byId = {for (final p in placements) p.node.qid: p};
 
-    final incoming = _filaments(_to, byId, _arriveOpacity(t));
-    final outgoing =
-        _from == null ? <EdgeFilament>[] : _filaments(_from!, byId, _departOpacity(t));
+    final incoming = _to == null
+        ? <EdgeFilament>[]
+        : _filaments(_to!, byId, _arriveOpacity(t));
+    final outgoing = _from == null
+        ? <EdgeFilament>[]
+        : _filaments(_from!, byId, _departOpacity(t));
 
-    final toHub = byId[_to.center.id];
-    final fromHub = _from == null ? null : byId[_from!.center.id];
+    final toHub = _to == null ? null : byId[_to!.center.qid];
 
     return IgnorePointer(
-      ignoring: _inFlight,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          if (fromHub != null)
-            Positioned.fill(
-              child: CustomPaint(
-                painter: InstrumentPainter(
-                  center: fromHub.position,
-                  orbitRadius: orbit,
-                  centerRadius: fromHub.radius,
-                  degree: _from!.degree,
-                  maxDegree: widget.repository.maxDegree,
-                  depth: _from!.depth,
-                  hue: _from!.center.category.color,
-                  opacity: _departOpacity(t),
+      ignoring: _inFlight || _busy,
+      child: Opacity(
+        opacity: _busy ? 0.45 : 1,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            if (toHub != null)
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: InstrumentPainter(
+                    center: toHub.position,
+                    orbitRadius: orbit,
+                    centerRadius: toHub.radius,
+                    degree: _to!.degree,
+                    maxDegree: 140,
+                    depth: _session.depth,
+                    hue: _to!.center.category.color,
+                    opacity: _arriveOpacity(t),
+                  ),
                 ),
               ),
-            ),
-          if (toHub != null)
             Positioned.fill(
               child: CustomPaint(
-                painter: InstrumentPainter(
-                  center: toHub.position,
-                  orbitRadius: orbit,
-                  centerRadius: toHub.radius,
-                  degree: _to.degree,
-                  maxDegree: widget.repository.maxDegree,
-                  depth: _session.depth,
-                  hue: _to.center.category.color,
-                  opacity: _arriveOpacity(t),
-                ),
+                painter: EdgeFilamentPainter([...outgoing, ...incoming]),
               ),
             ),
-          Positioned.fill(
-            child: CustomPaint(
-              painter: EdgeFilamentPainter([...outgoing, ...incoming]),
-            ),
-          ),
-          for (final p in placements) _buildNode(p),
-        ],
+            for (final p in placements) _buildNode(p),
+          ],
+        ),
       ),
     );
   }
@@ -366,28 +391,11 @@ class _GraphScreenState extends State<GraphScreen>
           opacity: p.opacity,
           child: GestureDetector(
             onTap: _openDetail,
-            child: Hero(
-              tag: 'node-${p.node.id}',
-              // The backdrop blur is dropped mid-flight; blurring a moving
-              // layer costs frames and reads no differently in transit.
-              flightShuttleBuilder: (
-                flightContext,
-                animation,
-                direction,
-                fromContext,
-                toContext,
-              ) =>
-                  NodeCircle(
-                radius: p.radius,
-                hue: p.node.category.color,
-                child: _CenterLabel(name: p.node.name),
-              ),
-              child: NodeCircle(
-                radius: p.radius,
-                hue: p.node.category.color,
-                frosted: true,
-                child: _CenterLabel(name: p.node.name),
-              ),
+            child: NodeCircle(
+              radius: p.radius,
+              hue: p.node.category.color,
+              frosted: true,
+              child: _CenterLabel(name: p.node.label),
             ),
           ),
         ),
@@ -402,7 +410,7 @@ class _GraphScreenState extends State<GraphScreen>
         opacity: p.opacity,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () => _recenterOn(p.node.id),
+          onTap: () => _recenterOn(p.node.qid),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -413,7 +421,7 @@ class _GraphScreenState extends State<GraphScreen>
               ),
               const SizedBox(height: 7),
               Text(
-                p.node.name,
+                p.node.label,
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -422,7 +430,7 @@ class _GraphScreenState extends State<GraphScreen>
               if (p.neighbor != null) ...[
                 const SizedBox(height: 3),
                 Text(
-                  p.neighbor!.relation.toUpperCase(),
+                  p.neighbor!.phrasing.toUpperCase(),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -442,8 +450,6 @@ class _CenterLabel extends StatelessWidget {
 
   final String name;
 
-  /// Long titles step down rather than clipping; the circle is the frame and
-  /// the name has to live inside it.
   double get _fontSize {
     if (name.length <= 12) return 18;
     if (name.length <= 20) return 16;
@@ -463,48 +469,114 @@ class _CenterLabel extends StatelessWidget {
   }
 }
 
-class _TopBar extends StatelessWidget {
-  const _TopBar({required this.previousName, required this.onBack});
+class _Booting extends StatelessWidget {
+  const _Booting();
 
-  final String? previousName;
+  @override
+  Widget build(BuildContext context) => Center(
+        child: Text('FINDING A TOPIC', style: HudPalette.telemetry),
+      );
+}
+
+class _Failure extends StatelessWidget {
+  const _Failure({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 36),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.55,
+                color: Color(0xFF7E97A4),
+              ),
+            ),
+            const SizedBox(height: 18),
+            GestureDetector(
+              onTap: onRetry,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(999),
+                  border:
+                      Border.all(color: HudPalette.aqua.withValues(alpha: 0.35)),
+                ),
+                child: Text(
+                  'TRY ANOTHER TOPIC',
+                  style: HudPalette.telemetry.copyWith(color: HudPalette.aqua),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TopBar extends StatelessWidget {
+  const _TopBar({
+    required this.canGoBack,
+    required this.onBack,
+    required this.onReroll,
+  });
+
+  final bool canGoBack;
   final VoidCallback onBack;
+  final VoidCallback? onReroll;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 46,
-      child: previousName == null
-          ? null
-          : Align(
-              alignment: Alignment.centerLeft,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: onBack,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.chevron_left,
-                        size: 18,
-                        color: HudPalette.aquaDim,
-                      ),
-                      const SizedBox(width: 2),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 190),
-                        child: Text(
-                          previousName!.toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: HudPalette.telemetry,
-                        ),
-                      ),
-                    ],
-                  ),
+      child: Row(
+        children: [
+          if (canGoBack)
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onBack,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.chevron_left,
+                        size: 18, color: HudPalette.aquaDim),
+                    SizedBox(width: 2),
+                    Text('BACK', style: HudPalette.telemetry),
+                  ],
                 ),
               ),
             ),
+          const Spacer(),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onReroll,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'NEW TOPIC',
+                style: HudPalette.telemetry.copyWith(
+                  color: onReroll == null
+                      ? HudPalette.aquaDim.withValues(alpha: 0.4)
+                      : HudPalette.aquaDim,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -514,6 +586,7 @@ class _Footer extends StatelessWidget {
     required this.depth,
     required this.degree,
     required this.category,
+    required this.busy,
     required this.hintVisible,
     required this.bottomInset,
   });
@@ -521,6 +594,7 @@ class _Footer extends StatelessWidget {
   final int depth;
   final int degree;
   final NodeCategory category;
+  final bool busy;
   final bool hintVisible;
   final double bottomInset;
 
@@ -540,15 +614,17 @@ class _Footer extends StatelessWidget {
           SizedBox(
             height: 22,
             child: AnimatedOpacity(
-              opacity: hintVisible ? 1 : 0,
-              duration: const Duration(milliseconds: 400),
+              opacity: busy || hintVisible ? 1 : 0,
+              duration: const Duration(milliseconds: 300),
               child: Padding(
                 padding: const EdgeInsets.only(top: 9),
                 child: Text(
-                  'TAP A SATELLITE TO TRAVEL  ·  TAP THE CENTRE FOR DETAIL',
+                  busy
+                      ? 'DRAWING FROM WIKIDATA'
+                      : 'TAP A SATELLITE TO TRAVEL  ·  TAP THE CENTRE FOR DETAIL',
                   style: HudPalette.telemetry.copyWith(
                     fontSize: 8.5,
-                    color: HudPalette.aquaDim,
+                    color: busy ? HudPalette.aqua : HudPalette.aquaDim,
                   ),
                 ),
               ),
