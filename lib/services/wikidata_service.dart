@@ -57,7 +57,7 @@ class WikidataService {
   static const Duration timeout = Duration(seconds: 20);
 
   static const String userAgent =
-      'Perihelion/2.2 (https://github.com/cglendenning/graph-visualization)';
+      'Perihelion/2.3 (https://github.com/cglendenning/graph-visualization)';
 
   static const int seatCount = 6;
 
@@ -77,11 +77,24 @@ class WikidataService {
   /// larger query costs far less than several small ones in sequence.
   static const int propertiesSampled = 18;
 
+  /// How widely covered a neighbour must be to take a seat, tried in order.
+  ///
+  /// Wikidata records how many language Wikipedias carry an article for each
+  /// item, which is the best cheap proxy for whether a person has heard of
+  /// it. Filtering on it costs nothing — it prunes before the join, so a
+  /// filtered query is no slower than an unfiltered one — whereas sorting by
+  /// it takes seven seconds and is unaffordable.
+  ///
+  /// Forty is roughly "known outside its own country": for Vienna's natives
+  /// it yields Karl Popper and Melanie Klein rather than a local pop singer.
+  /// The lower tiers exist so a modest topic can still fill its seats.
+  static const List<int> notabilityTiers = [40, 12, 0];
+
   /// Slices of the property list to try before giving up on the neat path.
   ///
   /// Without this a well-connected topic could run a dozen queries back to
   /// back, each a second or two, and the jump would appear to hang.
-  static const int maxRounds = 2;
+  static const int maxRounds = 3;
 
   /// Total time one rosette may spend querying before it settles for what it
   /// already has. A partly filled rosette beats a spinner.
@@ -108,7 +121,24 @@ class WikidataService {
     'P527', // has part — usually administrative
     'P361', // part of
     'P17', // country — true of nearly everything, says little
+    'P971', // category combines topics
+    'P301', // category's main topic
+    'P4224', // category contains
+    'P1754', // category related to list
+    'P6365', // member category
   };
+
+  /// Wikimedia's own pages — categories, list articles, templates,
+  /// disambiguation stubs. They carry sitelinks, so the notability filter
+  /// lets them through; they are excluded by what they are instead.
+  static const List<String> wikimediaInternalTypes = [
+    'Q4167836', // Wikimedia category
+    'Q13406463', // Wikimedia list article
+    'Q11266439', // Wikimedia template
+    'Q4167410', // Wikimedia disambiguation page
+    'Q17442446', // Wikimedia internal item
+    'Q11753321', // Wikimedia navigational template
+  ];
 
   static final RegExp _qid = RegExp(r'^Q\d+$');
   static final RegExp _pid = RegExp(r'^P\d+$');
@@ -372,15 +402,31 @@ LIMIT 200''';
     // A couple of slices, because one can come back empty when none of its
     // targets have an article of their own. Strictly bounded: chaining a
     // dozen queries is what made a jump look like it had frozen.
-    for (var round = 0, cursor = 0;
+    // Each round widens the net: a fresh slice of properties, and a lower bar
+    // for how widely known a neighbour has to be. The best-known candidates
+    // therefore take seats first, and the obscure ones only fill what is left.
+    for (var round = 0;
         round < maxRounds &&
-            cursor < preferred.length &&
+            round < notabilityTiers.length &&
             chosen.length < seatCount &&
             clock.elapsed < sampleBudget;
-        round++, cursor += propertiesSampled) {
-      final slice =
-          preferred.skip(cursor).take(propertiesSampled).toList(growable: false);
-      final rows = await _neighborRows(qid, slice, requireArticle: true);
+        round++) {
+      var slice = preferred
+          .skip(round * propertiesSampled)
+          .take(propertiesSampled)
+          .toList(growable: false);
+      // Once the property list is exhausted, keep going on the first slice
+      // with the lower bar rather than stopping early.
+      if (slice.isEmpty) {
+        slice = preferred.take(propertiesSampled).toList(growable: false);
+      }
+      if (slice.isEmpty) break;
+      final rows = await _neighborRows(
+        qid,
+        slice,
+        requireArticle: true,
+        minSitelinks: notabilityTiers[round],
+      );
       _absorb(rows, qid, chosen, taken);
     }
 
@@ -393,6 +439,7 @@ LIMIT 200''';
         qid,
         fallback.take(propertiesSampled).toList(growable: false),
         requireArticle: false,
+        minSitelinks: 0,
       );
       _absorb(rows, qid, chosen, taken);
     }
@@ -448,36 +495,71 @@ LIMIT 60''');
     String qid,
     List<PropertyLink> links, {
     required bool requireArticle,
+    required int minSitelinks,
   }) async {
     if (links.isEmpty) return const [];
 
+    final fitted = _fitToUrl(links, (candidate) => _buildRowsQuery(
+          qid,
+          candidate,
+          requireArticle: requireArticle,
+          minSitelinks: minSitelinks,
+        ));
+
+    return _select(_buildRowsQuery(
+      qid,
+      fitted,
+      requireArticle: requireArticle,
+      minSitelinks: minSitelinks,
+    ));
+  }
+
+  String _buildRowsQuery(
+    String qid,
+    List<PropertyLink> links, {
+    required bool requireArticle,
+    required int minSitelinks,
+  }) {
     final blocks = links.map((link) {
       final pattern = link.incoming
           ? '?other wdt:${link.pid} wd:$qid .'
           : 'wd:$qid wdt:${link.pid} ?other .';
+      final tag = '${link.pid}${link.incoming ? 'i' : 'o'}';
       final article = requireArticle
-          ? '?sl${link.pid}${link.incoming ? 'i' : 'o'} schema:about ?other ; '
+          ? '?sl$tag schema:about ?other ; '
               'schema:isPartOf <https://en.wikipedia.org/> .'
           : 'FILTER(isIRI(?other))';
+      final notable = minSitelinks > 0
+          ? '?other wikibase:sitelinks ?n$tag . FILTER(?n$tag >= $minSitelinks)'
+          : '';
       return '''
   {
     SELECT ?pd ?dir ?other WHERE {
       BIND(wdt:${link.pid} AS ?pd) BIND("${link.incoming ? 'in' : 'out'}" AS ?dir)
       $pattern
       $article
+      $notable
     }
     LIMIT $candidatesPerProperty
   }''';
     }).join('\n  UNION');
 
-    return _select('''
+    // Stated once over the whole result rather than inside each subquery.
+    // Repeating it per property pushed the request URL past 9kB and the
+    // endpoint answered 414, which in the app looked like a dead tap.
+    final internal = 'FILTER NOT EXISTS { ?other wdt:P31 ?internal . '
+        'VALUES ?internal { '
+        '${wikimediaInternalTypes.map((q) => 'wd:$q').join(' ')} } }';
+
+    return '''
 SELECT ?pd ?dir ?other ?otherLabel ?propLabel ?type WHERE {
 $blocks
   ?prop wikibase:directClaim ?pd .
+  $internal
   OPTIONAL { ?other wdt:P31 ?type }
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
-LIMIT 600''');
+LIMIT 600''';
   }
 
   /// Adds whatever [rows] can contribute to [chosen], in the three passes
@@ -573,6 +655,27 @@ LIMIT 600''');
 
   static String? _value(Map<String, dynamic> row, String key) =>
       (row[key] as Map<String, dynamic>?)?['value'] as String?;
+
+  /// Longest request URL to send.
+  ///
+  /// The endpoint answers 414 somewhere above nine kilobytes, and a 414 in
+  /// the app is indistinguishable from a tap that does nothing. Queries are
+  /// trimmed to stay well under it rather than discovering the ceiling in
+  /// front of a user.
+  static const int maxRequestUrlLength = 7000;
+
+  /// Drops properties from the end until the request will fit.
+  static List<PropertyLink> _fitToUrl(
+    List<PropertyLink> links,
+    String Function(List<PropertyLink>) build,
+  ) {
+    var fitted = links;
+    while (fitted.length > 1 &&
+        sparqlUrl(build(fitted)).toString().length > maxRequestUrlLength) {
+      fitted = fitted.sublist(0, fitted.length - 1);
+    }
+    return fitted;
+  }
 
   Future<List<Map<String, dynamic>>> _select(String query) async {
     final body = await _get(sparqlUrl(query));

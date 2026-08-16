@@ -383,9 +383,12 @@ void main() {
         random: Random(2),
       );
       await service.sampleNeighbors('Q1741');
-      // properties + two rounds + one relaxed pass. No second hop, because
-      // nothing was seated to hop from.
-      expect(calls, lessThanOrEqualTo(4));
+      // properties + one round per notability tier + one relaxed pass. No
+      // second hop, because nothing was seated to hop from.
+      expect(
+        calls,
+        lessThanOrEqualTo(WikidataService.notabilityTiers.length + 2),
+      );
     });
 
     test('serves a prefetched draw without touching the network', () async {
@@ -458,6 +461,52 @@ void main() {
       final service = WikidataService(fetcher: (_) async => _bindings([]));
       service.prefetch(['not-a-qid', 'P31', '']);
       expect(service.isPrefetching, isFalse);
+    });
+
+    test('keeps the request url short enough for the endpoint to accept',
+        () async {
+      // Regression: repeating a filter inside every subquery pushed the URL
+      // past 9kB and the endpoint answered 414, which looked like a dead tap.
+      var longest = 0;
+      final service = WikidataService(
+        fetcher: (url) async {
+          longest = url.toString().length > longest
+              ? url.toString().length
+              : longest;
+          if (url.queryParameters['query']!.contains('SELECT DISTINCT ?pd')) {
+            return _bindings([
+              for (var i = 0; i < 60; i++)
+                _row({'pd': '${_wd}P${100000 + i}', 'dir': 'in'}),
+            ]);
+          }
+          return _bindings([]);
+        },
+        random: Random(6),
+      );
+      await service.sampleNeighbors('Q1741');
+      expect(longest, lessThanOrEqualTo(WikidataService.maxRequestUrlLength));
+    });
+
+    test('excludes Wikimedia\'s own category and list pages', () {
+      for (final type in ['Q4167836', 'Q13406463', 'Q4167410']) {
+        expect(WikidataService.wikimediaInternalTypes, contains(type));
+      }
+      // Reached via properties that only ever point at those pages.
+      expect(WikidataService.blockedProperties, contains('P971'));
+      expect(WikidataService.blockedProperties, contains('P301'));
+    });
+
+    test('tries the widest-known neighbours before the obscure ones', () {
+      expect(WikidataService.notabilityTiers.first, greaterThan(0));
+      expect(
+        WikidataService.notabilityTiers,
+        orderedEquals(
+          List<int>.of(WikidataService.notabilityTiers)
+            ..sort((a, b) => b.compareTo(a)),
+        ),
+      );
+      // The last tier accepts anything, so seats still fill.
+      expect(WikidataService.notabilityTiers.last, 0);
     });
 
     test('returns nothing when the item has no usable properties', () async {

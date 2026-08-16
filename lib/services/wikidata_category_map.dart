@@ -51,8 +51,8 @@ class WikidataCategoryMap {
     'Q5398426': NodeCategory.work, // television series
     'Q25379': NodeCategory.work, // play
     'Q1344': NodeCategory.work, // opera
-    'Q13406463': NodeCategory.work, // list article
-    'Q191067': NodeCategory.work, // article
+
+
 
     // event
     'Q1656682': NodeCategory.event,
