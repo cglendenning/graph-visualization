@@ -6,6 +6,7 @@ import '../services/wikipedia_service.dart';
 import '../theme/hud_palette.dart';
 import '../widgets/node_circle.dart';
 import '../widgets/wikipedia_section.dart';
+import 'about_screen.dart';
 
 /// Everything the graph knows about one node.
 ///
@@ -18,6 +19,7 @@ class NodeDetailScreen extends StatelessWidget {
     required this.degree,
     required this.neighbors,
     required this.wikipediaService,
+    required this.nodeCount,
   });
 
   final GraphNode node;
@@ -25,11 +27,15 @@ class NodeDetailScreen extends StatelessWidget {
   final List<Neighbor> neighbors;
   final WikipediaService wikipediaService;
 
+  /// Size of the whole graph, reported on the sources screen.
+  final int nodeCount;
+
   static Route<void> route({
     required GraphNode node,
     required int degree,
     required List<Neighbor> neighbors,
     required WikipediaService wikipediaService,
+    required int nodeCount,
   }) =>
       CupertinoPageRoute<void>(
         builder: (_) => NodeDetailScreen(
@@ -37,6 +43,7 @@ class NodeDetailScreen extends StatelessWidget {
           degree: degree,
           neighbors: neighbors,
           wikipediaService: wikipediaService,
+          nodeCount: nodeCount,
         ),
       );
 
@@ -108,6 +115,24 @@ class NodeDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 14),
                     for (final n in neighbors) _ConnectionRow(neighbor: n),
+                    const SizedBox(height: 18),
+                    _Rule(hue: hue),
+                    const SizedBox(height: 18),
+                    Center(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => Navigator.of(context)
+                            .push(AboutScreen.route(nodeCount: nodeCount)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: Text(
+                            'SOURCES & LICENCES',
+                            style: HudPalette.telemetry
+                                .copyWith(letterSpacing: 2.2),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

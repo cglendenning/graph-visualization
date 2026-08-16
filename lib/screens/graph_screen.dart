@@ -144,6 +144,7 @@ class _GraphScreenState extends State<GraphScreen>
         degree: _to.degree,
         neighbors: widget.repository.neighborsOf(_to.center.id),
         wikipediaService: widget.wikipediaService,
+        nodeCount: widget.repository.nodeCount,
       ),
     );
   }

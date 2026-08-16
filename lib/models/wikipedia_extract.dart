@@ -24,7 +24,10 @@ class WikipediaExtract {
   static const String licenseName = 'CC BY-SA 4.0';
 
   /// The credit line shown under the text.
-  String get attribution => '"$title" on Wikipedia';
+  ///
+  /// Says "extract" explicitly: this is the article's opening section
+  /// reproduced verbatim, not the whole article and not a rewrite of it.
+  String get attribution => 'Extract from "$title" on Wikipedia';
 }
 
 /// Thrown when an extract cannot be retrieved.

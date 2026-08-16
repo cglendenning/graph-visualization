@@ -49,7 +49,7 @@ void main() {
       );
       final extract = await service.extractFor('Napoleon Bonaparte');
       expect(extract.title, 'Napoleon');
-      expect(extract.attribution, '"Napoleon" on Wikipedia');
+      expect(extract.attribution, 'Extract from "Napoleon" on Wikipedia');
     });
 
     test('carries the licence the attribution requires', () async {
