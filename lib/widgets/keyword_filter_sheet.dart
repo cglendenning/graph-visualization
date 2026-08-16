@@ -37,6 +37,8 @@ class _KeywordFilterSheetState extends State<KeywordFilterSheet> {
   late final TextEditingController _controller =
       TextEditingController(text: widget.initial);
 
+  bool _explaining = false;
+
   @override
   void dispose() {
     _controller.dispose();
@@ -69,16 +71,33 @@ class _KeywordFilterSheetState extends State<KeywordFilterSheet> {
                 style: HudPalette.telemetry.copyWith(letterSpacing: 2.2)),
             const SizedBox(height: 14),
             const Text(
-              'Name a subject and exploration leans toward it: satellites '
-              'connected to it take the seats first. It is a pull, not a '
-              'fence — remaining seats still fill normally, so you can always '
-              'wander back out.',
+              'Name a subject and exploration leans toward it.',
               style: TextStyle(
                 fontSize: 13.5,
                 height: 1.5,
                 color: Color(0xFF8AA5B3),
               ),
             ),
+            const SizedBox(height: 10),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => setState(() => _explaining = !_explaining),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Text(
+                  _explaining ? 'HIDE DETAIL' : 'WHAT DOES THIS DO?',
+                  style: HudPalette.telemetry.copyWith(
+                    color: HudPalette.aqua,
+                    decoration: TextDecoration.underline,
+                    decorationColor: HudPalette.aqua.withValues(alpha: 0.4),
+                  ),
+                ),
+              ),
+            ),
+            if (_explaining) ...[
+              const SizedBox(height: 12),
+              const _Explainer(),
+            ],
             const SizedBox(height: 18),
             TextField(
               controller: _controller,
@@ -130,6 +149,72 @@ class _KeywordFilterSheetState extends State<KeywordFilterSheet> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Sets expectations honestly, including where steering is weak.
+class _Explainer extends StatelessWidget {
+  const _Explainer();
+
+  static const _lines = [
+    'Your words are matched to a subject on Wikipedia, and everything '
+        'written about that subject becomes the theme.',
+    'Satellites inside the theme take the seats first, so the rosette leans '
+        'the way you pointed it.',
+    'It is a pull, not a fence. Any seats the theme cannot fill are taken by '
+        'ordinary neighbours, so you never get an empty screen and you can '
+        'always wander back out.',
+    'The footer shows how many of the six came from your subject.',
+    'Specific subjects hold better than broad ones. "Jazz" or "electric '
+        'guitar" stay on theme for a long walk; something as broad as "food" '
+        'drifts after a hop or two.',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: HudPalette.aqua.withValues(alpha: 0.18)),
+        color: HudPalette.voidBlack.withValues(alpha: 0.6),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final line in _lines)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 7, right: 10),
+                    child: Container(
+                      width: 3,
+                      height: 3,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: HudPalette.aqua.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      line,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        height: 1.5,
+                        color: Color(0xFF8AA5B3),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

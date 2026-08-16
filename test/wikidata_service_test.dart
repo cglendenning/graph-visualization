@@ -19,6 +19,7 @@ const _entity = 'http://www.wikidata.org/entity/';
 
 void main() {
   mainThemed();
+  mainReadiness();
   group('WikidataService queries', () {
     test('sends SPARQL as a json-formatted GET', () {
       final url = WikidataService.sparqlUrl('SELECT * WHERE {}');
@@ -828,6 +829,52 @@ void mainThemed() {
       expect(s.hasReadyDraw('Q1'), isTrue);
       await s.applyFilter('jazz');
       expect(s.hasReadyDraw('Q1'), isFalse);
+    });
+  });
+}
+
+void mainReadiness() {
+  group('readiness signalling', () {
+    test('warms one topic, not two, within its attempt budget', () {
+      // Two at once inside a small budget usually warmed neither.
+      expect(WikidataService.randomTopicsWarm, 1);
+      expect(WikidataService.randomWarmAttempts, greaterThan(6));
+      // A near-full rosette is good enough; insisting on six rejected most
+      // articles and left nothing warm at all.
+      expect(WikidataService.randomWarmMinSeats,
+          lessThan(WikidataService.seatCount));
+      expect(WikidataService.randomWarmMinSeats, greaterThan(1));
+    });
+
+    test('announces when a satellite becomes ready', () async {
+      final service = WikidataService(fetcher: themedWorld, random: Random(4));
+      var ticks = 0;
+      service.cacheRevision.addListener(() => ticks++);
+      service.prefetch(['Q1741']);
+      while (service.isPrefetching) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      expect(service.hasReadyDraw('Q1741'), isTrue);
+      expect(ticks, greaterThan(0));
+    });
+
+    test('announces again when that readiness is spent', () async {
+      final service = WikidataService(fetcher: themedWorld, random: Random(4));
+      service.prefetch(['Q1741']);
+      while (service.isPrefetching) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      var ticks = 0;
+      service.cacheRevision.addListener(() => ticks++);
+      await service.sampleNeighbors('Q1741');
+      expect(service.hasReadyDraw('Q1741'), isFalse);
+      expect(ticks, greaterThan(0));
+    });
+
+    test('reports nothing ready before any warming', () {
+      final service = WikidataService(fetcher: themedWorld);
+      expect(service.hasReadyDraw('Q1741'), isFalse);
+      expect(service.hasWarmRandomTopic, isFalse);
     });
   });
 }

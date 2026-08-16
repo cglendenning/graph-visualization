@@ -88,6 +88,7 @@ class _GraphScreenState extends State<GraphScreen>
     _controller = AnimationController(vsync: this, duration: _transition)
       ..addListener(_onTick)
       ..addStatusListener(_onStatus);
+    widget.wikidata.cacheRevision.addListener(_onCacheChanged);
     _load(() => _session.start());
   }
 
@@ -99,8 +100,13 @@ class _GraphScreenState extends State<GraphScreen>
     }
   }
 
+  void _onCacheChanged() {
+    if (mounted) setState(() {});
+  }
+
   @override
   void dispose() {
+    widget.wikidata.cacheRevision.removeListener(_onCacheChanged);
     _controller.dispose();
     super.dispose();
   }
@@ -331,6 +337,7 @@ class _GraphScreenState extends State<GraphScreen>
                 onReroll: _busy ? null : _reroll,
                 onFilter: _busy ? null : _openFilter,
                 theme: widget.wikidata.filterLabel,
+                topicReady: widget.wikidata.hasWarmRandomTopic,
               ),
               Expanded(
                 child: LayoutBuilder(
@@ -449,10 +456,13 @@ class _GraphScreenState extends State<GraphScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              NodeCircle(
-                radius: p.radius,
-                hue: p.node.category.color,
-                emphasis: 0.85,
+              _ReadyMark(
+                ready: widget.wikidata.hasReadyDraw(p.node.qid),
+                child: NodeCircle(
+                  radius: p.radius,
+                  hue: p.node.category.color,
+                  emphasis: 0.85,
+                ),
               ),
               const SizedBox(height: 7),
               Text(
@@ -567,6 +577,7 @@ class _TopBar extends StatelessWidget {
     required this.onReroll,
     required this.onFilter,
     required this.theme,
+    required this.topicReady,
   });
 
   final bool canGoBack;
@@ -574,6 +585,9 @@ class _TopBar extends StatelessWidget {
   final VoidCallback? onReroll;
   final VoidCallback? onFilter;
   final String theme;
+
+  /// Whether a topic is already drawn and waiting behind "new topic".
+  final bool topicReady;
 
   @override
   Widget build(BuildContext context) {
@@ -628,17 +642,71 @@ class _TopBar extends StatelessWidget {
           const Spacer(),
           _BarButton(
             onTap: onReroll,
-            child: Text(
-              'NEW TOPIC',
-              style: HudPalette.telemetry.copyWith(
-                color: onReroll == null
-                    ? HudPalette.aquaDim.withValues(alpha: 0.4)
-                    : HudPalette.aquaDim,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (topicReady) ...[
+                  const _ReadyDot(),
+                  const SizedBox(width: 6),
+                ],
+                Text(
+                  'NEW TOPIC',
+                  style: HudPalette.telemetry.copyWith(
+                    color: onReroll == null
+                        ? HudPalette.aquaDim.withValues(alpha: 0.4)
+                        : HudPalette.aquaDim,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+/// A hairline dot meaning "already drawn, this will be instant".
+///
+/// Deliberately tiny and unlabelled: it is reassurance for anyone who looks
+/// for it, not a thing to read on every screen.
+class _ReadyDot extends StatelessWidget {
+  const _ReadyDot();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: 4,
+        height: 4,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: HudPalette.aqua.withValues(alpha: 0.85),
+          boxShadow: [
+            BoxShadow(
+              color: HudPalette.aqua.withValues(alpha: 0.6),
+              blurRadius: 4,
+            ),
+          ],
+        ),
+      );
+}
+
+/// Places the readiness dot at the top of a satellite, on its ring.
+class _ReadyMark extends StatelessWidget {
+  const _ReadyMark({required this.ready, required this.child});
+
+  final bool ready;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!ready) return child;
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.topCenter,
+      children: [
+        child,
+        const Positioned(top: -3, child: _ReadyDot()),
+      ],
     );
   }
 }

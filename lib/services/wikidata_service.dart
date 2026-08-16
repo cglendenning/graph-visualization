@@ -42,6 +42,12 @@ class WikidataService {
   final List<String> _prefetchQueue = <String>[];
   final Set<String> _prefetching = <String>{};
 
+  /// Ticks whenever something becomes ready or is consumed, so the rosette
+  /// can show which satellites are already in hand.
+  final ValueNotifier<int> cacheRevision = ValueNotifier<int>(0);
+
+  void _cacheChanged() => cacheRevision.value++;
+
   /// Prefetches running at once.
   ///
   /// Deliberately below the six satellites on screen. Each prefetch is three
@@ -416,7 +422,10 @@ LIMIT 200''';
     // makes the jump feel immediate. It is removed on use so that coming back
     // here later draws afresh.
     final ready = _readyDraws.remove(qid);
-    if (ready != null && ready.isNotEmpty) return ready;
+    if (ready != null && ready.isNotEmpty) {
+      _cacheChanged();
+      return ready;
+    }
     return _drawNeighbors(qid);
   }
 
@@ -454,11 +463,25 @@ LIMIT 200''';
   bool _warmingRandom = false;
 
   /// How many random topics to keep in hand.
-  static const int randomTopicsWarm = 2;
+  ///
+  /// One, not two. Each attempt costs several queries, and warming a pair
+  /// inside a small attempt budget usually meant warming neither.
+  static const int randomTopicsWarm = 1;
+
+  /// Attempts allowed when warming a topic.
+  static const int randomWarmAttempts = 8;
+
+  /// Seats a warmed topic must reach. Slightly under six: insisting on a
+  /// perfect rosette rejected most articles and left nothing warm at all.
+  static const int randomWarmMinSeats = seatCount - 1;
 
   /// Takes a pre-drawn random topic, or null if none is ready yet.
-  String? takeWarmRandomQid() =>
-      _readyRandom.isEmpty ? null : _readyRandom.removeAt(0);
+  String? takeWarmRandomQid() {
+    if (_readyRandom.isEmpty) return null;
+    final qid = _readyRandom.removeAt(0);
+    _cacheChanged();
+    return qid;
+  }
 
   bool get hasWarmRandomTopic => _readyRandom.isNotEmpty;
 
@@ -476,15 +499,17 @@ LIMIT 200''';
   Future<void> _warmRandom() async {
     try {
       var attempts = 0;
-      while (_readyRandom.length < randomTopicsWarm && attempts < 6) {
+      while (_readyRandom.length < randomTopicsWarm &&
+          attempts < randomWarmAttempts) {
         attempts++;
         final qid = await randomStartQid();
         if (_readyRandom.contains(qid)) continue;
         await node(qid);
         final draw = await _drawNeighbors(qid);
-        if (draw.length < seatCount) continue;
+        if (draw.length < randomWarmMinSeats) continue;
         _remember(_readyDraws, qid, draw);
         _readyRandom.add(qid);
+        _cacheChanged();
       }
     } on Object catch (error) {
       // Not fatal — pressing "new topic" falls back to drawing on demand.
@@ -509,6 +534,7 @@ LIMIT 200''';
       final draw = await _drawNeighbors(qid);
       if (draw.isNotEmpty) {
         _remember(_readyDraws, qid, draw);
+        _cacheChanged();
       }
     } on Object catch (error) {
       // Not fatal — the tap will fetch on demand. Logged rather than
