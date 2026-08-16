@@ -17,29 +17,6 @@ Map<String, Map<String, String>> _row(Map<String, String> values) =>
 const _wd = 'http://www.wikidata.org/prop/direct/';
 const _entity = 'http://www.wikidata.org/entity/';
 
-/// Answers both the property list and the neighbour query for one item,
-/// so a full draw can be exercised without a network.
-Future<String> twoProperties(Uri url) async {
-  if (url.queryParameters['query']!.contains('SELECT DISTINCT ?pd')) {
-    return _bindings([
-      _row({'pd': '${_wd}P19', 'dir': 'in'}),
-      _row({'pd': '${_wd}P36', 'dir': 'out'}),
-    ]);
-  }
-  return _bindings([
-    _row({
-      'pd': '${_wd}P19', 'dir': 'in', 'other': '${_entity}Q7304',
-      'otherLabel': 'Gustav Mahler', 'propLabel': 'place of birth',
-      'type': '${_entity}Q5',
-    }),
-    _row({
-      'pd': '${_wd}P36', 'dir': 'out', 'other': '${_entity}Q40',
-      'otherLabel': 'Austria', 'propLabel': 'capital of',
-      'type': '${_entity}Q6256',
-    }),
-  ]);
-}
-
 void main() {
   group('WikidataService queries', () {
     test('sends SPARQL as a json-formatted GET', () {
@@ -185,6 +162,27 @@ void main() {
   });
 
   group('sampleNeighbors', () {
+    String twoProperties(Uri url) {
+      if (url.queryParameters['query']!.contains('SELECT DISTINCT ?pd')) {
+        return _bindings([
+          _row({'pd': '${_wd}P19', 'dir': 'in'}),
+          _row({'pd': '${_wd}P36', 'dir': 'out'}),
+        ]);
+      }
+      return _bindings([
+        _row({
+          'pd': '${_wd}P19', 'dir': 'in', 'other': '${_entity}Q7304',
+          'otherLabel': 'Gustav Mahler', 'propLabel': 'place of birth',
+          'type': '${_entity}Q5',
+        }),
+        _row({
+          'pd': '${_wd}P36', 'dir': 'out', 'other': '${_entity}Q40',
+          'otherLabel': 'Austria', 'propLabel': 'capital of',
+          'type': '${_entity}Q6256',
+        }),
+      ]);
+    }
+
     test('returns one neighbour per property, phrased from the centre',
         () async {
       final service = WikidataService(
@@ -608,142 +606,6 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 5));
       }
       expect(service.hasWarmRandomTopic, isFalse);
-    });
-  });
-
-  group('keyword filter', () {
-    test('starts unconstrained', () {
-      final service = WikidataService(fetcher: (_) async => _bindings([]));
-      expect(service.isFiltered, isFalse);
-      expect(service.keywords, isEmpty);
-    });
-
-    test('splits input into terms and ignores punctuation and noise', () {
-      final service = WikidataService(fetcher: (_) async => _bindings([]));
-      service.setKeywords('  Electric-Guitar!  a ');
-      // Single characters are dropped; they match almost everything.
-      expect(service.keywords, ['electric', 'guitar']);
-      expect(service.isFiltered, isTrue);
-    });
-
-    test('clears back to unconstrained', () {
-      final service = WikidataService(fetcher: (_) async => _bindings([]));
-      service.setKeywords('guitar');
-      service.setKeywords('   ');
-      expect(service.isFiltered, isFalse);
-      expect(service.keywords, isEmpty);
-    });
-
-    test('matches label and description, not the label alone', () async {
-      // The whole point: a guitarist is not called "guitar", but is
-      // described as one.
-      late String sent;
-      final service = WikidataService(
-        fetcher: (url) async {
-          final q = url.queryParameters['query']!;
-          if (q.contains('SELECT DISTINCT ?pd')) {
-            return _bindings([_row({'pd': '${_wd}P19', 'dir': 'in'})]);
-          }
-          sent = q;
-          return _bindings([]);
-        },
-      );
-      service.setKeywords('guitar');
-      await service.sampleNeighbors('Q1741');
-      expect(sent, contains('rdfs:label'));
-      expect(sent, contains('schema:description'));
-      expect(sent, contains('CONTAINS('));
-      expect(sent, contains('"guitar"'));
-    });
-
-    test('drops warmed draws when the constraint changes', () async {
-      final service = WikidataService(
-        fetcher: twoProperties,
-        random: Random(4),
-      );
-      service.prefetch(['Q1741']);
-      while (service.isPrefetching) {
-        await Future<void>.delayed(const Duration(milliseconds: 5));
-      }
-      expect(service.hasReadyDraw('Q1741'), isTrue);
-      service.setKeywords('guitar');
-      // That draw was made without the constraint, so it must not be served.
-      expect(service.hasReadyDraw('Q1741'), isFalse);
-    });
-
-    test('a new topic under a filter is seeded from the keywords', () async {
-      // Regression: a purely random article is almost never about the
-      // subject asked for, so its rosette came back empty.
-      var usedSearch = false;
-      final service = WikidataService(
-        fetcher: (url) async {
-          if (url.host == 'en.wikipedia.org') {
-            fail('should not draw a random article while filtered');
-          }
-          usedSearch = true;
-          expect(url.queryParameters['query'], contains('EntitySearch'));
-          expect(url.queryParameters['query'], contains('electric guitar'));
-          return _bindings([
-            _row({'item': '${_entity}Q78987'}),
-          ]);
-        },
-        random: Random(1),
-      );
-      service.setKeywords('electric guitar');
-      expect(await service.randomStartQid(), 'Q78987');
-      expect(usedSearch, isTrue);
-    });
-
-    test('falls back to a random article when the words match nothing',
-        () async {
-      final service = WikidataService(
-        fetcher: (url) async {
-          if (url.host == 'en.wikipedia.org') {
-            return jsonEncode({
-              'query': {
-                'pages': [
-                  {'title': 'X', 'pageprops': {'wikibase_item': 'Q42'}},
-                ],
-              },
-            });
-          }
-          return _bindings([]); // search found nothing
-        },
-        random: Random(1),
-      );
-      service.setKeywords('qwertyuiop');
-      expect(await service.randomStartQid(), 'Q42');
-    });
-
-    test('an unfiltered new topic still draws a random article', () async {
-      final service = WikidataService(
-        fetcher: (url) async {
-          expect(url.host, 'en.wikipedia.org');
-          return jsonEncode({
-            'query': {
-              'pages': [
-                {'title': 'X', 'pageprops': {'wikibase_item': 'Q7'}},
-              ],
-            },
-          });
-        },
-      );
-      expect(await service.randomStartQid(), 'Q7');
-    });
-
-    test('an unchanged filter does not throw away warmed work', () async {
-      final service = WikidataService(
-        fetcher: twoProperties,
-        random: Random(4),
-      );
-      service.setKeywords('guitar');
-      service.prefetch(['Q1741']);
-      while (service.isPrefetching) {
-        await Future<void>.delayed(const Duration(milliseconds: 5));
-      }
-      expect(service.hasReadyDraw('Q1741'), isTrue);
-      service.setKeywords('Guitar');
-      expect(service.hasReadyDraw('Q1741'), isTrue);
     });
   });
 

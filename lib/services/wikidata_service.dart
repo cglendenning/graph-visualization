@@ -57,7 +57,7 @@ class WikidataService {
   static const Duration timeout = Duration(seconds: 20);
 
   static const String userAgent =
-      'Perihelion/2.4 (https://github.com/cglendenning/graph-visualization)';
+      'Perihelion/2.3 (https://github.com/cglendenning/graph-visualization)';
 
   static const int seatCount = 6;
 
@@ -143,54 +143,6 @@ class WikidataService {
   static final RegExp _qid = RegExp(r'^Q\d+$');
   static final RegExp _pid = RegExp(r'^P\d+$');
 
-  List<String> _keywords = const [];
-
-  /// Words every satellite must match, or empty for unconstrained browsing.
-  List<String> get keywords => List<String>.unmodifiable(_keywords);
-
-  /// Narrows exploration to neighbours mentioning all of [terms].
-  ///
-  /// Matching is against the label *and* the description together, which
-  /// matters more than it sounds: nobody born in Vienna is called "music",
-  /// but plenty are described as musicians. Label-only matching returns
-  /// almost nothing.
-  ///
-  /// Changing the filter discards anything already warmed, since those draws
-  /// were made under the previous constraint.
-  void setKeywords(String input) {
-    final terms = input
-        .toLowerCase()
-        .split(RegExp(r'[^a-z0-9]+'))
-        .where((t) => t.length > 1)
-        .take(4)
-        .toList(growable: false);
-    if (_sameTerms(terms, _keywords)) return;
-    _keywords = terms;
-    _readyDraws.clear();
-    _prefetchQueue.clear();
-  }
-
-  bool get isFiltered => _keywords.isNotEmpty;
-
-  static bool _sameTerms(List<String> a, List<String> b) =>
-      a.length == b.length &&
-      List<int>.generate(a.length, (i) => i).every((i) => a[i] == b[i]);
-
-  /// When a keyword filter is on, most properties return nothing, so the
-  /// search has to look at far more of them.
-  ///
-  /// A keyword is already a strong constraint. Stacking the notability bar
-  /// and the must-have-an-article rule on top of it left almost nothing
-  /// alive: searching "food" from the food article returned one satellite.
-  /// Under a filter those two are dropped and the coverage widened instead.
-  /// Ten, not more: the keyword clause is repeated per property, and twelve
-  /// pushes the request past the URL ceiling, where it gets trimmed straight
-  /// back down again. Coverage comes from more rounds instead — each query
-  /// stays sub-second, so six of them is still quick.
-  static const int filteredPropertiesSampled = 10;
-  static const int filteredMaxRounds = 6;
-  static const List<int> filteredNotabilityTiers = [0, 0, 0, 0, 0, 0];
-
   // ---------------------------------------------------------------- queries
 
   static Uri sparqlUrl(String query) => Uri.https(
@@ -217,13 +169,6 @@ class WikidataService {
   /// is bot-imported scholarly records, so a raw random item is almost never
   /// something a person would want to land on.
   Future<String> randomStartQid() async {
-    // With a filter on, a purely random article is almost never about the
-    // subject asked for, and its rosette comes back empty. Seed from the
-    // keywords instead so a new topic lands inside the constraint.
-    if (isFiltered) {
-      final seeded = await _searchStartQid();
-      if (seeded != null) return seeded;
-    }
     final body = await _get(randomArticleUrl());
     final json = _decode(body);
     final pages = (json['query'] as Map<String, dynamic>?)?['pages'];
@@ -238,39 +183,6 @@ class WikidataService {
       return randomStartQid();
     }
     return qid;
-  }
-
-  /// Picks a topic matching the active keywords, using Wikidata's own search
-  /// index rather than scanning the graph.
-  ///
-  /// Returns null when the words match nothing, so the caller can fall back
-  /// to an unconstrained topic rather than failing outright.
-  Future<String?> _searchStartQid() async {
-    final phrase = _keywords.join(' ').replaceAll('"', '');
-    if (phrase.isEmpty) return null;
-
-    final rows = await _select('''
-SELECT ?item WHERE {
-  SERVICE wikibase:mwapi {
-    bd:serviceParam wikibase:endpoint "www.wikidata.org" ;
-                    wikibase:api "EntitySearch" ;
-                    mwapi:search "$phrase" ;
-                    mwapi:language "en" ;
-                    mwapi:limit "30" .
-    ?item wikibase:apiOutputItem mwapi:item .
-  }
-  ?sl schema:about ?item ; schema:isPartOf <https://en.wikipedia.org/> .
-  FILTER NOT EXISTS { ?item wdt:P31 ?internal .
-    VALUES ?internal { ${wikimediaInternalTypes.map((q) => 'wd:$q').join(' ')} } }
-}
-LIMIT 30''');
-
-    final candidates = rows
-        .map((r) => _localName(_value(r, 'item') ?? ''))
-        .where(_qid.hasMatch)
-        .toList(growable: false);
-    if (candidates.isEmpty) return null;
-    return candidates[_random.nextInt(candidates.length)];
   }
 
   /// Label, description and category for one item.
@@ -428,11 +340,7 @@ LIMIT 200''';
         if (_readyRandom.contains(qid)) continue;
         await node(qid);
         final draw = await _drawNeighbors(qid);
-        // Unfiltered, insist on a full rosette so a new topic never opens on
-        // a stub. Under a filter, a partial result is the expected shape and
-        // demanding six would reject everything.
-        final enough = isFiltered ? draw.isNotEmpty : draw.length >= seatCount;
-        if (!enough) continue;
+        if (draw.length < seatCount) continue;
         _remember(_readyDraws, qid, draw);
         _readyRandom.add(qid);
       }
@@ -497,33 +405,27 @@ LIMIT 200''';
     // Each round widens the net: a fresh slice of properties, and a lower bar
     // for how widely known a neighbour has to be. The best-known candidates
     // therefore take seats first, and the obscure ones only fill what is left.
-    final tiers = isFiltered ? filteredNotabilityTiers : notabilityTiers;
-    final perRound = isFiltered ? filteredPropertiesSampled : propertiesSampled;
-    final rounds = isFiltered ? filteredMaxRounds : maxRounds;
-
     for (var round = 0;
-        round < rounds &&
-            round < tiers.length &&
+        round < maxRounds &&
+            round < notabilityTiers.length &&
             chosen.length < seatCount &&
             clock.elapsed < sampleBudget;
         round++) {
       var slice = preferred
-          .skip(round * perRound)
-          .take(perRound)
+          .skip(round * propertiesSampled)
+          .take(propertiesSampled)
           .toList(growable: false);
       // Once the property list is exhausted, keep going on the first slice
       // with the lower bar rather than stopping early.
       if (slice.isEmpty) {
-        slice = preferred.take(perRound).toList(growable: false);
+        slice = preferred.take(propertiesSampled).toList(growable: false);
       }
       if (slice.isEmpty) break;
       final rows = await _neighborRows(
         qid,
         slice,
-        // Under a filter the text match is doing the selecting, so insisting
-        // the neighbour also have its own article is one constraint too many.
-        requireArticle: !isFiltered,
-        minSitelinks: tiers[round],
+        requireArticle: true,
+        minSitelinks: notabilityTiers[round],
       );
       _absorb(rows, qid, chosen, taken);
     }
@@ -630,16 +532,6 @@ LIMIT 60''');
       final notable = minSitelinks > 0
           ? '?other wikibase:sitelinks ?n$tag . FILTER(?n$tag >= $minSitelinks)'
           : '';
-      // Matched inside the subquery, not outside it: filtering after the
-      // per-property LIMIT would test ten random candidates and almost
-      // always find none.
-      final keyword = _keywords.isEmpty
-          ? ''
-          : '?other rdfs:label ?l$tag . FILTER(lang(?l$tag) = "en") '
-              'OPTIONAL { ?other schema:description ?d$tag . '
-              'FILTER(lang(?d$tag) = "en") } '
-              'BIND(LCASE(CONCAT(?l$tag, " ", COALESCE(?d$tag, ""))) AS ?h$tag) '
-              '${_keywords.map((k) => 'FILTER(CONTAINS(?h$tag, "$k"))').join(' ')}';
       return '''
   {
     SELECT ?pd ?dir ?other WHERE {
@@ -647,7 +539,6 @@ LIMIT 60''');
       $pattern
       $article
       $notable
-      $keyword
     }
     LIMIT $candidatesPerProperty
   }''';
