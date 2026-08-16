@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+
+import 'package:flutter/foundation.dart';
 
 import '../models/node_category.dart';
 import '../models/wikidata_node.dart';
@@ -30,10 +33,31 @@ class WikidataService {
   final Map<String, List<PropertyLink>> _propertyCache = {};
   final Map<String, WikidataNode> _nodeCache = {};
 
+  /// Rosettes drawn ahead of time for satellites currently on screen.
+  ///
+  /// Consumed on use rather than kept: the draw is meant to be random, so a
+  /// later return to the same topic should produce a different six.
+  final Map<String, List<WikidataNeighbor>> _readyDraws = {};
+
+  final List<String> _prefetchQueue = <String>[];
+  final Set<String> _prefetching = <String>{};
+
+  /// Prefetches running at once.
+  ///
+  /// Deliberately below the six satellites on screen. Each prefetch is three
+  /// queries, and firing eighteen at a public endpoint in one burst is both
+  /// discourteous and a good way to get throttled. Three at a time still
+  /// warms every satellite within a few seconds of the rosette appearing.
+  static const int maxConcurrentPrefetch = 3;
+
+  /// Entries held before the oldest are dropped, so a long session cannot
+  /// grow the caches without bound.
+  static const int maxCacheEntries = 240;
+
   static const Duration timeout = Duration(seconds: 20);
 
   static const String userAgent =
-      'Perihelion/2.0 (https://github.com/cglendenning/graph-visualization)';
+      'Perihelion/2.2 (https://github.com/cglendenning/graph-visualization)';
 
   static const int seatCount = 6;
 
@@ -163,7 +187,7 @@ LIMIT 20''';
       description: description,
       category: WikidataCategoryMap.forTypes(types),
     );
-    _nodeCache[qid] = result;
+    _remember(_nodeCache, qid, result);
     return result;
   }
 
@@ -200,7 +224,7 @@ LIMIT 200''';
       // last-resort pass can still reach them rather than leaving a seat empty.
       links.add(PropertyLink(pid: pid, incoming: _value(row, 'dir') == 'in'));
     }
-    _propertyCache[qid] = links;
+    _remember(_propertyCache, qid, links);
     return links;
   }
 
@@ -216,6 +240,78 @@ LIMIT 200''';
   /// If the drawn properties still cannot fill six, another slice of the
   /// property list is drawn, and finally the filters themselves are relaxed.
   Future<List<WikidataNeighbor>> sampleNeighbors(String qid) async {
+    // A draw warmed while the user was reading is taken as-is, which is what
+    // makes the jump feel immediate. It is removed on use so that coming back
+    // here later draws afresh.
+    final ready = _readyDraws.remove(qid);
+    if (ready != null && ready.isNotEmpty) return ready;
+    return _drawNeighbors(qid);
+  }
+
+  /// Warms [qids] in the background so tapping one is instant.
+  ///
+  /// Fire and forget: nothing here is awaited by the caller, and a failure
+  /// only means the tap falls back to fetching on demand.
+  void prefetch(Iterable<String> qids) {
+    for (final qid in qids) {
+      if (!_qid.hasMatch(qid)) continue;
+      if (_readyDraws.containsKey(qid) ||
+          _prefetching.contains(qid) ||
+          _prefetchQueue.contains(qid)) {
+        continue;
+      }
+      _prefetchQueue.add(qid);
+    }
+    _drainPrefetchQueue();
+  }
+
+  /// Drops queued work that is no longer worth doing — the user has moved on
+  /// and those satellites are off screen. Work already in flight is allowed
+  /// to finish, since its result is still worth caching.
+  void cancelPendingPrefetch() => _prefetchQueue.clear();
+
+  /// Whether any warming is still queued or in flight.
+  bool get isPrefetching =>
+      _prefetching.isNotEmpty || _prefetchQueue.isNotEmpty;
+
+  /// Whether [qid] can be seated instantly from a warmed draw.
+  bool hasReadyDraw(String qid) => _readyDraws.containsKey(qid);
+
+  void _drainPrefetchQueue() {
+    while (_prefetching.length < maxConcurrentPrefetch &&
+        _prefetchQueue.isNotEmpty) {
+      final qid = _prefetchQueue.removeAt(0);
+      _prefetching.add(qid);
+      unawaited(_warm(qid));
+    }
+  }
+
+  Future<void> _warm(String qid) async {
+    try {
+      await node(qid);
+      final draw = await _drawNeighbors(qid);
+      if (draw.isNotEmpty) {
+        _remember(_readyDraws, qid, draw);
+      }
+    } on Object catch (error) {
+      // Not fatal — the tap will fetch on demand. Logged rather than
+      // swallowed so a systematic prefetch failure is visible in the console.
+      debugPrint('Perihelion: prefetch for $qid failed: $error');
+    } finally {
+      _prefetching.remove(qid);
+      _drainPrefetchQueue();
+    }
+  }
+
+  /// Inserts into a bounded cache, evicting the oldest entry when full.
+  static void _remember<T>(Map<String, T> cache, String key, T value) {
+    if (cache.length >= maxCacheEntries && !cache.containsKey(key)) {
+      cache.remove(cache.keys.first);
+    }
+    cache[key] = value;
+  }
+
+  Future<List<WikidataNeighbor>> _drawNeighbors(String qid) async {
     final all = await propertiesFor(qid);
     if (all.isEmpty) return const [];
 

@@ -123,6 +123,15 @@ class _GraphScreenState extends State<GraphScreen>
         _busy = false;
       });
       _controller.forward(from: 0);
+
+      // Draw the next rosette for each satellite while the reader is looking
+      // at this one. Whichever they tap is then already in hand.
+      final arrived = _session.rosette;
+      if (arrived != null) {
+        widget.wikidata
+          ..cancelPendingPrefetch()
+          ..prefetch(arrived.occupied.map((n) => n.node.qid));
+      }
     } on Object catch (error) {
       if (!mounted) return;
       setState(() {

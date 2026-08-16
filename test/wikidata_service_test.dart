@@ -388,6 +388,78 @@ void main() {
       expect(calls, lessThanOrEqualTo(4));
     });
 
+    test('serves a prefetched draw without touching the network', () async {
+      var calls = 0;
+      final service = WikidataService(
+        fetcher: (url) async {
+          calls++;
+          return twoProperties(url);
+        },
+        random: Random(4),
+      );
+
+      service.prefetch(['Q1741']);
+      await Future<void>.delayed(Duration.zero);
+      while (service.isPrefetching) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      final warmed = calls;
+      expect(warmed, greaterThan(0));
+
+      final n = await service.sampleNeighbors('Q1741');
+      expect(n, isNotEmpty);
+      // Served entirely from the warmed draw.
+      expect(calls, warmed);
+    });
+
+    test('re-draws on a return visit, so a prefetch is used once', () async {
+      var calls = 0;
+      final service = WikidataService(
+        fetcher: (url) async {
+          calls++;
+          return twoProperties(url);
+        },
+        random: Random(4),
+      );
+      service.prefetch(['Q1741']);
+      while (service.isPrefetching) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      await service.sampleNeighbors('Q1741');
+      final afterFirst = calls;
+      await service.sampleNeighbors('Q1741');
+      // The second visit draws again rather than repeating the same six.
+      expect(calls, greaterThan(afterFirst));
+    });
+
+    test('never runs more prefetches at once than it promises', () async {
+      var concurrent = 0;
+      var peak = 0;
+      final service = WikidataService(
+        fetcher: (url) async {
+          concurrent++;
+          peak = peak > concurrent ? peak : concurrent;
+          await Future<void>.delayed(const Duration(milliseconds: 5));
+          concurrent--;
+          return twoProperties(url);
+        },
+        random: Random(4),
+      );
+      service.prefetch(
+        List.generate(12, (i) => 'Q${2000 + i}'),
+      );
+      while (service.isPrefetching) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      expect(peak, lessThanOrEqualTo(WikidataService.maxConcurrentPrefetch));
+    });
+
+    test('ignores ids that are not items', () async {
+      final service = WikidataService(fetcher: (_) async => _bindings([]));
+      service.prefetch(['not-a-qid', 'P31', '']);
+      expect(service.isPrefetching, isFalse);
+    });
+
     test('returns nothing when the item has no usable properties', () async {
       final service = WikidataService(
         fetcher: (_) async => _bindings([
