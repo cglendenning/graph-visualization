@@ -134,7 +134,7 @@
   <p class="heads-up"><b>This replaces Constellation, it does not upgrade it.</b> The app was renamed, so it carries a new bundle identifier and installs alongside the old one. Delete Constellation from your home screen after this finishes.</p>
 
   <dl class="telemetry">
-    <dt>Version</dt><dd>2.4.0 (11)</dd>
+    <dt>Version</dt><dd>2.4.1 (12)</dd>
     <dt>Bundle</dt><dd>com.craigglendenning.perihelion</dd>
     <dt>Min iOS</dt><dd>13.0</dd>
     <dt>Signing</dt><dd>Development · MCALPSQ5P5</dd>
@@ -143,12 +143,12 @@
   </dl>
 
   <div class="how">
-    <strong>What changed in 2.4.0</strong>
+    <strong>What changed in 2.4.1</strong>
       <ol>
-        <li>Constrain exploration by keyword. Tap FILTER, type something like &ldquo;electric guitar&rdquo;, and every satellite from then on has to mention all of those words.</li>
-        <li>Matching looks at each item&rsquo;s description as well as its name &mdash; a guitarist is not called &ldquo;guitar&rdquo;, but is described as one.</li>
-        <li>Show everything again with one tap.</li>
-        <li>A constrained rosette is often partly empty on purpose, so the footer says how many of the six matched.</li>
+        <li>Fixed &ldquo;New topic&rdquo; ignoring the filter. It drew a purely random article, which was almost never about what you asked for, so the rosette came back empty.</li>
+        <li>With a filter on, a new topic now comes from Wikidata&rsquo;s search index &mdash; enter &ldquo;electric guitar&rdquo; and you land on electric guitar, not cryptanalysis.</li>
+        <li>Applying a filter where nothing matches now moves you somewhere it does, instead of stranding you on a dead end.</li>
+        <li>Clearing the filter returns to unconstrained random topics.</li>
       </ol>
   </div>
 

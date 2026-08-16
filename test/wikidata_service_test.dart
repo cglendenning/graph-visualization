@@ -671,6 +671,66 @@ void main() {
       expect(service.hasReadyDraw('Q1741'), isFalse);
     });
 
+    test('a new topic under a filter is seeded from the keywords', () async {
+      // Regression: a purely random article is almost never about the
+      // subject asked for, so its rosette came back empty.
+      var usedSearch = false;
+      final service = WikidataService(
+        fetcher: (url) async {
+          if (url.host == 'en.wikipedia.org') {
+            fail('should not draw a random article while filtered');
+          }
+          usedSearch = true;
+          expect(url.queryParameters['query'], contains('EntitySearch'));
+          expect(url.queryParameters['query'], contains('electric guitar'));
+          return _bindings([
+            _row({'item': '${_entity}Q78987'}),
+          ]);
+        },
+        random: Random(1),
+      );
+      service.setKeywords('electric guitar');
+      expect(await service.randomStartQid(), 'Q78987');
+      expect(usedSearch, isTrue);
+    });
+
+    test('falls back to a random article when the words match nothing',
+        () async {
+      final service = WikidataService(
+        fetcher: (url) async {
+          if (url.host == 'en.wikipedia.org') {
+            return jsonEncode({
+              'query': {
+                'pages': [
+                  {'title': 'X', 'pageprops': {'wikibase_item': 'Q42'}},
+                ],
+              },
+            });
+          }
+          return _bindings([]); // search found nothing
+        },
+        random: Random(1),
+      );
+      service.setKeywords('qwertyuiop');
+      expect(await service.randomStartQid(), 'Q42');
+    });
+
+    test('an unfiltered new topic still draws a random article', () async {
+      final service = WikidataService(
+        fetcher: (url) async {
+          expect(url.host, 'en.wikipedia.org');
+          return jsonEncode({
+            'query': {
+              'pages': [
+                {'title': 'X', 'pageprops': {'wikibase_item': 'Q7'}},
+              ],
+            },
+          });
+        },
+      );
+      expect(await service.randomStartQid(), 'Q7');
+    });
+
     test('an unchanged filter does not throw away warmed work', () async {
       final service = WikidataService(
         fetcher: twoProperties,

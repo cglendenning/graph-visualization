@@ -212,6 +212,13 @@ class WikidataService {
   /// is bot-imported scholarly records, so a raw random item is almost never
   /// something a person would want to land on.
   Future<String> randomStartQid() async {
+    // With a filter on, a purely random article is almost never about the
+    // subject asked for, and its rosette comes back empty. Seed from the
+    // keywords instead so a new topic lands inside the constraint.
+    if (isFiltered) {
+      final seeded = await _searchStartQid();
+      if (seeded != null) return seeded;
+    }
     final body = await _get(randomArticleUrl());
     final json = _decode(body);
     final pages = (json['query'] as Map<String, dynamic>?)?['pages'];
@@ -226,6 +233,39 @@ class WikidataService {
       return randomStartQid();
     }
     return qid;
+  }
+
+  /// Picks a topic matching the active keywords, using Wikidata's own search
+  /// index rather than scanning the graph.
+  ///
+  /// Returns null when the words match nothing, so the caller can fall back
+  /// to an unconstrained topic rather than failing outright.
+  Future<String?> _searchStartQid() async {
+    final phrase = _keywords.join(' ').replaceAll('"', '');
+    if (phrase.isEmpty) return null;
+
+    final rows = await _select('''
+SELECT ?item WHERE {
+  SERVICE wikibase:mwapi {
+    bd:serviceParam wikibase:endpoint "www.wikidata.org" ;
+                    wikibase:api "EntitySearch" ;
+                    mwapi:search "$phrase" ;
+                    mwapi:language "en" ;
+                    mwapi:limit "30" .
+    ?item wikibase:apiOutputItem mwapi:item .
+  }
+  ?sl schema:about ?item ; schema:isPartOf <https://en.wikipedia.org/> .
+  FILTER NOT EXISTS { ?item wdt:P31 ?internal .
+    VALUES ?internal { ${wikimediaInternalTypes.map((q) => 'wd:$q').join(' ')} } }
+}
+LIMIT 30''');
+
+    final candidates = rows
+        .map((r) => _localName(_value(r, 'item') ?? ''))
+        .where(_qid.hasMatch)
+        .toList(growable: false);
+    if (candidates.isEmpty) return null;
+    return candidates[_random.nextInt(candidates.length)];
   }
 
   /// Label, description and category for one item.
@@ -383,7 +423,11 @@ LIMIT 200''';
         if (_readyRandom.contains(qid)) continue;
         await node(qid);
         final draw = await _drawNeighbors(qid);
-        if (draw.length < seatCount) continue;
+        // Unfiltered, insist on a full rosette so a new topic never opens on
+        // a stub. Under a filter, a partial result is the expected shape and
+        // demanding six would reject everything.
+        final enough = isFiltered ? draw.isNotEmpty : draw.length >= seatCount;
+        if (!enough) continue;
         _remember(_readyDraws, qid, draw);
         _readyRandom.add(qid);
       }

@@ -175,6 +175,12 @@ class _GraphScreenState extends State<GraphScreen>
     // Redraw where we stand, so the constraint takes effect without losing
     // the reader's place in the graph.
     await _load(() => _session.refresh());
+    // Unless nothing here matches at all — then stranding the reader on a
+    // dead end is worse than moving them somewhere the constraint applies.
+    if (!mounted) return;
+    if (widget.wikidata.isFiltered && (_to?.occupied.isEmpty ?? false)) {
+      await _load(() => _session.start());
+    }
   }
 
   void _openDetail() {
