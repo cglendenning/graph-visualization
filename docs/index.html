@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Constellation — install</title>
+<style>
+  :root {
+    --void: #05070C;
+    --deep: #0A121C;
+    --aqua: #56E8FF;
+    --aqua-dim: #2E7F94;
+    --ice: #DCE9F5;
+    --muted: #6E93A3;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 22%, #0D1622 0%, var(--void) 62%),
+      var(--void);
+    color: var(--ice);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4rem 1.5rem 5rem;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { width: 100%; max-width: 30rem; }
+  .mark {
+    width: 132px; height: 132px;
+    margin: 0 auto 2rem;
+    border-radius: 30px;
+    display: block;
+    box-shadow: 0 0 60px rgba(86,232,255,.22), 0 10px 40px rgba(0,0,0,.6);
+  }
+  h1 {
+    font-size: 2rem;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+    margin: 0 0 .5rem;
+  }
+  .tagline {
+    color: var(--muted);
+    font-size: 1rem;
+    margin: 0 0 2.75rem;
+    font-style: italic;
+  }
+  .install {
+    display: inline-block;
+    padding: 1rem 3rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(86,232,255,.20), rgba(86,232,255,.08));
+    border: 1.5px solid rgba(86,232,255,.55);
+    color: var(--aqua);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: .01em;
+    box-shadow: 0 0 34px rgba(86,232,255,.18);
+    transition: transform .12s ease, box-shadow .2s ease;
+  }
+  .install:active { transform: scale(.975); box-shadow: 0 0 20px rgba(86,232,255,.3); }
+  .note {
+    margin: 1.5rem auto 0;
+    font-size: .8rem;
+    color: var(--aqua-dim);
+    max-width: 24rem;
+  }
+  .telemetry {
+    margin: 3.5rem 0 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .55rem 1.5rem;
+    text-align: left;
+    font-family: Menlo, Courier, monospace;
+    font-size: .72rem;
+    letter-spacing: .08em;
+    border-top: 1px solid rgba(86,232,255,.14);
+    padding-top: 1.5rem;
+  }
+  .telemetry dt { color: var(--aqua-dim); text-transform: uppercase; }
+  .telemetry dd { margin: 0; color: var(--ice); font-variant-numeric: tabular-nums; }
+  .how {
+    margin-top: 2.5rem;
+    text-align: left;
+    font-size: .82rem;
+    color: var(--muted);
+    line-height: 1.7;
+    border-top: 1px solid rgba(86,232,255,.14);
+    padding-top: 1.5rem;
+  }
+  .how strong { color: var(--ice); font-weight: 600; display: block; margin-bottom: .5rem;
+                font-family: Menlo, Courier, monospace; font-size: .72rem; letter-spacing: .1em;
+                text-transform: uppercase; }
+  .how ol { margin: 0; padding-left: 1.15rem; }
+  .how li { margin-bottom: .35rem; }
+</style>
+</head>
+<body>
+<main>
+  <img class="mark" src="icon-512.png" alt="Constellation icon">
+  <h1>Constellation</h1>
+  <p class="tagline">Traverse a knowledge graph, one node at a time.</p>
+
+  <a class="install" href="itms-services://?action=download-manifest&amp;url=https://cglendenning.github.io/graph-visualization/manifest.plist">Install on iPhone</a>
+
+  <p class="note">Open this page in Safari on the iPhone 12&nbsp;mini this build was signed for. The install prompt will not appear on a desktop browser.</p>
+
+  <dl class="telemetry">
+    <dt>Version</dt><dd>1.0.0 (1)</dd>
+    <dt>Size</dt><dd>6.7 MB</dd>
+    <dt>Bundle</dt><dd>com.craigglendenning.constellation</dd>
+    <dt>Min iOS</dt><dd>13.0</dd>
+    <dt>Signing</dt><dd>Development · MCALPSQ5P5</dd>
+    <dt>Graph</dt><dd>140 nodes · 8 categories</dd>
+  </dl>
+
+  <div class="how">
+    <strong>After installing</strong>
+    <ol>
+      <li>Tap a satellite to make it the new centre.</li>
+      <li>Tap the centre circle for the full record.</li>
+      <li>The node you came from always stays on screen, opposite your direction of travel.</li>
+      <li>The tick ring counts connections; the arc counts how far you have travelled.</li>
+    </ol>
+  </div>
+</main>
+</body>
+</html>
