@@ -36,9 +36,15 @@ class NeighborSelector {
       }
     }
 
+    // Hold the last seat for a way out of the current subject — but only
+    // when there is more on offer than fits, or the rosette would simply
+    // lose a node to reserve a seat nothing can fill.
+    final reserveBridge = ordered.length > seatCount;
+    final mainSeats = reserveBridge ? seatCount - 1 : seatCount;
+
     // Pass one: best remaining edge from each category not yet represented.
     for (final n in ordered) {
-      if (chosen.length == seatCount) break;
+      if (chosen.length == mainSeats) break;
       if (takenIds.contains(n.node.id)) continue;
       if (takenCategories.contains(n.node.category.id)) continue;
       take(n);
@@ -46,12 +52,34 @@ class NeighborSelector {
 
     // Pass two: fill what is left by raw strength.
     for (final n in ordered) {
-      if (chosen.length == seatCount) break;
+      if (chosen.length == mainSeats) break;
       if (takenIds.contains(n.node.id)) continue;
       take(n);
     }
 
+    // The bridge seat. Strength has already had five chances; this one goes
+    // to whichever remaining neighbour shares least with the centre, which
+    // is the edge most likely to lead somewhere the traversal has not been.
+    if (reserveBridge && chosen.length < seatCount) {
+      Neighbor? bridge;
+      for (final n in ordered) {
+        if (takenIds.contains(n.node.id)) continue;
+        if (bridge == null || _moreDistinct(n, bridge)) bridge = n;
+      }
+      if (bridge != null) take(bridge);
+    }
+
     return List<Neighbor>.unmodifiable(chosen);
+  }
+
+  /// Most distinct wins; ties fall back to strength, then id, so the bridge
+  /// is as stable between runs as the rest of the rosette.
+  static bool _moreDistinct(Neighbor a, Neighbor b) {
+    if (a.distinctness != b.distinctness) {
+      return a.distinctness > b.distinctness;
+    }
+    if (a.weight != b.weight) return a.weight > b.weight;
+    return a.node.id.compareTo(b.node.id) < 0;
   }
 
   /// Strongest first; ties broken by id so the layout never reshuffles

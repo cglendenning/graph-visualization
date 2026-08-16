@@ -55,6 +55,7 @@ class Neighbor {
     required this.node,
     required this.relation,
     required this.weight,
+    this.distinctness = 0,
   });
 
   final GraphNode node;
@@ -63,4 +64,12 @@ class Neighbor {
   final String relation;
 
   final double weight;
+
+  /// How far outside the centre's own neighbourhood this node sits, 0..1.
+  ///
+  /// One minus the Jaccard overlap of the two nodes' neighbourhoods. A
+  /// neighbour that shares most of the centre's connections scores near zero
+  /// and leads nowhere new; a neighbour that shares almost none scores near
+  /// one and is a bridge out of the current subject.
+  final double distinctness;
 }

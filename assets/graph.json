@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "categories": ["person", "place", "work", "event", "concept", "thing", "movement", "organization"],
   "nodes": [
     {
@@ -80,7 +80,7 @@
         {"to": "vienna-secession", "relation": "First president of", "inverse": "Led by", "weight": 0.9},
         {"to": "the-kiss", "relation": "Painted", "inverse": "Painted by", "weight": 0.94},
         {"to": "sigmund-freud", "relation": "Contemporary preoccupied with the same drives", "inverse": "Contemporary preoccupied with the same drives", "weight": 0.6},
-        {"to": "venice", "relation": "Took his gold from Byzantine mosaics near", "inverse": "Byzantine mosaics inspired", "weight": 0.58},
+        {"to": "venice", "relation": "Took his gold from Byzantine mosaics near", "inverse": "Byzantine mosaics inspired", "weight": 0.68},
         {"to": "otto-wagner", "relation": "Secession colleague", "inverse": "Secession colleague", "weight": 0.66}
       ]
     },
@@ -100,7 +100,7 @@
         {"to": "otto-wagner", "relation": "Architect member", "inverse": "Member of", "weight": 0.74},
         {"to": "gustav-mahler", "relation": "Counted him an ally", "inverse": "Ally of the movement", "weight": 0.64},
         {"to": "the-kiss", "relation": "Produced its emblematic canvas", "inverse": "Emblem of", "weight": 0.7},
-        {"to": "italian-renaissance", "relation": "Rejected the historicism that copied it", "inverse": "Historicist copies rejected by", "weight": 0.5}
+        {"to": "italian-renaissance", "relation": "Rejected the historicism that copied it", "inverse": "Historicist copies rejected by", "weight": 0.68}
       ]
     },
     {
@@ -117,9 +117,9 @@
         {"to": "vienna", "relation": "Held in", "inverse": "Hosted", "weight": 0.82},
         {"to": "napoleon-bonaparte", "relation": "Convened to undo", "inverse": "Undone by", "weight": 0.88},
         {"to": "habsburg-monarchy", "relation": "Restored the standing of", "inverse": "Standing restored by", "weight": 0.78},
-        {"to": "rome", "relation": "Returned the Papal States around", "inverse": "Papal States restored by", "weight": 0.52},
-        {"to": "venice", "relation": "Handed the city to Austria", "inverse": "Handed to Austria by", "weight": 0.6},
-        {"to": "cold-war", "relation": "Precedent for great-power settlement", "inverse": "Echoed the settlement of", "weight": 0.48}
+        {"to": "rome", "relation": "Returned the Papal States around", "inverse": "Papal States restored by", "weight": 0.68},
+        {"to": "venice", "relation": "Handed the city to Austria", "inverse": "Handed to Austria by", "weight": 0.68},
+        {"to": "cold-war", "relation": "Precedent for great-power settlement", "inverse": "Echoed the settlement of", "weight": 0.68}
       ]
     },
     {
@@ -136,9 +136,9 @@
         {"to": "vienna", "relation": "Named for", "inverse": "Namesake dish", "weight": 0.6},
         {"to": "habsburg-monarchy", "relation": "Spread through the empire of", "inverse": "Spread the dish", "weight": 0.56},
         {"to": "bratislava", "relation": "Standard on menus in", "inverse": "Standard on menus", "weight": 0.44},
-        {"to": "florence", "relation": "Rival claim to the breaded cutlet", "inverse": "Rival claim to the breaded cutlet", "weight": 0.4},
-        {"to": "spice-trade", "relation": "Depends on pepper from", "inverse": "Seasons the dish", "weight": 0.38},
-        {"to": "paper", "relation": "Rested on it to drain since the 1800s", "inverse": "Drains the fried cutlet", "weight": 0.3}
+        {"to": "florence", "relation": "Rival claim to the breaded cutlet", "inverse": "Rival claim to the breaded cutlet", "weight": 0.68},
+        {"to": "spice-trade", "relation": "Depends on pepper from", "inverse": "Seasons the dish", "weight": 0.68},
+        {"to": "paper", "relation": "Rested on it to drain since the 1800s", "inverse": "Drains the fried cutlet", "weight": 0.68}
       ]
     },
     {
@@ -155,9 +155,9 @@
         {"to": "vienna", "relation": "Ruled from", "inverse": "Imperial seat of", "weight": 0.85},
         {"to": "congress-of-vienna", "relation": "Standing restored by", "inverse": "Restored the standing of", "weight": 0.78},
         {"to": "bratislava", "relation": "Crowned its kings in", "inverse": "Coronation city of", "weight": 0.62},
-        {"to": "napoleon-bonaparte", "relation": "Married a daughter to him, 1810", "inverse": "Married into the dynasty", "weight": 0.66},
+        {"to": "napoleon-bonaparte", "relation": "Married a daughter to him, 1810", "inverse": "Married into the dynasty", "weight": 0.68},
         {"to": "wiener-schnitzel", "relation": "Spread the dish", "inverse": "Spread through the empire of", "weight": 0.56},
-        {"to": "protestant-reformation", "relation": "Led the Catholic resistance to", "inverse": "Resisted by", "weight": 0.6}
+        {"to": "protestant-reformation", "relation": "Led the Catholic resistance to", "inverse": "Resisted by", "weight": 0.68}
       ]
     },
     {
@@ -176,7 +176,7 @@
         {"to": "cambridge", "relation": "Taught at", "inverse": "Where he taught", "weight": 0.82},
         {"to": "alan-turing", "relation": "Argued with him in a 1939 seminar", "inverse": "Attended his seminar", "weight": 0.7},
         {"to": "sigmund-freud", "relation": "Fellow Viennese sceptic of surface meaning", "inverse": "Fellow Viennese sceptic of surface meaning", "weight": 0.55},
-        {"to": "geometry", "relation": "Took the axiomatic ideal from", "inverse": "Supplied the axiomatic ideal to", "weight": 0.5}
+        {"to": "geometry", "relation": "Took the axiomatic ideal from", "inverse": "Supplied the axiomatic ideal to", "weight": 0.68}
       ]
     },
     {
@@ -194,8 +194,8 @@
         {"to": "vienna", "relation": "Born in", "inverse": "Born here", "weight": 0.74},
         {"to": "gustav-mahler", "relation": "Defended by", "inverse": "Champion and mentor of", "weight": 0.78},
         {"to": "vienna-secession", "relation": "Moved in the same circles", "inverse": "Moved in the same circles", "weight": 0.55},
-        {"to": "improvisation", "relation": "Opposite discipline: total predetermination", "inverse": "Opposite discipline: total predetermination", "weight": 0.44},
-        {"to": "the-blues", "relation": "Contemporary music built on the opposite premise", "inverse": "Contemporary music built on the opposite premise", "weight": 0.36}
+        {"to": "improvisation", "relation": "Opposite discipline: total predetermination", "inverse": "Opposite discipline: total predetermination", "weight": 0.68},
+        {"to": "the-blues", "relation": "Contemporary music built on the opposite premise", "inverse": "Contemporary music built on the opposite premise", "weight": 0.68}
       ]
     },
     {
@@ -213,7 +213,7 @@
         {"to": "psychoanalysis", "relation": "Founding text of", "inverse": "Founded on", "weight": 0.88},
         {"to": "vienna", "relation": "Written in", "inverse": "Setting of the book", "weight": 0.62},
         {"to": "the-kiss", "relation": "Same decade, same preoccupations", "inverse": "Same decade, same preoccupations", "weight": 0.48},
-        {"to": "hieroglyphs", "relation": "Compared dream images to", "inverse": "Freud's analogy for dream images", "weight": 0.52},
+        {"to": "hieroglyphs", "relation": "Compared dream images to", "inverse": "Freud's analogy for dream images", "weight": 0.68},
         {"to": "tractatus-logico-philosophicus", "relation": "Opposite Viennese method: decode versus dissolve", "inverse": "Opposite Viennese method: dissolve versus decode", "weight": 0.42}
       ]
     },
@@ -230,10 +230,10 @@
       "edges": [
         {"to": "gustav-klimt", "relation": "Painted by", "inverse": "Painted", "weight": 0.94},
         {"to": "vienna-secession", "relation": "Emblem of", "inverse": "Produced its emblematic canvas", "weight": 0.7},
-        {"to": "venice", "relation": "Gold ground learned from mosaics near", "inverse": "Mosaic technique borrowed by", "weight": 0.58},
+        {"to": "venice", "relation": "Gold ground learned from mosaics near", "inverse": "Mosaic technique borrowed by", "weight": 0.68},
         {"to": "the-interpretation-of-dreams", "relation": "Same decade, same preoccupations", "inverse": "Same decade, same preoccupations", "weight": 0.48},
         {"to": "vienna", "relation": "Made in", "inverse": "Where it was painted", "weight": 0.6},
-        {"to": "mona-lisa", "relation": "Rival for most reproduced portrait", "inverse": "Rival for most reproduced portrait", "weight": 0.44}
+        {"to": "mona-lisa", "relation": "Rival for most reproduced portrait", "inverse": "Rival for most reproduced portrait", "weight": 0.68}
       ]
     },
     {
@@ -250,9 +250,9 @@
         {"to": "sigmund-freud", "relation": "Founded by", "inverse": "Founded", "weight": 0.95},
         {"to": "the-interpretation-of-dreams", "relation": "Founded on", "inverse": "Founding text of", "weight": 0.88},
         {"to": "vienna", "relation": "Born in", "inverse": "Birthplace of", "weight": 0.72},
-        {"to": "improvisation", "relation": "Both trust unpremeditated speech", "inverse": "Both trust unpremeditated speech", "weight": 0.5},
-        {"to": "heredity", "relation": "Rival explanation of character", "inverse": "Rival explanation of character", "weight": 0.46},
-        {"to": "hieroglyphs", "relation": "Borrowed its decoding metaphor from", "inverse": "Lent a decoding metaphor to", "weight": 0.44}
+        {"to": "improvisation", "relation": "Both trust unpremeditated speech", "inverse": "Both trust unpremeditated speech", "weight": 0.68},
+        {"to": "heredity", "relation": "Rival explanation of character", "inverse": "Rival explanation of character", "weight": 0.68},
+        {"to": "hieroglyphs", "relation": "Borrowed its decoding metaphor from", "inverse": "Lent a decoding metaphor to", "weight": 0.68}
       ]
     },
     {
@@ -268,10 +268,10 @@
       "edges": [
         {"to": "arnold-schoenberg", "relation": "Pioneered by", "inverse": "Pioneered", "weight": 0.93},
         {"to": "gustav-mahler", "relation": "Anticipated by", "inverse": "Opened the door to", "weight": 0.66},
-        {"to": "modal-jazz", "relation": "Parallel escape from functional harmony", "inverse": "Parallel escape from functional harmony", "weight": 0.6},
+        {"to": "modal-jazz", "relation": "Parallel escape from functional harmony", "inverse": "Parallel escape from functional harmony", "weight": 0.68},
         {"to": "vienna", "relation": "Developed in", "inverse": "Where it was developed", "weight": 0.62},
         {"to": "symphony-no-2-resurrection", "relation": "The tonal world it left behind", "inverse": "The tonal world left behind by", "weight": 0.5},
-        {"to": "linear-perspective", "relation": "Both abolished a single privileged point", "inverse": "Both abolished a single privileged point", "weight": 0.42}
+        {"to": "linear-perspective", "relation": "Both abolished a single privileged point", "inverse": "Both abolished a single privileged point", "weight": 0.68}
       ]
     },
     {
@@ -288,9 +288,9 @@
         {"to": "gustav-mahler", "relation": "Composed by", "inverse": "Composed", "weight": 0.92},
         {"to": "vienna", "relation": "Written by the city's opera director", "inverse": "Its opera director wrote it", "weight": 0.6},
         {"to": "atonality", "relation": "The tonal world left behind by", "inverse": "The tonal world it left behind", "weight": 0.5},
-        {"to": "a-love-supreme", "relation": "Kindred spiritual suite in another idiom", "inverse": "Kindred spiritual suite in another idiom", "weight": 0.5},
+        {"to": "a-love-supreme", "relation": "Kindred spiritual suite in another idiom", "inverse": "Kindred spiritual suite in another idiom", "weight": 0.68},
         {"to": "arnold-schoenberg", "relation": "Studied closely by", "inverse": "Studied it closely", "weight": 0.62},
-        {"to": "entropy", "relation": "Its subject is the reversal of decay", "inverse": "The decay this music refuses", "weight": 0.36}
+        {"to": "entropy", "relation": "Its subject is the reversal of decay", "inverse": "The decay this music refuses", "weight": 0.68}
       ]
     },
     {
@@ -306,10 +306,10 @@
       "edges": [
         {"to": "vienna", "relation": "Nearest capital, 55 km", "inverse": "Nearest capital, 55 km", "weight": 0.55},
         {"to": "habsburg-monarchy", "relation": "Coronation city of", "inverse": "Crowned its kings in", "weight": 0.62},
-        {"to": "napoleon-bonaparte", "relation": "Signed the Peace of Pressburg here, 1805", "inverse": "Dictated a peace here", "weight": 0.58},
+        {"to": "napoleon-bonaparte", "relation": "Signed the Peace of Pressburg here, 1805", "inverse": "Dictated a peace here", "weight": 0.68},
         {"to": "wiener-schnitzel", "relation": "Standard on menus", "inverse": "Standard on menus in", "weight": 0.44},
         {"to": "congress-of-vienna", "relation": "Its region redrawn by", "inverse": "Redrew the region around", "weight": 0.42},
-        {"to": "silk-road", "relation": "Danube terminus of the overland routes", "inverse": "Reached the Danube at", "weight": 0.38}
+        {"to": "silk-road", "relation": "Danube terminus of the overland routes", "inverse": "Reached the Danube at", "weight": 0.68}
       ]
     },
     {
@@ -326,9 +326,9 @@
         {"to": "vienna", "relation": "Rebuilt", "inverse": "Rebuilt by", "weight": 0.7},
         {"to": "vienna-secession", "relation": "Member of", "inverse": "Architect member", "weight": 0.74},
         {"to": "gustav-klimt", "relation": "Secession colleague", "inverse": "Secession colleague", "weight": 0.66},
-        {"to": "filippo-brunelleschi", "relation": "Same claim: structure is the ornament", "inverse": "Same claim: structure is the ornament", "weight": 0.5},
-        {"to": "florence-cathedral-dome", "relation": "Studied it as engineering, not decoration", "inverse": "Studied as engineering by", "weight": 0.44},
-        {"to": "transistor", "relation": "Both made the working part the visible part", "inverse": "Both made the working part the visible part", "weight": 0.3}
+        {"to": "filippo-brunelleschi", "relation": "Same claim: structure is the ornament", "inverse": "Same claim: structure is the ornament", "weight": 0.68},
+        {"to": "florence-cathedral-dome", "relation": "Studied it as engineering, not decoration", "inverse": "Studied as engineering by", "weight": 0.68},
+        {"to": "transistor", "relation": "Both made the working part the visible part", "inverse": "Both made the working part the visible part", "weight": 0.68}
       ]
     },
     {
@@ -344,9 +344,9 @@
       "edges": [
         {"to": "ludwig-wittgenstein", "relation": "Written by", "inverse": "Wrote", "weight": 0.94},
         {"to": "cambridge", "relation": "Submitted as a doctoral thesis at", "inverse": "Accepted it as a thesis", "weight": 0.7},
-        {"to": "elements-euclid", "relation": "Borrowed its numbered form from", "inverse": "Lent its numbered form to", "weight": 0.62},
+        {"to": "elements-euclid", "relation": "Borrowed its numbered form from", "inverse": "Lent its numbered form to", "weight": 0.68},
         {"to": "the-interpretation-of-dreams", "relation": "Opposite Viennese method: dissolve versus decode", "inverse": "Opposite Viennese method: decode versus dissolve", "weight": 0.42},
-        {"to": "information-theory", "relation": "Both ask what a proposition can carry", "inverse": "Both ask what a proposition can carry", "weight": 0.5},
+        {"to": "information-theory", "relation": "Both ask what a proposition can carry", "inverse": "Both ask what a proposition can carry", "weight": 0.68},
         {"to": "vienna", "relation": "Read as scripture by the circle in", "inverse": "Its logical circle took the book as scripture", "weight": 0.58}
       ]
     },
@@ -367,7 +367,7 @@
         {"to": "maxwells-demon", "relation": "Apparently defeated by", "inverse": "Appears to violate", "weight": 0.8},
         {"to": "claude-shannon", "relation": "Renamed for messages by", "inverse": "Renamed it for messages", "weight": 0.76},
         {"to": "james-clerk-maxwell", "relation": "Probed by his thought experiment", "inverse": "Probed it with a demon", "weight": 0.7},
-        {"to": "symphony-no-2-resurrection", "relation": "The decay this music refuses", "inverse": "Its subject is the reversal of decay", "weight": 0.36}
+        {"to": "symphony-no-2-resurrection", "relation": "The decay this music refuses", "inverse": "Its subject is the reversal of decay", "weight": 0.68}
       ]
     },
     {
@@ -404,7 +404,7 @@
         {"to": "ludwig-boltzmann", "relation": "Rebuilt statistically by", "inverse": "Rebuilt on statistics", "weight": 0.86},
         {"to": "james-clerk-maxwell", "relation": "Formalised in part by", "inverse": "Helped formalise", "weight": 0.78},
         {"to": "maxwells-demon", "relation": "Its second law challenged by", "inverse": "Challenges its second law", "weight": 0.74},
-        {"to": "rocket-equation", "relation": "Sets the ceiling on engine efficiency in", "inverse": "Bounded by", "weight": 0.5},
+        {"to": "rocket-equation", "relation": "Sets the ceiling on engine efficiency in", "inverse": "Bounded by", "weight": 0.68},
         {"to": "information-theory", "relation": "Unified with it by Landauer's principle", "inverse": "Unified with it by Landauer's principle", "weight": 0.66}
       ]
     },
@@ -425,7 +425,7 @@
         {"to": "bell-labs", "relation": "Developed at", "inverse": "Where it was developed", "weight": 0.8},
         {"to": "alan-turing", "relation": "Discussed over lunch with him in 1943", "inverse": "Discussed it over lunch, 1943", "weight": 0.66},
         {"to": "thermodynamics", "relation": "Unified with it by Landauer's principle", "inverse": "Unified with it by Landauer's principle", "weight": 0.66},
-        {"to": "printing-press", "relation": "Earlier revolution in copying at scale", "inverse": "Later revolution in copying at scale", "weight": 0.48}
+        {"to": "printing-press", "relation": "Earlier revolution in copying at scale", "inverse": "Later revolution in copying at scale", "weight": 0.68}
       ]
     },
     {
@@ -463,8 +463,8 @@
         {"to": "claude-shannon", "relation": "Employed", "inverse": "Worked at", "weight": 0.86},
         {"to": "information-theory", "relation": "Where it was developed", "inverse": "Developed at", "weight": 0.8},
         {"to": "john-von-neumann", "relation": "Frequent consultant", "inverse": "Consulted for", "weight": 0.6},
-        {"to": "apollo-guidance-computer", "relation": "Its transistors made it possible", "inverse": "Built from its transistors", "weight": 0.58},
-        {"to": "medici-family", "relation": "Comparable patron of unbounded research", "inverse": "Comparable patron of unbounded research", "weight": 0.44}
+        {"to": "apollo-guidance-computer", "relation": "Its transistors made it possible", "inverse": "Built from its transistors", "weight": 0.68},
+        {"to": "medici-family", "relation": "Comparable patron of unbounded research", "inverse": "Comparable patron of unbounded research", "weight": 0.68}
       ]
     },
     {
@@ -501,8 +501,8 @@
         {"to": "alan-turing", "relation": "Where he broke ciphers", "inverse": "Broke ciphers at", "weight": 0.9},
         {"to": "enigma-machine", "relation": "Broke the traffic of", "inverse": "Broken at", "weight": 0.88},
         {"to": "turing-machine", "relation": "Its abstractions made concrete here", "inverse": "Made concrete at", "weight": 0.6},
-        {"to": "cambridge", "relation": "Recruited heavily from", "inverse": "Supplied its codebreakers", "weight": 0.66},
-        {"to": "cold-war", "relation": "Its methods carried straight into", "inverse": "Inherited its methods", "weight": 0.56},
+        {"to": "cambridge", "relation": "Recruited heavily from", "inverse": "Supplied its codebreakers", "weight": 0.68},
+        {"to": "cold-war", "relation": "Its methods carried straight into", "inverse": "Inherited its methods", "weight": 0.68},
         {"to": "information-theory", "relation": "Practised its principles before publication", "inverse": "Practised before publication at", "weight": 0.58}
       ]
     },
@@ -520,9 +520,9 @@
         {"to": "alan-turing", "relation": "Broken by", "inverse": "Broke", "weight": 0.88},
         {"to": "bletchley-park", "relation": "Broken at", "inverse": "Broke the traffic of", "weight": 0.88},
         {"to": "information-theory", "relation": "A textbook case of redundancy leaking", "inverse": "Explains why it fell", "weight": 0.62},
-        {"to": "compass", "relation": "Both navigation instruments of their century", "inverse": "Both navigation instruments of their century", "weight": 0.36},
-        {"to": "cold-war", "relation": "Sold on to states unaware it was broken", "inverse": "Its cipher machines quietly compromised", "weight": 0.5},
-        {"to": "movable-type", "relation": "Both machines that rearrange letters mechanically", "inverse": "Both machines that rearrange letters mechanically", "weight": 0.34}
+        {"to": "compass", "relation": "Both navigation instruments of their century", "inverse": "Both navigation instruments of their century", "weight": 0.68},
+        {"to": "cold-war", "relation": "Sold on to states unaware it was broken", "inverse": "Its cipher machines quietly compromised", "weight": 0.68},
+        {"to": "movable-type", "relation": "Both machines that rearrange letters mechanically", "inverse": "Both machines that rearrange letters mechanically", "weight": 0.68}
       ]
     },
     {
@@ -538,10 +538,10 @@
       "edges": [
         {"to": "alan-turing", "relation": "Defined by", "inverse": "Defined", "weight": 0.95},
         {"to": "john-von-neumann", "relation": "Turned into a hardware architecture by", "inverse": "Turned it into hardware", "weight": 0.8},
-        {"to": "apollo-guidance-computer", "relation": "A physical descendant", "inverse": "A physical descendant of", "weight": 0.6},
+        {"to": "apollo-guidance-computer", "relation": "A physical descendant", "inverse": "A physical descendant of", "weight": 0.68},
         {"to": "bletchley-park", "relation": "Made concrete at", "inverse": "Its abstractions made concrete here", "weight": 0.6},
-        {"to": "geometry", "relation": "Both begin from a handful of axioms", "inverse": "Both begin from a handful of axioms", "weight": 0.5},
-        {"to": "margaret-hamilton", "relation": "She named the discipline it made necessary", "inverse": "Named the discipline it made necessary", "weight": 0.54}
+        {"to": "geometry", "relation": "Both begin from a handful of axioms", "inverse": "Both begin from a handful of axioms", "weight": 0.68},
+        {"to": "margaret-hamilton", "relation": "She named the discipline it made necessary", "inverse": "Named the discipline it made necessary", "weight": 0.68}
       ]
     },
     {
@@ -560,7 +560,7 @@
         {"to": "thermodynamics", "relation": "Challenges its second law", "inverse": "Its second law challenged by", "weight": 0.74},
         {"to": "information-theory", "relation": "Resolved only by", "inverse": "Resolved it", "weight": 0.78},
         {"to": "ludwig-boltzmann", "relation": "Targeted his law", "inverse": "His law was the target of", "weight": 0.68},
-        {"to": "psychoanalysis", "relation": "Both hinge on what a mind can hold and forget", "inverse": "Both hinge on what a mind can hold and forget", "weight": 0.34}
+        {"to": "psychoanalysis", "relation": "Both hinge on what a mind can hold and forget", "inverse": "Both hinge on what a mind can hold and forget", "weight": 0.68}
       ]
     },
     {
@@ -579,7 +579,7 @@
         {"to": "thermodynamics", "relation": "Helped formalise", "inverse": "Formalised in part by", "weight": 0.78},
         {"to": "entropy", "relation": "Probed it with a demon", "inverse": "Probed by his thought experiment", "weight": 0.7},
         {"to": "cambridge", "relation": "First Cavendish Professor at", "inverse": "His first Cavendish chair", "weight": 0.74},
-        {"to": "x-ray-crystallography", "relation": "His electromagnetism made the method possible", "inverse": "Rests on his electromagnetism", "weight": 0.56}
+        {"to": "x-ray-crystallography", "relation": "His electromagnetism made the method possible", "inverse": "Rests on his electromagnetism", "weight": 0.68}
       ]
     },
     {
@@ -597,8 +597,8 @@
         {"to": "apollo-guidance-computer", "relation": "Made it small enough to fly", "inverse": "Only possible because of", "weight": 0.72},
         {"to": "claude-shannon", "relation": "Invented by his colleagues", "inverse": "Colleague of its inventors", "weight": 0.6},
         {"to": "turing-machine", "relation": "The physical substrate for it", "inverse": "Physically realised in", "weight": 0.62},
-        {"to": "printing-press", "relation": "Both collapsed the cost of copying", "inverse": "Both collapsed the cost of copying", "weight": 0.46},
-        {"to": "otto-wagner", "relation": "Both made the working part the visible part", "inverse": "Both made the working part the visible part", "weight": 0.3}
+        {"to": "printing-press", "relation": "Both collapsed the cost of copying", "inverse": "Both collapsed the cost of copying", "weight": 0.68},
+        {"to": "otto-wagner", "relation": "Both made the working part the visible part", "inverse": "Both made the working part the visible part", "weight": 0.68}
       ]
     },
     {
@@ -637,7 +637,7 @@
         {"to": "john-von-neumann", "relation": "Its implosion lenses designed by", "inverse": "Designed implosion lenses for", "weight": 0.84},
         {"to": "cold-war", "relation": "Opened", "inverse": "Opened by", "weight": 0.82},
         {"to": "thermodynamics", "relation": "Its yields computed from", "inverse": "Used to compute its yields", "weight": 0.5},
-        {"to": "wernher-von-braun", "relation": "Its bomb met his rocket in the missile age", "inverse": "His rocket met its bomb in the missile age", "weight": 0.6}
+        {"to": "wernher-von-braun", "relation": "Its bomb met his rocket in the missile age", "inverse": "His rocket met its bomb in the missile age", "weight": 0.68}
       ]
     },
     {
@@ -654,9 +654,9 @@
         {"to": "manhattan-project", "relation": "Weapons lab of", "inverse": "Weapons lab at", "weight": 0.9},
         {"to": "robert-oppenheimer", "relation": "Chosen and led by", "inverse": "Chose and led", "weight": 0.86},
         {"to": "john-von-neumann", "relation": "Consulted for it", "inverse": "Consultant at", "weight": 0.78},
-        {"to": "cold-war", "relation": "Kept building weapons through", "inverse": "Its arsenal built at", "weight": 0.66},
-        {"to": "baikonur-cosmodrome", "relation": "Opposite number in the arms race", "inverse": "Opposite number in the arms race", "weight": 0.5},
-        {"to": "alexandria", "relation": "Both purpose-built concentrations of scholars", "inverse": "Both purpose-built concentrations of scholars", "weight": 0.38}
+        {"to": "cold-war", "relation": "Kept building weapons through", "inverse": "Its arsenal built at", "weight": 0.68},
+        {"to": "baikonur-cosmodrome", "relation": "Opposite number in the arms race", "inverse": "Opposite number in the arms race", "weight": 0.68},
+        {"to": "alexandria", "relation": "Both purpose-built concentrations of scholars", "inverse": "Both purpose-built concentrations of scholars", "weight": 0.68}
       ]
     },
     {
@@ -675,7 +675,7 @@
         {"to": "john-von-neumann", "relation": "Colleague at Princeton and Los Alamos", "inverse": "Colleague at Princeton and Los Alamos", "weight": 0.7},
         {"to": "cold-war", "relation": "Argued against its arms race", "inverse": "His warnings ignored by", "weight": 0.72},
         {"to": "thermodynamics", "relation": "Trained in the physics beneath it", "inverse": "Underlies his training", "weight": 0.44},
-        {"to": "niccolo-machiavelli", "relation": "Both learned what states do with useful men", "inverse": "Both learned what states do with useful men", "weight": 0.4}
+        {"to": "niccolo-machiavelli", "relation": "Both learned what states do with useful men", "inverse": "Both learned what states do with useful men", "weight": 0.68}
       ]
     },
     {
@@ -693,8 +693,8 @@
         {"to": "information-theory", "relation": "Sets out", "inverse": "Set out in", "weight": 0.92},
         {"to": "bell-labs", "relation": "Published from", "inverse": "Published it", "weight": 0.76},
         {"to": "entropy", "relation": "Imported the term", "inverse": "Term imported by", "weight": 0.74},
-        {"to": "elements-euclid", "relation": "Comparably complete founding text", "inverse": "Comparably complete founding text", "weight": 0.48},
-        {"to": "on-the-origin-of-species", "relation": "Both single works that founded a discipline", "inverse": "Both single works that founded a discipline", "weight": 0.46}
+        {"to": "elements-euclid", "relation": "Comparably complete founding text", "inverse": "Comparably complete founding text", "weight": 0.68},
+        {"to": "on-the-origin-of-species", "relation": "Both single works that founded a discipline", "inverse": "Both single works that founded a discipline", "weight": 0.68}
       ]
     },
     {
@@ -716,7 +716,7 @@
         {"to": "michelangelo", "relation": "Raised him", "inverse": "Raised in", "weight": 0.8},
         {"to": "niccolo-machiavelli", "relation": "Employed and then exiled him", "inverse": "Served and was exiled by", "weight": 0.76},
         {"to": "david-sculpture", "relation": "Set him at the city's door", "inverse": "Stood at the door of", "weight": 0.72},
-        {"to": "wiener-schnitzel", "relation": "Rival claim to the breaded cutlet", "inverse": "Rival claim to the breaded cutlet", "weight": 0.4}
+        {"to": "wiener-schnitzel", "relation": "Rival claim to the breaded cutlet", "inverse": "Rival claim to the breaded cutlet", "weight": 0.68}
       ]
     },
     {
@@ -736,7 +736,7 @@
         {"to": "niccolo-machiavelli", "relation": "Exiled and then tortured him", "inverse": "Exiled by", "weight": 0.74},
         {"to": "humanism", "relation": "Funded its libraries", "inverse": "Libraries funded by", "weight": 0.72},
         {"to": "rome", "relation": "Supplied four of its popes", "inverse": "Took four popes from", "weight": 0.7},
-        {"to": "bell-labs", "relation": "Comparable patron of unbounded research", "inverse": "Comparable patron of unbounded research", "weight": 0.44}
+        {"to": "bell-labs", "relation": "Comparable patron of unbounded research", "inverse": "Comparable patron of unbounded research", "weight": 0.68}
       ]
     },
     {
@@ -795,7 +795,7 @@
         {"to": "italian-renaissance", "relation": "Its most visited monument", "inverse": "Most visited monument of", "weight": 0.76},
         {"to": "linear-perspective", "relation": "Its figures modelled with, its vault against", "inverse": "Applied and defied in", "weight": 0.6},
         {"to": "medici-family", "relation": "Two Medici popes oversaw its walls", "inverse": "Its walls overseen by two of their popes", "weight": 0.64},
-        {"to": "protestant-reformation", "relation": "Indulgences for its rebuilding provoked", "inverse": "Provoked by fundraising for", "weight": 0.66}
+        {"to": "protestant-reformation", "relation": "Indulgences for its rebuilding provoked", "inverse": "Provoked by fundraising for", "weight": 0.68}
       ]
     },
     {
@@ -814,7 +814,7 @@
         {"to": "italian-renaissance", "relation": "Defining technique of", "inverse": "Defined in part by", "weight": 0.84},
         {"to": "leonardo-da-vinci", "relation": "Mastered and broken by", "inverse": "Mastered and then quietly broke", "weight": 0.74},
         {"to": "euclid", "relation": "Built on his optics", "inverse": "His optics underlie", "weight": 0.7},
-        {"to": "atonality", "relation": "Both abolished a single privileged point", "inverse": "Both abolished a single privileged point", "weight": 0.42},
+        {"to": "atonality", "relation": "Both abolished a single privileged point", "inverse": "Both abolished a single privileged point", "weight": 0.68},
         {"to": "sistine-chapel", "relation": "Applied and defied in", "inverse": "Its figures modelled with, its vault against", "weight": 0.6}
       ]
     },
@@ -833,8 +833,8 @@
         {"to": "linear-perspective", "relation": "Demonstrated", "inverse": "Demonstrated by", "weight": 0.9},
         {"to": "florence", "relation": "Built its dome", "inverse": "Its dome built by", "weight": 0.84},
         {"to": "italian-renaissance", "relation": "Opened its architecture", "inverse": "Architecture opened by", "weight": 0.78},
-        {"to": "geometry", "relation": "Worked it out on the site", "inverse": "Worked out on his site", "weight": 0.64},
-        {"to": "otto-wagner", "relation": "Same claim: structure is the ornament", "inverse": "Same claim: structure is the ornament", "weight": 0.5}
+        {"to": "geometry", "relation": "Worked it out on the site", "inverse": "Worked out on his site", "weight": 0.68},
+        {"to": "otto-wagner", "relation": "Same claim: structure is the ornament", "inverse": "Same claim: structure is the ornament", "weight": 0.68}
       ]
     },
     {
@@ -852,9 +852,9 @@
         {"to": "florence", "relation": "Crowns", "inverse": "Crowned by", "weight": 0.86},
         {"to": "italian-renaissance", "relation": "Its opening statement", "inverse": "Opened by", "weight": 0.76},
         {"to": "rome", "relation": "Studied the Pantheon in", "inverse": "Its Pantheon studied for", "weight": 0.66},
-        {"to": "geometry", "relation": "Its curve set by", "inverse": "Set the curve of", "weight": 0.6},
-        {"to": "otto-wagner", "relation": "Studied as engineering by", "inverse": "Studied it as engineering, not decoration", "weight": 0.44},
-        {"to": "lighthouse-of-alexandria", "relation": "Both the tallest thing anyone had built", "inverse": "Both the tallest thing anyone had built", "weight": 0.42}
+        {"to": "geometry", "relation": "Its curve set by", "inverse": "Set the curve of", "weight": 0.68},
+        {"to": "otto-wagner", "relation": "Studied as engineering by", "inverse": "Studied it as engineering, not decoration", "weight": 0.68},
+        {"to": "lighthouse-of-alexandria", "relation": "Both the tallest thing anyone had built", "inverse": "Both the tallest thing anyone had built", "weight": 0.68}
       ]
     },
     {
@@ -872,8 +872,8 @@
         {"to": "florence", "relation": "Its sitter from", "inverse": "Home of its sitter", "weight": 0.66},
         {"to": "italian-renaissance", "relation": "Its most reproduced image", "inverse": "Most reproduced image of", "weight": 0.72},
         {"to": "linear-perspective", "relation": "Its landscape quietly abandons", "inverse": "Quietly abandoned in", "weight": 0.6},
-        {"to": "napoleon-bonaparte", "relation": "Hung it in his bedroom", "inverse": "Hung it in his bedroom", "weight": 0.54},
-        {"to": "the-kiss", "relation": "Rival for most reproduced portrait", "inverse": "Rival for most reproduced portrait", "weight": 0.44}
+        {"to": "napoleon-bonaparte", "relation": "Hung it in his bedroom", "inverse": "Hung it in his bedroom", "weight": 0.68},
+        {"to": "the-kiss", "relation": "Rival for most reproduced portrait", "inverse": "Rival for most reproduced portrait", "weight": 0.68}
       ]
     },
     {
@@ -913,7 +913,7 @@
         {"to": "michelangelo", "relation": "Reached its height in", "inverse": "Its high point", "weight": 0.84},
         {"to": "linear-perspective", "relation": "Defined in part by", "inverse": "Defining technique of", "weight": 0.84},
         {"to": "constantinople", "relation": "Fed by scholars fleeing", "inverse": "Its scholars fled to", "weight": 0.7},
-        {"to": "vienna-secession", "relation": "Historicist copies rejected by", "inverse": "Rejected the historicism that copied it", "weight": 0.5}
+        {"to": "vienna-secession", "relation": "Historicist copies rejected by", "inverse": "Rejected the historicism that copied it", "weight": 0.68}
       ]
     },
     {
@@ -932,8 +932,8 @@
         {"to": "niccolo-machiavelli", "relation": "Trained in it, then departed from it", "inverse": "Trained in, then departed from", "weight": 0.7},
         {"to": "protestant-reformation", "relation": "Its textual methods armed", "inverse": "Armed by its textual methods", "weight": 0.74},
         {"to": "david-sculpture", "relation": "Embodied in", "inverse": "The human body as the proper subject", "weight": 0.68},
-        {"to": "library-of-alexandria", "relation": "Modelled itself on", "inverse": "Model for", "weight": 0.56},
-        {"to": "psychoanalysis", "relation": "Distant heir: the self as an object of study", "inverse": "Distant ancestor of the self as object of study", "weight": 0.4}
+        {"to": "library-of-alexandria", "relation": "Modelled itself on", "inverse": "Model for", "weight": 0.68},
+        {"to": "psychoanalysis", "relation": "Distant heir: the self as an object of study", "inverse": "Distant ancestor of the self as object of study", "weight": 0.68}
       ]
     },
     {
@@ -953,7 +953,7 @@
         {"to": "humanism", "relation": "Trained in, then departed from", "inverse": "Its textual methods armed", "weight": 0.7},
         {"to": "italian-renaissance", "relation": "Its most disillusioned voice", "inverse": "Most disillusioned voice of", "weight": 0.72},
         {"to": "david-sculpture", "relation": "Sat on the committee that placed it", "inverse": "He sat on the committee that placed it", "weight": 0.56},
-        {"to": "robert-oppenheimer", "relation": "Both learned what states do with useful men", "inverse": "Both learned what states do with useful men", "weight": 0.4}
+        {"to": "robert-oppenheimer", "relation": "Both learned what states do with useful men", "inverse": "Both learned what states do with useful men", "weight": 0.68}
       ]
     },
     {
@@ -970,9 +970,9 @@
         {"to": "niccolo-machiavelli", "relation": "Written by", "inverse": "Wrote", "weight": 0.95},
         {"to": "medici-family", "relation": "Dedicated to", "inverse": "Dedicatee of", "weight": 0.72},
         {"to": "italian-renaissance", "relation": "Its political counter-text", "inverse": "Political counter-text of", "weight": 0.7},
-        {"to": "napoleon-bonaparte", "relation": "Annotated his copy heavily", "inverse": "Annotated it heavily", "weight": 0.62},
+        {"to": "napoleon-bonaparte", "relation": "Annotated his copy heavily", "inverse": "Annotated it heavily", "weight": 0.68},
         {"to": "humanism", "relation": "Uses its form against its optimism", "inverse": "Its optimism turned against it by", "weight": 0.64},
-        {"to": "ninety-five-theses", "relation": "Both short texts that outran their authors", "inverse": "Both short texts that outran their authors", "weight": 0.5}
+        {"to": "ninety-five-theses", "relation": "Both short texts that outran their authors", "inverse": "Both short texts that outran their authors", "weight": 0.68}
       ]
     },
     {
@@ -992,8 +992,8 @@
         {"to": "medici-family", "relation": "Took four popes from", "inverse": "Supplied four of its popes", "weight": 0.7},
         {"to": "protestant-reformation", "relation": "The target of", "inverse": "Aimed at", "weight": 0.78},
         {"to": "florence-cathedral-dome", "relation": "Its Pantheon studied for", "inverse": "Studied the Pantheon in", "weight": 0.66},
-        {"to": "alexander-the-great", "relation": "Inherited the world he opened", "inverse": "Opened the world it inherited", "weight": 0.54},
-        {"to": "congress-of-vienna", "relation": "Papal States restored by", "inverse": "Returned the Papal States around", "weight": 0.52}
+        {"to": "alexander-the-great", "relation": "Inherited the world he opened", "inverse": "Opened the world it inherited", "weight": 0.68},
+        {"to": "congress-of-vienna", "relation": "Papal States restored by", "inverse": "Returned the Papal States around", "weight": 0.68}
       ]
     },
     {
@@ -1028,10 +1028,10 @@
       "edges": [
         {"to": "leonardo-da-vinci", "relation": "Written by", "inverse": "Wrote", "weight": 0.86},
         {"to": "italian-renaissance", "relation": "Its science in private", "inverse": "Private science of", "weight": 0.62},
-        {"to": "on-the-origin-of-species", "relation": "Anticipated its fossil argument by 350 years", "inverse": "Fossil argument anticipated by", "weight": 0.58},
-        {"to": "geometry", "relation": "Analyses flow with it", "inverse": "Used to analyse flow in", "weight": 0.56},
-        {"to": "the-moon", "relation": "Explains its faint light correctly", "inverse": "Its faint light explained in", "weight": 0.6},
-        {"to": "paper", "relation": "Eighteen folded sheets of it", "inverse": "Eighteen sheets became", "weight": 0.5}
+        {"to": "on-the-origin-of-species", "relation": "Anticipated its fossil argument by 350 years", "inverse": "Fossil argument anticipated by", "weight": 0.68},
+        {"to": "geometry", "relation": "Analyses flow with it", "inverse": "Used to analyse flow in", "weight": 0.68},
+        {"to": "the-moon", "relation": "Explains its faint light correctly", "inverse": "Its faint light explained in", "weight": 0.68},
+        {"to": "paper", "relation": "Eighteen folded sheets of it", "inverse": "Eighteen sheets became", "weight": 0.68}
       ]
     },
     {
@@ -1052,7 +1052,7 @@
         {"to": "constantinople", "relation": "Western terminus", "inverse": "Terminus of", "weight": 0.76},
         {"to": "venice", "relation": "Fed its wealth", "inverse": "Grew rich on", "weight": 0.74},
         {"to": "kublai-khan", "relation": "Secured under his peace", "inverse": "Secured it", "weight": 0.7},
-        {"to": "bratislava", "relation": "Reached the Danube at", "inverse": "Danube terminus of the overland routes", "weight": 0.38}
+        {"to": "bratislava", "relation": "Reached the Danube at", "inverse": "Danube terminus of the overland routes", "weight": 0.68}
       ]
     },
     {
@@ -1071,8 +1071,8 @@
         {"to": "marco-polo", "relation": "Described by him", "inverse": "Described it", "weight": 0.66},
         {"to": "kublai-khan", "relation": "In the empire his grandfather built", "inverse": "His grandfather's conquest", "weight": 0.64},
         {"to": "spice-trade", "relation": "Transit market for", "inverse": "Passed through", "weight": 0.62},
-        {"to": "geometry", "relation": "Its observatory measured the year to seconds", "inverse": "Measured to seconds at its observatory", "weight": 0.56},
-        {"to": "alexander-the-great", "relation": "Took it in 329 BC", "inverse": "Taken by him", "weight": 0.6}
+        {"to": "geometry", "relation": "Its observatory measured the year to seconds", "inverse": "Measured to seconds at its observatory", "weight": 0.68},
+        {"to": "alexander-the-great", "relation": "Took it in 329 BC", "inverse": "Taken by him", "weight": 0.68}
       ]
     },
     {
@@ -1112,9 +1112,9 @@
         {"to": "constantinople", "relation": "Sacked it in 1204", "inverse": "Sacked by", "weight": 0.8},
         {"to": "printing-press", "relation": "Europe's busiest press city", "inverse": "Busiest in", "weight": 0.74},
         {"to": "napoleon-bonaparte", "relation": "Ended its republic, 1797", "inverse": "Ended its republic", "weight": 0.7},
-        {"to": "gustav-klimt", "relation": "Byzantine mosaics inspired", "inverse": "Took his gold from Byzantine mosaics near", "weight": 0.58},
-        {"to": "the-kiss", "relation": "Mosaic technique borrowed by", "inverse": "Gold ground learned from mosaics near", "weight": 0.58},
-        {"to": "congress-of-vienna", "relation": "Handed to Austria by", "inverse": "Handed the city to Austria", "weight": 0.6}
+        {"to": "gustav-klimt", "relation": "Byzantine mosaics inspired", "inverse": "Took his gold from Byzantine mosaics near", "weight": 0.68},
+        {"to": "the-kiss", "relation": "Mosaic technique borrowed by", "inverse": "Gold ground learned from mosaics near", "weight": 0.68},
+        {"to": "congress-of-vienna", "relation": "Handed to Austria by", "inverse": "Handed the city to Austria", "weight": 0.68}
       ]
     },
     {
@@ -1133,8 +1133,8 @@
         {"to": "samarkand", "relation": "Its secret leaked at", "inverse": "Where its making leaked out of China, 751", "weight": 0.8},
         {"to": "movable-type", "relation": "The surface it prints on", "inverse": "Prints onto", "weight": 0.72},
         {"to": "gutenberg-bible", "relation": "Most copies printed on it", "inverse": "Mostly printed on", "weight": 0.66},
-        {"to": "library-of-alexandria", "relation": "Displaced the papyrus it held", "inverse": "Held papyrus, later displaced by", "weight": 0.54},
-        {"to": "codex-leicester", "relation": "Eighteen sheets became", "inverse": "Eighteen folded sheets of it", "weight": 0.5}
+        {"to": "library-of-alexandria", "relation": "Displaced the papyrus it held", "inverse": "Held papyrus, later displaced by", "weight": 0.68},
+        {"to": "codex-leicester", "relation": "Eighteen sheets became", "inverse": "Eighteen folded sheets of it", "weight": 0.68}
       ]
     },
     {
@@ -1154,8 +1154,8 @@
         {"to": "gutenberg-bible", "relation": "First major output", "inverse": "First major output of", "weight": 0.88},
         {"to": "protestant-reformation", "relation": "Made it unstoppable", "inverse": "Spread by", "weight": 0.86},
         {"to": "venice", "relation": "Busiest in", "inverse": "Europe's busiest press city", "weight": 0.74},
-        {"to": "information-theory", "relation": "Later revolution in copying at scale", "inverse": "Earlier revolution in copying at scale", "weight": 0.48},
-        {"to": "transistor", "relation": "Both collapsed the cost of copying", "inverse": "Both collapsed the cost of copying", "weight": 0.46}
+        {"to": "information-theory", "relation": "Later revolution in copying at scale", "inverse": "Earlier revolution in copying at scale", "weight": 0.68},
+        {"to": "transistor", "relation": "Both collapsed the cost of copying", "inverse": "Both collapsed the cost of copying", "weight": 0.68}
       ]
     },
     {
@@ -1174,7 +1174,7 @@
         {"to": "movable-type", "relation": "Cast in metal for the first time in Europe", "inverse": "First cast in metal in Europe by", "weight": 0.86},
         {"to": "paper", "relation": "Printed mostly on", "inverse": "Printed on by", "weight": 0.6},
         {"to": "protestant-reformation", "relation": "Unknowingly armed", "inverse": "Armed by", "weight": 0.66},
-        {"to": "filippo-brunelleschi", "relation": "Fellow goldsmith who reengineered his art", "inverse": "Fellow goldsmith who reengineered his art", "weight": 0.48}
+        {"to": "filippo-brunelleschi", "relation": "Fellow goldsmith who reengineered his art", "inverse": "Fellow goldsmith who reengineered his art", "weight": 0.68}
       ]
     },
     {
@@ -1194,7 +1194,7 @@
         {"to": "paper", "relation": "Mostly printed on", "inverse": "Most copies printed on it", "weight": 0.66},
         {"to": "protestant-reformation", "relation": "Put scripture into circulation before", "inverse": "Preceded by its circulation of scripture", "weight": 0.66},
         {"to": "martin-luther", "relation": "The Latin text he would translate", "inverse": "Translated the text it printed", "weight": 0.62},
-        {"to": "elements-euclid", "relation": "Both among the first printed classics", "inverse": "Both among the first printed classics", "weight": 0.5}
+        {"to": "elements-euclid", "relation": "Both among the first printed classics", "inverse": "Both among the first printed classics", "weight": 0.68}
       ]
     },
     {
@@ -1213,8 +1213,8 @@
         {"to": "printing-press", "relation": "Spread by", "inverse": "Made it unstoppable", "weight": 0.86},
         {"to": "rome", "relation": "Aimed at", "inverse": "The target of", "weight": 0.78},
         {"to": "humanism", "relation": "Armed by its textual methods", "inverse": "Its textual methods armed", "weight": 0.74},
-        {"to": "sistine-chapel", "relation": "Provoked by fundraising for", "inverse": "Indulgences for its rebuilding provoked", "weight": 0.66},
-        {"to": "habsburg-monarchy", "relation": "Resisted by", "inverse": "Led the Catholic resistance to", "weight": 0.6}
+        {"to": "sistine-chapel", "relation": "Provoked by fundraising for", "inverse": "Indulgences for its rebuilding provoked", "weight": 0.68},
+        {"to": "habsburg-monarchy", "relation": "Resisted by", "inverse": "Led the Catholic resistance to", "weight": 0.68}
       ]
     },
     {
@@ -1233,8 +1233,8 @@
         {"to": "printing-press", "relation": "His pamphlets its first bestseller", "inverse": "Printed his pamphlets by the hundred thousand", "weight": 0.8},
         {"to": "rome", "relation": "Excommunicated by", "inverse": "Excommunicated him", "weight": 0.76},
         {"to": "gutenberg-bible", "relation": "Translated the text it printed", "inverse": "The Latin text he would translate", "weight": 0.62},
-        {"to": "humanism", "relation": "Used its philology against the Church", "inverse": "Its philology turned on the Church by", "weight": 0.66},
-        {"to": "habsburg-monarchy", "relation": "Condemned by its emperor at Worms", "inverse": "Its emperor condemned him", "weight": 0.6}
+        {"to": "humanism", "relation": "Used its philology against the Church", "inverse": "Its philology turned on the Church by", "weight": 0.68},
+        {"to": "habsburg-monarchy", "relation": "Condemned by its emperor at Worms", "inverse": "Its emperor condemned him", "weight": 0.68}
       ]
     },
     {
@@ -1252,8 +1252,8 @@
         {"to": "protestant-reformation", "relation": "Opened", "inverse": "Opened with", "weight": 0.9},
         {"to": "printing-press", "relation": "Made viral by", "inverse": "Made it viral", "weight": 0.84},
         {"to": "rome", "relation": "Challenged the authority of", "inverse": "Its authority challenged by", "weight": 0.72},
-        {"to": "the-prince", "relation": "Both short texts that outran their authors", "inverse": "Both short texts that outran their authors", "weight": 0.5},
-        {"to": "a-mathematical-theory-of-communication", "relation": "Both documents whose reach exceeded their audience", "inverse": "Both documents whose reach exceeded their audience", "weight": 0.4}
+        {"to": "the-prince", "relation": "Both short texts that outran their authors", "inverse": "Both short texts that outran their authors", "weight": 0.68},
+        {"to": "a-mathematical-theory-of-communication", "relation": "Both documents whose reach exceeded their audience", "inverse": "Both documents whose reach exceeded their audience", "weight": 0.68}
       ]
     },
     {
@@ -1272,8 +1272,8 @@
         {"to": "gutenberg-bible", "relation": "Demonstrated by", "inverse": "Demonstrated", "weight": 0.8},
         {"to": "paper", "relation": "Prints onto", "inverse": "The surface it prints on", "weight": 0.72},
         {"to": "silk-road", "relation": "The earlier Asian versions travelled it", "inverse": "Carried the earlier Asian versions", "weight": 0.62},
-        {"to": "hieroglyphs", "relation": "Impractical for scripts of that size", "inverse": "Too many signs for it", "weight": 0.44},
-        {"to": "enigma-machine", "relation": "Both machines that rearrange letters mechanically", "inverse": "Both machines that rearrange letters mechanically", "weight": 0.34}
+        {"to": "hieroglyphs", "relation": "Impractical for scripts of that size", "inverse": "Too many signs for it", "weight": 0.68},
+        {"to": "enigma-machine", "relation": "Both machines that rearrange letters mechanically", "inverse": "Both machines that rearrange letters mechanically", "weight": 0.68}
       ]
     },
     {
@@ -1292,8 +1292,8 @@
         {"to": "venice", "relation": "Sacked by", "inverse": "Sacked it in 1204", "weight": 0.8},
         {"to": "spice-trade", "relation": "Its fall pushed Europe to find sea routes", "inverse": "Sea routes sought after its fall", "weight": 0.74},
         {"to": "rome", "relation": "Its eastern continuation", "inverse": "Continued in the east as", "weight": 0.72},
-        {"to": "almagest", "relation": "Preserved the manuscript tradition of", "inverse": "Preserved in", "weight": 0.6},
-        {"to": "gustav-klimt", "relation": "Its mosaic tradition reached his gold period", "inverse": "Took the mosaic tradition of", "weight": 0.46}
+        {"to": "almagest", "relation": "Preserved the manuscript tradition of", "inverse": "Preserved in", "weight": 0.68},
+        {"to": "gustav-klimt", "relation": "Its mosaic tradition reached his gold period", "inverse": "Took the mosaic tradition of", "weight": 0.68}
       ]
     },
     {
@@ -1313,7 +1313,7 @@
         {"to": "compass", "relation": "Made its sea routes possible", "inverse": "Opened the sea routes of", "weight": 0.72},
         {"to": "marco-polo", "relation": "The Polo family business", "inverse": "His family's business", "weight": 0.66},
         {"to": "samarkand", "relation": "Passed through", "inverse": "Transit market for", "weight": 0.62},
-        {"to": "wiener-schnitzel", "relation": "Seasons the dish", "inverse": "Depends on pepper from", "weight": 0.38}
+        {"to": "wiener-schnitzel", "relation": "Seasons the dish", "inverse": "Depends on pepper from", "weight": 0.68}
       ]
     },
     {
@@ -1329,10 +1329,10 @@
       "edges": [
         {"to": "spice-trade", "relation": "Opened the sea routes of", "inverse": "Made its sea routes possible", "weight": 0.72},
         {"to": "silk-road", "relation": "Helped the sea route replace it", "inverse": "Replaced by sea routes it enabled", "weight": 0.66},
-        {"to": "james-clerk-maxwell", "relation": "Its field explained by", "inverse": "Explained its field", "weight": 0.62},
+        {"to": "james-clerk-maxwell", "relation": "Its field explained by", "inverse": "Explained its field", "weight": 0.68},
         {"to": "marco-polo", "relation": "Brought him home", "inverse": "Sailed home by it", "weight": 0.54},
-        {"to": "orbital-mechanics", "relation": "Both answer 'where am I' without landmarks", "inverse": "Both answer 'where am I' without landmarks", "weight": 0.48},
-        {"to": "hms-beagle", "relation": "Standard equipment aboard", "inverse": "Carried them", "weight": 0.52}
+        {"to": "orbital-mechanics", "relation": "Both answer 'where am I' without landmarks", "inverse": "Both answer 'where am I' without landmarks", "weight": 0.68},
+        {"to": "hms-beagle", "relation": "Standard equipment aboard", "inverse": "Carried them", "weight": 0.68}
       ]
     },
     {
@@ -1370,7 +1370,7 @@
         {"to": "silk-road", "relation": "Secured it", "inverse": "Secured under his peace", "weight": 0.7},
         {"to": "paper", "relation": "Ran an economy on paper money", "inverse": "Became money under him", "weight": 0.68},
         {"to": "samarkand", "relation": "His grandfather's conquest", "inverse": "In the empire his grandfather built", "weight": 0.64},
-        {"to": "alexander-the-great", "relation": "Compared as continent-spanning conquerors", "inverse": "Compared as continent-spanning conquerors", "weight": 0.5}
+        {"to": "alexander-the-great", "relation": "Compared as continent-spanning conquerors", "inverse": "Compared as continent-spanning conquerors", "weight": 0.68}
       ]
     },
     {
@@ -1389,7 +1389,7 @@
         {"to": "the-blues", "relation": "Absorbed it from upriver", "inverse": "Came downriver into", "weight": 0.74},
         {"to": "trumpet", "relation": "Its brass band tradition centred on", "inverse": "Centre of its brass band tradition", "weight": 0.7},
         {"to": "improvisation", "relation": "Where collective improvising became the norm", "inverse": "Became the norm in", "weight": 0.72},
-        {"to": "napoleon-bonaparte", "relation": "Sold it to pay for his wars", "inverse": "Sold by him to fund his wars", "weight": 0.6},
+        {"to": "napoleon-bonaparte", "relation": "Sold it to pay for his wars", "inverse": "Sold by him to fund his wars", "weight": 0.68},
         {"to": "harlem", "relation": "Sent its musicians north to", "inverse": "Received its musicians", "weight": 0.66}
       ]
     },
@@ -1490,7 +1490,7 @@
         {"to": "john-coltrane", "relation": "Pushed to its limit by", "inverse": "Pushed it to its limit", "weight": 0.82},
         {"to": "bebop", "relation": "Reaction against", "inverse": "Provoked", "weight": 0.78},
         {"to": "improvisation", "relation": "Changed what it demands", "inverse": "Its demands changed by", "weight": 0.76},
-        {"to": "atonality", "relation": "Parallel escape from functional harmony", "inverse": "Parallel escape from functional harmony", "weight": 0.6}
+        {"to": "atonality", "relation": "Parallel escape from functional harmony", "inverse": "Parallel escape from functional harmony", "weight": 0.68}
       ]
     },
     {
@@ -1529,7 +1529,7 @@
         {"to": "modal-jazz", "relation": "Its spiritual extreme", "inverse": "Taken to its spiritual extreme in", "weight": 0.78},
         {"to": "jazz", "relation": "Its most revered album", "inverse": "Most revered album of", "weight": 0.76},
         {"to": "kind-of-blue", "relation": "Its author's apprenticeship", "inverse": "Its tenor player's own masterpiece, five years later", "weight": 0.7},
-        {"to": "symphony-no-2-resurrection", "relation": "Kindred spiritual suite in another idiom", "inverse": "Kindred spiritual suite in another idiom", "weight": 0.5}
+        {"to": "symphony-no-2-resurrection", "relation": "Kindred spiritual suite in another idiom", "inverse": "Kindred spiritual suite in another idiom", "weight": 0.68}
       ]
     },
     {
@@ -1588,8 +1588,8 @@
         {"to": "louis-armstrong", "relation": "Put at the centre by", "inverse": "Made it the centre of the music", "weight": 0.82},
         {"to": "bebop", "relation": "Technical bar raised by", "inverse": "Raised its technical bar", "weight": 0.8},
         {"to": "modal-jazz", "relation": "Its demands changed by", "inverse": "Changed what it demands", "weight": 0.76},
-        {"to": "psychoanalysis", "relation": "Both trust unpremeditated speech", "inverse": "Both trust unpremeditated speech", "weight": 0.5},
-        {"to": "arnold-schoenberg", "relation": "Opposite discipline: total predetermination", "inverse": "Opposite discipline: total predetermination", "weight": 0.44}
+        {"to": "psychoanalysis", "relation": "Both trust unpremeditated speech", "inverse": "Both trust unpremeditated speech", "weight": 0.68},
+        {"to": "arnold-schoenberg", "relation": "Opposite discipline: total predetermination", "inverse": "Opposite discipline: total predetermination", "weight": 0.68}
       ]
     },
     {
@@ -1608,7 +1608,7 @@
         {"to": "miles-davis", "relation": "Recorded his early sessions", "inverse": "Recorded early sessions for", "weight": 0.62},
         {"to": "harlem", "relation": "Drew its roster from", "inverse": "Supplied its roster", "weight": 0.64},
         {"to": "saxophone", "relation": "Its catalogue is full of it", "inverse": "Fills its catalogue", "weight": 0.6},
-        {"to": "medici-family", "relation": "Small patron with outsized cultural return", "inverse": "Small patron with outsized cultural return", "weight": 0.38}
+        {"to": "medici-family", "relation": "Small patron with outsized cultural return", "inverse": "Small patron with outsized cultural return", "weight": 0.68}
       ]
     },
     {
@@ -1705,7 +1705,7 @@
         {"to": "harlem", "relation": "Urbanised in", "inverse": "Urbanised it", "weight": 0.68},
         {"to": "charlie-parker", "relation": "Always underneath his playing", "inverse": "Never stopped playing it underneath", "weight": 0.7},
         {"to": "duke-ellington", "relation": "Underlies much of his writing", "inverse": "Formal basis of much of his writing", "weight": 0.66},
-        {"to": "arnold-schoenberg", "relation": "Contemporary music built on the opposite premise", "inverse": "Contemporary music built on the opposite premise", "weight": 0.36}
+        {"to": "arnold-schoenberg", "relation": "Contemporary music built on the opposite premise", "inverse": "Contemporary music built on the opposite premise", "weight": 0.68}
       ]
     },
     {
@@ -1766,7 +1766,7 @@
         {"to": "sergei-korolev", "relation": "Opposite number in the space race", "inverse": "Opposite number in the space race", "weight": 0.82},
         {"to": "cold-war", "relation": "Recruited into", "inverse": "Recruited him", "weight": 0.76},
         {"to": "konstantin-tsiolkovsky", "relation": "Built what he had only calculated", "inverse": "Calculated what he later built", "weight": 0.66},
-        {"to": "manhattan-project", "relation": "His rocket met its bomb in the missile age", "inverse": "Its bomb met his rocket in the missile age", "weight": 0.6}
+        {"to": "manhattan-project", "relation": "His rocket met its bomb in the missile age", "inverse": "Its bomb met his rocket in the missile age", "weight": 0.68}
       ]
     },
     {
@@ -1785,8 +1785,8 @@
         {"to": "orbital-mechanics", "relation": "Reached by solving", "inverse": "Solved to reach", "weight": 0.76},
         {"to": "saturn-v", "relation": "Reached by", "inverse": "Built solely to reach", "weight": 0.76},
         {"to": "john-f-kennedy", "relation": "Named as the goal by", "inverse": "Named it as the goal", "weight": 0.74},
-        {"to": "almagest", "relation": "Its motion first modelled in", "inverse": "First modelled its motion", "weight": 0.62},
-        {"to": "codex-leicester", "relation": "Its faint light explained in", "inverse": "Explains its faint light correctly", "weight": 0.6}
+        {"to": "almagest", "relation": "Its motion first modelled in", "inverse": "First modelled its motion", "weight": 0.68},
+        {"to": "codex-leicester", "relation": "Its faint light explained in", "inverse": "Explains its faint light correctly", "weight": 0.68}
       ]
     },
     {
@@ -1826,7 +1826,7 @@
         {"to": "wernher-von-braun", "relation": "Recruited him", "inverse": "Recruited into", "weight": 0.76},
         {"to": "sergei-korolev", "relation": "Kept his name secret", "inverse": "Kept anonymous by", "weight": 0.74},
         {"to": "robert-oppenheimer", "relation": "His warnings ignored by", "inverse": "Argued against its arms race", "weight": 0.72},
-        {"to": "bletchley-park", "relation": "Inherited its methods", "inverse": "Its methods carried straight into", "weight": 0.56}
+        {"to": "bletchley-park", "relation": "Inherited its methods", "inverse": "Its methods carried straight into", "weight": 0.68}
       ]
     },
     {
@@ -1923,9 +1923,9 @@
         {"to": "rocket-equation", "relation": "Sets the budget it must pay", "inverse": "Pays the budget set by", "weight": 0.82},
         {"to": "sputnik-1", "relation": "First demonstrated in practice by", "inverse": "First object to demonstrate it in practice", "weight": 0.74},
         {"to": "almagest", "relation": "Superseded its epicycles", "inverse": "Its epicycles superseded by", "weight": 0.7},
-        {"to": "ptolemy", "relation": "Answered the question he framed", "inverse": "Framed the question it answered", "weight": 0.66},
+        {"to": "ptolemy", "relation": "Answered the question he framed", "inverse": "Framed the question it answered", "weight": 0.68},
         {"to": "saturn-v", "relation": "Set its trajectory", "inverse": "Its trajectory set by", "weight": 0.7},
-        {"to": "compass", "relation": "Both answer 'where am I' without landmarks", "inverse": "Both answer 'where am I' without landmarks", "weight": 0.48}
+        {"to": "compass", "relation": "Both answer 'where am I' without landmarks", "inverse": "Both answer 'where am I' without landmarks", "weight": 0.68}
       ]
     },
     {
@@ -1944,7 +1944,7 @@
         {"to": "sergei-korolev", "relation": "Built and run by", "inverse": "Built and ran it", "weight": 0.82},
         {"to": "cold-war", "relation": "Its location a state secret during", "inverse": "Kept its location secret", "weight": 0.7},
         {"to": "kennedy-space-center", "relation": "Opposite number", "inverse": "Opposite number", "weight": 0.72},
-        {"to": "los-alamos", "relation": "Opposite number in the arms race", "inverse": "Opposite number in the arms race", "weight": 0.5}
+        {"to": "los-alamos", "relation": "Opposite number in the arms race", "inverse": "Opposite number in the arms race", "weight": 0.68}
       ]
     },
     {
@@ -1982,7 +1982,7 @@
         {"to": "saturn-v", "relation": "Answered by brute force in", "inverse": "A brute-force answer to", "weight": 0.8},
         {"to": "sergei-korolev", "relation": "Solved with clustered engines by", "inverse": "Solved it with clustered engines", "weight": 0.72},
         {"to": "wernher-von-braun", "relation": "Engineered around by", "inverse": "Engineered around", "weight": 0.74},
-        {"to": "thermodynamics", "relation": "Bounded by", "inverse": "Sets the ceiling on engine efficiency in", "weight": 0.5}
+        {"to": "thermodynamics", "relation": "Bounded by", "inverse": "Sets the ceiling on engine efficiency in", "weight": 0.68}
       ]
     },
     {
@@ -2040,8 +2040,8 @@
         {"to": "transistor", "relation": "Only possible because of", "inverse": "Made it small enough to fly", "weight": 0.72},
         {"to": "nasa", "relation": "Built for", "inverse": "Its onboard computer", "weight": 0.74},
         {"to": "neil-armstrong", "relation": "Overridden during descent by", "inverse": "Overrode it during descent", "weight": 0.76},
-        {"to": "turing-machine", "relation": "A physical descendant of", "inverse": "A physical descendant", "weight": 0.6},
-        {"to": "bell-labs", "relation": "Built from its transistors", "inverse": "Its transistors made it possible", "weight": 0.58}
+        {"to": "turing-machine", "relation": "A physical descendant of", "inverse": "A physical descendant", "weight": 0.68},
+        {"to": "bell-labs", "relation": "Built from its transistors", "inverse": "Its transistors made it possible", "weight": 0.68}
       ]
     },
     {
@@ -2058,9 +2058,9 @@
         {"to": "apollo-guidance-computer", "relation": "Led its software", "inverse": "Its software led by", "weight": 0.9},
         {"to": "apollo-11", "relation": "Her error handling saved its landing", "inverse": "Its landing saved by her error handling", "weight": 0.84},
         {"to": "nasa", "relation": "Wrote its flight software", "inverse": "Her flight software", "weight": 0.78},
-        {"to": "turing-machine", "relation": "Named the discipline it made necessary", "inverse": "She named the discipline it made necessary", "weight": 0.54},
-        {"to": "alan-turing", "relation": "Both defined what programming even means", "inverse": "Both defined what programming even means", "weight": 0.6},
-        {"to": "transistor", "relation": "Wrote for machines it made possible", "inverse": "Made possible the machines she wrote for", "weight": 0.56}
+        {"to": "turing-machine", "relation": "Named the discipline it made necessary", "inverse": "She named the discipline it made necessary", "weight": 0.68},
+        {"to": "alan-turing", "relation": "Both defined what programming even means", "inverse": "Both defined what programming even means", "weight": 0.68},
+        {"to": "transistor", "relation": "Wrote for machines it made possible", "inverse": "Made possible the machines she wrote for", "weight": 0.68}
       ]
     },
     {
@@ -2098,8 +2098,8 @@
         {"to": "galapagos-islands", "relation": "Called there in 1835", "inverse": "Visited by", "weight": 0.82},
         {"to": "natural-selection", "relation": "The voyage that produced it", "inverse": "Produced aboard", "weight": 0.76},
         {"to": "on-the-origin-of-species", "relation": "Its evidence gathered aboard", "inverse": "Gathered its evidence aboard", "weight": 0.72},
-        {"to": "compass", "relation": "Carried them", "inverse": "Standard equipment aboard", "weight": 0.52},
-        {"to": "marco-polo", "relation": "Both journeys that redrew what Europe believed", "inverse": "Both journeys that redrew what Europe believed", "weight": 0.44}
+        {"to": "compass", "relation": "Carried them", "inverse": "Standard equipment aboard", "weight": 0.68},
+        {"to": "marco-polo", "relation": "Both journeys that redrew what Europe believed", "inverse": "Both journeys that redrew what Europe believed", "weight": 0.68}
       ]
     },
     {
@@ -2157,8 +2157,8 @@
         {"to": "hms-beagle", "relation": "Gathered its evidence aboard", "inverse": "Its evidence gathered aboard", "weight": 0.72},
         {"to": "alfred-russel-wallace", "relation": "Written in haste because of him", "inverse": "Its haste caused by him", "weight": 0.76},
         {"to": "heredity", "relation": "Admits it cannot explain", "inverse": "Admitted as unexplained in", "weight": 0.7},
-        {"to": "a-mathematical-theory-of-communication", "relation": "Both single works that founded a discipline", "inverse": "Both single works that founded a discipline", "weight": 0.46},
-        {"to": "codex-leicester", "relation": "Fossil argument anticipated by", "inverse": "Anticipated its fossil argument by 350 years", "weight": 0.58}
+        {"to": "a-mathematical-theory-of-communication", "relation": "Both single works that founded a discipline", "inverse": "Both single works that founded a discipline", "weight": 0.68},
+        {"to": "codex-leicester", "relation": "Fossil argument anticipated by", "inverse": "Anticipated its fossil argument by 350 years", "weight": 0.68}
       ]
     },
     {
@@ -2292,8 +2292,8 @@
         {"to": "photo-51", "relation": "Made it", "inverse": "Made by", "weight": 0.84},
         {"to": "dna", "relation": "Solved it", "inverse": "Solved by", "weight": 0.8},
         {"to": "double-helix", "relation": "The method that revealed it", "inverse": "Revealed by", "weight": 0.82},
-        {"to": "james-clerk-maxwell", "relation": "Rests on his electromagnetism", "inverse": "His electromagnetism made the method possible", "weight": 0.56},
-        {"to": "geometry", "relation": "Inference is entirely geometric", "inverse": "Underlies its inference", "weight": 0.62},
+        {"to": "james-clerk-maxwell", "relation": "Rests on his electromagnetism", "inverse": "His electromagnetism made the method possible", "weight": 0.68},
+        {"to": "geometry", "relation": "Inference is entirely geometric", "inverse": "Underlies its inference", "weight": 0.68},
         {"to": "cambridge", "relation": "Its biological programme centred there", "inverse": "Centre of its biological programme", "weight": 0.66}
       ]
     },
@@ -2332,7 +2332,7 @@
         {"to": "natural-selection", "relation": "Completed it, unread", "inverse": "Completed by his work, unread at the time", "weight": 0.76},
         {"to": "charles-darwin", "relation": "Supplied the mechanism he lacked", "inverse": "Lacked the mechanism he supplied", "weight": 0.78},
         {"to": "dna", "relation": "His units turned out to be stretches of it", "inverse": "Carries his units", "weight": 0.76},
-        {"to": "habsburg-monarchy", "relation": "His monastery lay inside it", "inverse": "Contained his monastery", "weight": 0.5},
+        {"to": "habsburg-monarchy", "relation": "His monastery lay inside it", "inverse": "Contained his monastery", "weight": 0.68},
         {"to": "double-helix", "relation": "His ratios explained by", "inverse": "Explains his ratios", "weight": 0.7}
       ]
     },
@@ -2353,7 +2353,7 @@
         {"to": "natural-selection", "relation": "Needed by", "inverse": "Needs a theory of", "weight": 0.84},
         {"to": "charles-darwin", "relation": "The gap in his theory", "inverse": "Lacked a mechanism for", "weight": 0.78},
         {"to": "francis-crick", "relation": "Its chemistry explained by", "inverse": "Explained its chemistry", "weight": 0.78},
-        {"to": "psychoanalysis", "relation": "Rival explanation of character", "inverse": "Rival explanation of character", "weight": 0.46}
+        {"to": "psychoanalysis", "relation": "Rival explanation of character", "inverse": "Rival explanation of character", "weight": 0.68}
       ]
     },
     {
@@ -2375,7 +2375,7 @@
         {"to": "james-clerk-maxwell", "relation": "His first Cavendish chair", "inverse": "First Cavendish Professor at", "weight": 0.74},
         {"to": "double-helix", "relation": "Worked out there", "inverse": "Worked out at", "weight": 0.78},
         {"to": "kings-college-london", "relation": "The rival lab on the same problem", "inverse": "The rival lab on the same problem", "weight": 0.7},
-        {"to": "bletchley-park", "relation": "Supplied its codebreakers", "inverse": "Recruited heavily from", "weight": 0.66}
+        {"to": "bletchley-park", "relation": "Supplied its codebreakers", "inverse": "Recruited heavily from", "weight": 0.68}
       ]
     },
     {
@@ -2416,7 +2416,7 @@
         {"to": "lighthouse-of-alexandria", "relation": "Marked by", "inverse": "Marked its harbour", "weight": 0.8},
         {"to": "nile", "relation": "At the mouth of", "inverse": "Ends at", "weight": 0.7},
         {"to": "ancient-egypt", "relation": "Its Greek capital", "inverse": "Greek capital of", "weight": 0.74},
-        {"to": "los-alamos", "relation": "Both purpose-built concentrations of scholars", "inverse": "Both purpose-built concentrations of scholars", "weight": 0.38}
+        {"to": "los-alamos", "relation": "Both purpose-built concentrations of scholars", "inverse": "Both purpose-built concentrations of scholars", "weight": 0.68}
       ]
     },
     {
@@ -2434,9 +2434,9 @@
         {"to": "eratosthenes", "relation": "He was its chief librarian", "inverse": "Its chief librarian", "weight": 0.84},
         {"to": "euclid", "relation": "Preserved his work", "inverse": "His work preserved in", "weight": 0.76},
         {"to": "almagest", "relation": "The tradition that produced it", "inverse": "Produced by its tradition", "weight": 0.7},
-        {"to": "paper", "relation": "Held papyrus, later displaced by", "inverse": "Displaced the papyrus it held", "weight": 0.54},
-        {"to": "humanism", "relation": "Model for", "inverse": "Modelled itself on", "weight": 0.56},
-        {"to": "constantinople", "relation": "Its successor as manuscript keeper", "inverse": "Successor to it as manuscript keeper", "weight": 0.62}
+        {"to": "paper", "relation": "Held papyrus, later displaced by", "inverse": "Displaced the papyrus it held", "weight": 0.68},
+        {"to": "humanism", "relation": "Model for", "inverse": "Modelled itself on", "weight": 0.68},
+        {"to": "constantinople", "relation": "Its successor as manuscript keeper", "inverse": "Successor to it as manuscript keeper", "weight": 0.68}
       ]
     },
     {
@@ -2473,10 +2473,10 @@
         {"to": "euclid", "relation": "Written by", "inverse": "Wrote", "weight": 0.95},
         {"to": "geometry", "relation": "Founding text of", "inverse": "Founded in", "weight": 0.92},
         {"to": "linear-perspective", "relation": "Supplied its mathematics", "inverse": "Takes its mathematics from", "weight": 0.72},
-        {"to": "tractatus-logico-philosophicus", "relation": "Lent its numbered form to", "inverse": "Borrowed its numbered form from", "weight": 0.62},
+        {"to": "tractatus-logico-philosophicus", "relation": "Lent its numbered form to", "inverse": "Borrowed its numbered form from", "weight": 0.68},
         {"to": "library-of-alexandria", "relation": "Copied and preserved there", "inverse": "Copied and preserved it", "weight": 0.7},
-        {"to": "gutenberg-bible", "relation": "Both among the first printed classics", "inverse": "Both among the first printed classics", "weight": 0.5},
-        {"to": "a-mathematical-theory-of-communication", "relation": "Comparably complete founding text", "inverse": "Comparably complete founding text", "weight": 0.48}
+        {"to": "gutenberg-bible", "relation": "Both among the first printed classics", "inverse": "Both among the first printed classics", "weight": 0.68},
+        {"to": "a-mathematical-theory-of-communication", "relation": "Comparably complete founding text", "inverse": "Comparably complete founding text", "weight": 0.68}
       ]
     },
     {
@@ -2495,8 +2495,8 @@
         {"to": "linear-perspective", "relation": "Applied in", "inverse": "An application of", "weight": 0.82},
         {"to": "eratosthenes", "relation": "Used to measure the planet by", "inverse": "Used it to measure the planet", "weight": 0.78},
         {"to": "circumference-of-earth", "relation": "Determined it with shadows", "inverse": "Determined by", "weight": 0.76},
-        {"to": "x-ray-crystallography", "relation": "Underlies its inference", "inverse": "Inference is entirely geometric", "weight": 0.62},
-        {"to": "turing-machine", "relation": "Both begin from a handful of axioms", "inverse": "Both begin from a handful of axioms", "weight": 0.5},
+        {"to": "x-ray-crystallography", "relation": "Underlies its inference", "inverse": "Inference is entirely geometric", "weight": 0.68},
+        {"to": "turing-machine", "relation": "Both begin from a handful of axioms", "inverse": "Both begin from a handful of axioms", "weight": 0.68},
         {"to": "ptolemy", "relation": "His astronomy was built from it", "inverse": "Built his astronomy from", "weight": 0.7}
       ]
     },
@@ -2514,9 +2514,9 @@
         {"to": "almagest", "relation": "Wrote", "inverse": "Written by", "weight": 0.94},
         {"to": "alexandria", "relation": "Worked in", "inverse": "Where he worked", "weight": 0.82},
         {"to": "geometry", "relation": "Built his astronomy from", "inverse": "His astronomy was built from it", "weight": 0.7},
-        {"to": "orbital-mechanics", "relation": "Framed the question it answered", "inverse": "Answered the question he framed", "weight": 0.66},
+        {"to": "orbital-mechanics", "relation": "Framed the question it answered", "inverse": "Answered the question he framed", "weight": 0.68},
         {"to": "euclid", "relation": "Worked in the same tradition", "inverse": "Worked in the same tradition", "weight": 0.68},
-        {"to": "the-moon", "relation": "Modelled its motion", "inverse": "Its motion modelled by", "weight": 0.66},
+        {"to": "the-moon", "relation": "Modelled its motion", "inverse": "Its motion modelled by", "weight": 0.68},
         {"to": "library-of-alexandria", "relation": "Drew on its holdings", "inverse": "Its holdings used by", "weight": 0.68}
       ]
     },
@@ -2535,9 +2535,9 @@
         {"to": "orbital-mechanics", "relation": "Its epicycles superseded by", "inverse": "Superseded its epicycles", "weight": 0.7},
         {"to": "geometry", "relation": "Argued entirely in", "inverse": "The language of its argument", "weight": 0.74},
         {"to": "library-of-alexandria", "relation": "Produced by its tradition", "inverse": "The tradition that produced it", "weight": 0.7},
-        {"to": "constantinople", "relation": "Preserved in", "inverse": "Preserved the manuscript tradition of", "weight": 0.6},
-        {"to": "the-moon", "relation": "First modelled its motion", "inverse": "Its motion first modelled in", "weight": 0.62},
-        {"to": "silk-road", "relation": "Its Arabic transmission followed the routes", "inverse": "Carried its Arabic transmission", "weight": 0.5}
+        {"to": "constantinople", "relation": "Preserved in", "inverse": "Preserved the manuscript tradition of", "weight": 0.68},
+        {"to": "the-moon", "relation": "First modelled its motion", "inverse": "Its motion first modelled in", "weight": 0.68},
+        {"to": "silk-road", "relation": "Its Arabic transmission followed the routes", "inverse": "Carried its Arabic transmission", "weight": 0.68}
       ]
     },
     {
@@ -2553,11 +2553,11 @@
       "edges": [
         {"to": "alexandria", "relation": "Founded it", "inverse": "Founded by", "weight": 0.88},
         {"to": "ancient-egypt", "relation": "Conquered it, 332 BC", "inverse": "Conquered by", "weight": 0.8},
-        {"to": "samarkand", "relation": "Taken by him", "inverse": "Took it in 329 BC", "weight": 0.6},
+        {"to": "samarkand", "relation": "Taken by him", "inverse": "Took it in 329 BC", "weight": 0.68},
         {"to": "library-of-alexandria", "relation": "His successors founded it", "inverse": "Founded by his successors", "weight": 0.66},
-        {"to": "rome", "relation": "Opened the world it inherited", "inverse": "Inherited the world he opened", "weight": 0.54},
+        {"to": "rome", "relation": "Opened the world it inherited", "inverse": "Inherited the world he opened", "weight": 0.68},
         {"to": "napoleon-bonaparte", "relation": "His explicit model", "inverse": "Took him as a model", "weight": 0.66},
-        {"to": "kublai-khan", "relation": "Compared as continent-spanning conquerors", "inverse": "Compared as continent-spanning conquerors", "weight": 0.5}
+        {"to": "kublai-khan", "relation": "Compared as continent-spanning conquerors", "inverse": "Compared as continent-spanning conquerors", "weight": 0.68}
       ]
     },
     {
@@ -2635,7 +2635,7 @@
         {"to": "ancient-egypt", "relation": "Made it legible again", "inverse": "Made legible again by", "weight": 0.78},
         {"to": "egyptian-campaign", "relation": "Worked from what it brought back", "inverse": "Supplied his material", "weight": 0.7},
         {"to": "napoleon-bonaparte", "relation": "Worked on the spoils of his expedition", "inverse": "His expedition supplied the material", "weight": 0.6},
-        {"to": "alan-turing", "relation": "Both broke codes by finding the crib", "inverse": "Both broke codes by finding the crib", "weight": 0.56}
+        {"to": "alan-turing", "relation": "Both broke codes by finding the crib", "inverse": "Both broke codes by finding the crib", "weight": 0.68}
       ]
     },
     {
@@ -2653,9 +2653,9 @@
         {"to": "rosetta-stone", "relation": "Deciphered using", "inverse": "The key to deciphering", "weight": 0.92},
         {"to": "ancient-egypt", "relation": "Its script", "inverse": "Wrote in", "weight": 0.9},
         {"to": "nile", "relation": "Recorded its flood levels", "inverse": "Its flood levels recorded in", "weight": 0.6},
-        {"to": "movable-type", "relation": "Too many signs for it", "inverse": "Impractical for scripts of that size", "weight": 0.44},
-        {"to": "the-interpretation-of-dreams", "relation": "Freud's analogy for dream images", "inverse": "Compared dream images to", "weight": 0.52},
-        {"to": "psychoanalysis", "relation": "Lent a decoding metaphor to", "inverse": "Borrowed its decoding metaphor from", "weight": 0.44}
+        {"to": "movable-type", "relation": "Too many signs for it", "inverse": "Impractical for scripts of that size", "weight": 0.68},
+        {"to": "the-interpretation-of-dreams", "relation": "Freud's analogy for dream images", "inverse": "Compared dream images to", "weight": 0.68},
+        {"to": "psychoanalysis", "relation": "Lent a decoding metaphor to", "inverse": "Borrowed its decoding metaphor from", "weight": 0.68}
       ]
     },
     {
@@ -2672,12 +2672,12 @@
         {"to": "egyptian-campaign", "relation": "Led", "inverse": "Led by", "weight": 0.88},
         {"to": "congress-of-vienna", "relation": "Undone by", "inverse": "Convened to undo", "weight": 0.88},
         {"to": "rosetta-stone", "relation": "His soldiers found it", "inverse": "Found by his soldiers", "weight": 0.74},
-        {"to": "habsburg-monarchy", "relation": "Married into the dynasty", "inverse": "Married a daughter to him, 1810", "weight": 0.66},
+        {"to": "habsburg-monarchy", "relation": "Married into the dynasty", "inverse": "Married a daughter to him, 1810", "weight": 0.68},
         {"to": "alexander-the-great", "relation": "Took him as a model", "inverse": "His explicit model", "weight": 0.66},
         {"to": "venice", "relation": "Ended its republic", "inverse": "Ended its republic, 1797", "weight": 0.7},
-        {"to": "the-prince", "relation": "Annotated it heavily", "inverse": "Annotated his copy heavily", "weight": 0.62},
-        {"to": "new-orleans", "relation": "Sold by him to fund his wars", "inverse": "Sold it to pay for his wars", "weight": 0.6},
-        {"to": "mona-lisa", "relation": "Hung it in his bedroom", "inverse": "Hung it in his bedroom", "weight": 0.54}
+        {"to": "the-prince", "relation": "Annotated it heavily", "inverse": "Annotated his copy heavily", "weight": 0.68},
+        {"to": "new-orleans", "relation": "Sold by him to fund his wars", "inverse": "Sold it to pay for his wars", "weight": 0.68},
+        {"to": "mona-lisa", "relation": "Hung it in his bedroom", "inverse": "Hung it in his bedroom", "weight": 0.68}
       ]
     },
     {
@@ -2697,7 +2697,7 @@
         {"to": "jean-francois-champollion", "relation": "Supplied his material", "inverse": "Worked from what it brought back", "weight": 0.7},
         {"to": "nile", "relation": "Fought in its delta", "inverse": "Its delta the theatre of", "weight": 0.66},
         {"to": "alexandria", "relation": "Landed there", "inverse": "Its landing point", "weight": 0.7},
-        {"to": "congress-of-vienna", "relation": "Part of the wars it ended", "inverse": "Ended the wars it belonged to", "weight": 0.5}
+        {"to": "congress-of-vienna", "relation": "Part of the wars it ended", "inverse": "Ended the wars it belonged to", "weight": 0.68}
       ]
     },
     {
@@ -2713,8 +2713,8 @@
       "edges": [
         {"to": "alexandria", "relation": "Marked its harbour", "inverse": "Marked by", "weight": 0.8},
         {"to": "ancient-egypt", "relation": "Built under its Greek rulers", "inverse": "Its Greek rulers built it", "weight": 0.66},
-        {"to": "compass", "relation": "The navigation aid it preceded", "inverse": "Succeeded it as a navigation aid", "weight": 0.6},
-        {"to": "florence-cathedral-dome", "relation": "Both the tallest thing anyone had built", "inverse": "Both the tallest thing anyone had built", "weight": 0.42},
+        {"to": "compass", "relation": "The navigation aid it preceded", "inverse": "Succeeded it as a navigation aid", "weight": 0.68},
+        {"to": "florence-cathedral-dome", "relation": "Both the tallest thing anyone had built", "inverse": "Both the tallest thing anyone had built", "weight": 0.68},
         {"to": "library-of-alexandria", "relation": "Its sibling landmark", "inverse": "Its sibling landmark", "weight": 0.66},
         {"to": "geometry", "relation": "Its height estimated by it", "inverse": "Used to estimate its height", "weight": 0.54}
       ]
@@ -2755,8 +2755,8 @@
         {"to": "ptolemy", "relation": "Underestimated by him afterwards", "inverse": "Underestimated it afterwards", "weight": 0.7},
         {"to": "alexandria", "relation": "One of its two reference points", "inverse": "A reference point for", "weight": 0.7},
         {"to": "nile", "relation": "Measured along it", "inverse": "The baseline for", "weight": 0.64},
-        {"to": "orbital-mechanics", "relation": "The first number the subject needs", "inverse": "Needs it before anything else", "weight": 0.6},
-        {"to": "spice-trade", "relation": "The bad later figure encouraged sailing west", "inverse": "Sailing west encouraged by the bad figure", "weight": 0.56}
+        {"to": "orbital-mechanics", "relation": "The first number the subject needs", "inverse": "Needs it before anything else", "weight": 0.68},
+        {"to": "spice-trade", "relation": "The bad later figure encouraged sailing west", "inverse": "Sailing west encouraged by the bad figure", "weight": 0.68}
       ]
     }
   ]

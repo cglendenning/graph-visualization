@@ -57,7 +57,7 @@ void main() {
 
     test('rejects a jump to a node that is not on screen', () {
       final s = sessionAt('hub');
-      expect(() => s.jumpTo('p3'), throwsArgumentError);
+      expect(() => s.jumpTo('p2'), throwsArgumentError);
       expect(() => s.jumpTo('ghost'), throwsArgumentError);
       expect(s.currentId, 'hub');
     });

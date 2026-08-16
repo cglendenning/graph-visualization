@@ -11,10 +11,18 @@ import '../models/graph_node.dart';
 /// Edges are stored once in the asset and mirrored here, so adjacency is
 /// symmetric and traversal can move in either direction.
 class GraphRepository {
-  GraphRepository._(this._nodes, this._adjacency);
+  GraphRepository._(this._nodes, this._adjacency)
+      : _neighborIds = {
+          for (final entry in _adjacency.entries)
+            entry.key: {for (final e in entry.value) e.to},
+        };
 
   final Map<String, GraphNode> _nodes;
   final Map<String, List<GraphEdge>> _adjacency;
+
+  /// Neighbour id sets, kept alongside the edge lists so neighbourhood
+  /// overlap can be measured without rebuilding them on every lookup.
+  final Map<String, Set<String>> _neighborIds;
 
   static const String assetPath = 'assets/graph.json';
 
@@ -96,8 +104,31 @@ class GraphRepository {
               node: node(e.to),
               relation: e.relation,
               weight: e.weight,
+              distinctness: distinctnessBetween(id, e.to),
             ))
         .toList(growable: false);
+  }
+
+  /// How little [a] and [b] share, 0..1 — one minus the Jaccard overlap of
+  /// their neighbourhoods.
+  ///
+  /// Each node is removed from the other's neighbourhood first, so the link
+  /// between them does not count as something they have in common. A pair
+  /// deep inside the same subject scores near zero; a pair joined by a single
+  /// tangential link scores near one.
+  double distinctnessBetween(String a, String b) {
+    final an = _neighborIds[a];
+    final bn = _neighborIds[b];
+    if (an == null || bn == null) return 1;
+
+    final left = an.where((id) => id != b).toSet();
+    final right = bn.where((id) => id != a).toSet();
+
+    final union = left.union(right);
+    if (union.isEmpty) return 1;
+
+    final shared = left.intersection(right).length;
+    return 1 - shared / union.length;
   }
 
   /// The largest degree in the graph, used to normalise the tick ring.

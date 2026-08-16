@@ -1,9 +1,34 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:perihelion/models/graph_node.dart';
 import 'package:perihelion/services/graph_repository.dart';
 import 'package:perihelion/services/neighbor_selector.dart';
 
 import 'support/fake_graph.dart';
+
+/// Builds a neighbour with exact weight and distinctness, for the cases the
+/// fixture graph cannot produce naturally.
+Neighbor _neighbor(
+  String id,
+  String category, {
+  required double weight,
+  required double distinctness,
+}) =>
+    Neighbor(
+      node: GraphNode.fromJson({
+        'id': id,
+        'name': id,
+        'category': category,
+        'tagline': 'tagline',
+        'wikipedia': id,
+        'facts': [
+          {'label': 'Label', 'value': 'Value'},
+        ],
+      }),
+      relation: 'Relates to',
+      weight: weight,
+      distinctness: distinctness,
+    );
 
 void main() {
   late GraphRepository repo;
@@ -26,11 +51,59 @@ void main() {
       expect(firstFive, containsAll(['p1', 'pl1', 'w1', 't1', 'e1']));
     });
 
-    test('fills the leftover seat with the next strongest of any type', () {
+    test('gives the last seat to the most distinct neighbour, not the next '
+        'strongest', () {
       final chosen = selector.select(repo.neighborsOf('hub'));
-      // Sixth seat falls back to the strongest unused node, another person.
-      expect(chosen.last.node.id, 'p2');
-      expect(chosen.map((n) => n.node.id), isNot(contains('p3')));
+      // p2 is the stronger edge (0.85 vs 0.80) but shares p1 with the hub.
+      // p3 shares nothing, so it is the way out of the current subject.
+      expect(chosen.last.node.id, 'p3');
+      expect(chosen.map((n) => n.node.id), isNot(contains('p2')));
+    });
+
+    test('reserves the bridge seat only when more is on offer than fits', () {
+      // p1 has three neighbours, so every one of them fits and no seat is
+      // held back — reserving would just drop a node for nothing.
+      final chosen = selector.select(repo.neighborsOf('p1'));
+      expect(chosen, hasLength(3));
+      expect(
+        chosen.map((n) => n.node.id).toSet(),
+        {'hub', 'p2', 'pl1'},
+      );
+    });
+
+    test('the bridge is the least overlapping of the leftovers', () {
+      final leftovers = repo
+          .neighborsOf('hub')
+          .where((n) => n.node.id == 'p2' || n.node.id == 'p3');
+      final p2 = leftovers.firstWhere((n) => n.node.id == 'p2');
+      final p3 = leftovers.firstWhere((n) => n.node.id == 'p3');
+      expect(p3.distinctness, greaterThan(p2.distinctness));
+      expect(p3.weight, lessThan(p2.weight));
+    });
+
+    test('breaks a distinctness tie on strength, then on id', () {
+      final tied = [
+        _neighbor('alpha', 'person', weight: 0.4, distinctness: 1),
+        _neighbor('bravo', 'place', weight: 0.9, distinctness: 1),
+        _neighbor('charlie', 'work', weight: 0.9, distinctness: 1),
+        _neighbor('delta', 'event', weight: 0.5, distinctness: 0.2),
+        _neighbor('echo', 'thing', weight: 0.5, distinctness: 0.2),
+        _neighbor('foxtrot', 'concept', weight: 0.5, distinctness: 0.2),
+        _neighbor('golf', 'movement', weight: 0.5, distinctness: 0.2),
+      ];
+      final chosen = selector.select(tied);
+      // Five main seats go by strength and category; the bridge then takes
+      // the most distinct leftover, and among equals the stronger one.
+      expect(chosen, hasLength(6));
+      expect(chosen.last.distinctness, 1);
+      expect(chosen.last.node.id, anyOf('bravo', 'charlie', 'alpha'));
+    });
+
+    test('a pinned node and a bridge still leave six distinct nodes', () {
+      final chosen = selector.select(repo.neighborsOf('hub'), pinnedId: 'e1');
+      expect(chosen, hasLength(6));
+      expect(chosen.map((n) => n.node.id), contains('e1'));
+      expect(chosen.map((n) => n.node.id).toSet(), hasLength(6));
     });
 
     test('never repeats a node', () {
