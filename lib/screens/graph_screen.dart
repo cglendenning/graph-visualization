@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ import '../services/wikidata_service.dart';
 import '../services/wikipedia_service.dart';
 import '../theme/hud_palette.dart';
 import '../widgets/hud_readout.dart';
-import '../widgets/keyword_filter_sheet.dart';
+import '../widgets/new_topic_sheet.dart';
 import '../widgets/node_circle.dart';
 import 'node_detail_screen.dart';
 
@@ -174,33 +175,35 @@ class _GraphScreenState extends State<GraphScreen>
   void _reroll() {
     if (_inFlight || _busy) return;
     HapticFeedback.lightImpact();
-    _load(() => _session.start(), working: 'FINDING A NEW TOPIC');
+    unawaited(_newTopic());
   }
 
-  Future<void> _openFilter() async {
+  Future<void> _newTopic() async {
     if (_inFlight || _busy) return;
-    final result = await KeywordFilterSheet.show(
+    final choice = await NewTopicSheet.show(
       context,
-      initial: widget.wikidata.filterLabel,
+      randomReady: widget.wikidata.hasWarmRandomTopic,
     );
-    if (result == null || !mounted) return;
-    await _load(
-      () async {
-        if (result.cleared) {
-          widget.wikidata.clearFilter();
-          await _session.refresh();
-          return;
-        }
-        await widget.wikidata.applyFilter(result.terms);
-        // Open on the subject itself. Steering toward dogs should put the
-        // dog article at the centre, not something that merely mentions it.
-        final anchor = widget.wikidata.anchorQid;
-        await (anchor == null ? _session.start() : _session.startAt(anchor));
-      },
-      working: result.cleared
-          ? 'CLEARING'
-          : 'FINDING ${result.terms.trim().toUpperCase()}',
-    );
+    if (choice == null || !mounted) return;
+
+    switch (choice) {
+      case RandomTopic():
+        await _load(
+          () => _session.start(),
+          working: 'FINDING A NEW TOPIC',
+        );
+      case NamedTopic(:final phrase):
+        await _load(
+          () async {
+            final qid = await widget.wikidata.findTopic(phrase);
+            if (qid == null) {
+              throw WikidataUnavailable('Nothing on Wikipedia matches "$phrase".');
+            }
+            await _session.startAt(qid);
+          },
+          working: 'FINDING ${phrase.toUpperCase()}',
+        );
+    }
   }
 
   void _openDetail() {
@@ -349,8 +352,6 @@ class _GraphScreenState extends State<GraphScreen>
                 canGoBack: _session.canGoBack && !_busy,
                 onBack: _stepBack,
                 onReroll: _busy ? null : _reroll,
-                onFilter: _busy ? null : _openFilter,
-                theme: widget.wikidata.filterLabel,
                 topicReady: widget.wikidata.hasWarmRandomTopic,
               ),
               Expanded(
@@ -382,9 +383,6 @@ class _GraphScreenState extends State<GraphScreen>
                 busy: _busy,
                 hintVisible: _hintVisible && _session.depth == 0 && !_busy,
                 bottomInset: media.padding.bottom,
-                theme: widget.wikidata.filterLabel,
-                inTheme:
-                    current?.occupied.where((n) => n.themed).length ?? 0,
               ),
             ],
           ),
@@ -675,17 +673,12 @@ class _TopBar extends StatelessWidget {
     required this.canGoBack,
     required this.onBack,
     required this.onReroll,
-    required this.onFilter,
-    required this.theme,
     required this.topicReady,
   });
 
   final bool canGoBack;
   final VoidCallback onBack;
   final VoidCallback? onReroll;
-  final VoidCallback? onFilter;
-  final String theme;
-
   /// Whether a topic is already drawn and waiting behind "new topic".
   final bool topicReady;
 
@@ -710,35 +703,6 @@ class _TopBar extends StatelessWidget {
                 ],
               ),
             ),
-          const Spacer(),
-          _BarButton(
-            onTap: onFilter,
-            child: theme.isEmpty
-                ? Text('STEER',
-                    style: HudPalette.telemetry.copyWith(
-                      color: onFilter == null
-                          ? HudPalette.aquaDim.withValues(alpha: 0.4)
-                          : HudPalette.aquaDim,
-                    ))
-                : Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                          color: HudPalette.aqua.withValues(alpha: 0.45)),
-                      color: HudPalette.aqua.withValues(alpha: 0.10),
-                    ),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 120),
-                      child: Text(theme.toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: HudPalette.telemetry
-                              .copyWith(color: HudPalette.aqua)),
-                    ),
-                  ),
-          ),
           const Spacer(),
           _BarButton(
             onTap: onReroll,
@@ -843,8 +807,6 @@ class _Footer extends StatelessWidget {
     required this.busy,
     required this.hintVisible,
     required this.bottomInset,
-    required this.theme,
-    required this.inTheme,
   });
 
   final int depth;
@@ -853,19 +815,10 @@ class _Footer extends StatelessWidget {
   final bool busy;
   final bool hintVisible;
   final double bottomInset;
-  final String theme;
-  final int inTheme;
 
-  /// Steering is a pull rather than a fence, so the count says how much of
-  /// this rosette came from the subject rather than implying all of it did.
-  String get _hint {
-    if (busy) return 'DRAWING FROM WIKIDATA';
-    if (theme.isNotEmpty) {
-      return '${inTheme.toString().padLeft(2, '0')} OF 06 FROM '
-          '${theme.toUpperCase()}';
-    }
-    return 'TAP A SATELLITE TO TRAVEL  ·  TAP THE CENTRE FOR DETAIL';
-  }
+  String get _hint => busy
+      ? 'DRAWING FROM WIKIDATA'
+      : 'TAP A SATELLITE TO TRAVEL  ·  TAP THE CENTRE FOR DETAIL';
 
   @override
   Widget build(BuildContext context) {
@@ -883,7 +836,7 @@ class _Footer extends StatelessWidget {
           SizedBox(
             height: 22,
             child: AnimatedOpacity(
-              opacity: busy || hintVisible || theme.isNotEmpty ? 1 : 0,
+              opacity: busy || hintVisible ? 1 : 0,
               duration: const Duration(milliseconds: 300),
               child: Padding(
                 padding: const EdgeInsets.only(top: 9),

@@ -134,7 +134,7 @@
   <p class="heads-up"><b>This replaces Constellation, it does not upgrade it.</b> The app was renamed, so it carries a new bundle identifier and installs alongside the old one. Delete Constellation from your home screen after this finishes.</p>
 
   <dl class="telemetry">
-    <dt>Version</dt><dd>2.8.1 (18)</dd>
+    <dt>Version</dt><dd>3.0.0 (19)</dd>
     <dt>Bundle</dt><dd>com.craigglendenning.perihelion</dd>
     <dt>Min iOS</dt><dd>13.0</dd>
     <dt>Signing</dt><dd>Development · MCALPSQ5P5</dd>
@@ -143,10 +143,12 @@
   </dl>
 
   <div class="how">
-    <strong>What changed in 2.8.1</strong>
+    <strong>What changed in 3.0.0</strong>
       <ol>
-        <li>Wikipedia&rsquo;s own scaffolding no longer appears as a topic &mdash; project pages, categories, portals and templates are excluded everywhere.</li>
-        <li>The two-hop fallback used for thinly connected topics was missing those exclusions entirely, which is where they were leaking in.</li>
+        <li>Steering is gone. It never worked well enough to earn its place, so the control and all of its machinery have been removed.</li>
+        <li>New topic now asks where you want to go: name a topic and press Go, or take a random one.</li>
+        <li>Go lights up only once you have typed something. Rando topic shows the readiness dot when one is already drawn and waiting.</li>
+        <li>Naming a topic takes you to that topic &mdash; type &ldquo;dogs&rdquo; and the centre is the Dog article.</li>
       </ol>
   </div>
 

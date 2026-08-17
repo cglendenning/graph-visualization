@@ -103,19 +103,11 @@ class TraversalSession {
 
   /// Opens directly on [qid], clearing any trail behind it.
   ///
-  /// Used when steering, so the first thing on screen is the subject asked
-  /// for rather than something merely near it.
+  /// Used when the reader names a topic, so they land on that topic rather
+  /// than somewhere merely near it.
   Future<void> startAt(String qid) async {
     _history.clear();
     _rosette = await _build(qid, arrivedFrom: null);
-  }
-
-  /// Redraws the current topic without moving, used when steering is cleared
-  /// and the satellites on screen no longer reflect the change.
-  Future<void> refresh() async {
-    final current = _rosette;
-    if (current == null) return;
-    _rosette = await _build(current.center.qid, arrivedFrom: null);
   }
 
   /// Re-centres on a satellite, keeping a way back to where the user was.

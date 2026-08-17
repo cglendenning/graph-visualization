@@ -18,7 +18,7 @@ const _wd = 'http://www.wikidata.org/prop/direct/';
 const _entity = 'http://www.wikidata.org/entity/';
 
 void main() {
-  mainThemed();
+  mainTopicLookup();
   mainScaffolding();
   mainReadiness();
   group('WikidataService queries', () {
@@ -742,119 +742,6 @@ Future<String> themedWorld(Uri url) async {
   });
 }
 
-void mainThemed() {
-  group('theme steering', () {
-    test('starts unsteered', () {
-      final s = WikidataService(fetcher: themedWorld);
-      expect(s.isFiltered, isFalse);
-      expect(s.filterLabel, isEmpty);
-    });
-
-    test('resolves the concept and loads its topical neighbourhood', () async {
-      final s = WikidataService(fetcher: themedWorld);
-      await s.applyFilter('jazz');
-      expect(s.isFiltered, isTrue);
-      // Ranked by sitelinks, so the genre wins over a same-named album.
-      expect(s.filterLabel, 'jazz');
-      expect(s.isThemed('Q105513'), isTrue);
-      expect(s.isThemed('Q93341'), isTrue);
-      expect(s.isThemed('Q999001'), isFalse);
-      // Pages without a Wikidata item are skipped, not counted.
-      expect(s.themeSize, greaterThanOrEqualTo(2));
-    });
-
-    test('seats themed neighbours first but still fills all six', () async {
-      final s = WikidataService(fetcher: themedWorld, random: Random(3));
-      await s.applyFilter('jazz');
-      final n = await s.sampleNeighbors('Q1');
-      expect(n, isNotEmpty);
-      // Steering is a pull, not a fence: unthemed neighbours still appear.
-      expect(n.first.themed, isTrue);
-      expect(n.map((x) => x.node.qid), contains('Q93341'));
-    });
-
-    test('marks which neighbours came from the theme', () async {
-      final s = WikidataService(fetcher: themedWorld, random: Random(3));
-      await s.applyFilter('jazz');
-      final n = await s.sampleNeighbors('Q1');
-      for (final x in n) {
-        expect(x.themed, s.isThemed(x.node.qid));
-      }
-    });
-
-    test('starts inside the theme rather than anywhere at all', () async {
-      final s = WikidataService(fetcher: themedWorld, random: Random(3));
-      await s.applyFilter('jazz');
-      final start = await s.randomStartQid();
-      expect(s.isThemed(start), isTrue);
-    });
-
-    test('clearing returns to unsteered browsing', () async {
-      final s = WikidataService(fetcher: themedWorld);
-      await s.applyFilter('jazz');
-      s.clearFilter();
-      expect(s.isFiltered, isFalse);
-      expect(s.filterLabel, isEmpty);
-      expect(s.isThemed('Q105513'), isFalse);
-    });
-
-    test('an empty phrase clears rather than steering nowhere', () async {
-      final s = WikidataService(fetcher: themedWorld);
-      await s.applyFilter('jazz');
-      await s.applyFilter('   ');
-      expect(s.isFiltered, isFalse);
-    });
-
-    test('reports words that match nothing, keeping the old theme', () async {
-      final s = WikidataService(
-        fetcher: (url) async {
-          if (url.queryParameters['query']?.contains('EntitySearch') ?? false) {
-            return jsonEncode({'results': {'bindings': <dynamic>[]}});
-          }
-          return themedWorld(url);
-        },
-      );
-      await expectLater(
-        s.applyFilter('qwertyuiopasdf'),
-        throwsA(isA<WikidataUnavailable>()),
-      );
-      expect(s.isFiltered, isFalse);
-    });
-
-    test('opens on the subject itself, not merely near it', () async {
-      final s = WikidataService(fetcher: themedWorld, random: Random(3));
-      await s.applyFilter('jazz');
-      // Steering toward dogs should put the dog article at the centre.
-      expect(s.anchorQid, 'Q8341');
-      expect(s.isThemed(s.anchorQid!), isTrue);
-    });
-
-    test('discards pre-warmed topics when steering changes', () async {
-      // Regression: the warmed topic pool survived a filter change, so
-      // asking to steer opened on whatever unrelated topic was waiting.
-      final s = WikidataService(fetcher: themedWorld, random: Random(3));
-      s.prefetchRandomTopics();
-      var spins = 0;
-      while (!s.hasWarmRandomTopic && spins++ < 200) {
-        await Future<void>.delayed(const Duration(milliseconds: 5));
-      }
-      if (!s.hasWarmRandomTopic) return; // fixture did not warm; nothing to prove
-      await s.applyFilter('jazz');
-      expect(s.hasWarmRandomTopic, isFalse);
-    });
-
-    test('drops warmed draws when steering changes', () async {
-      final s = WikidataService(fetcher: themedWorld, random: Random(3));
-      s.prefetch(['Q1']);
-      while (s.isPrefetching) {
-        await Future<void>.delayed(const Duration(milliseconds: 5));
-      }
-      expect(s.hasReadyDraw('Q1'), isTrue);
-      await s.applyFilter('jazz');
-      expect(s.hasReadyDraw('Q1'), isFalse);
-    });
-  });
-}
 
 void mainReadiness() {
   group('readiness signalling', () {
@@ -955,6 +842,72 @@ void mainScaffolding() {
           WikidataService(fetcher: stubWithFurniture, random: Random(2));
       final n = await service.sampleNeighbors('Q999');
       expect(n.map((x) => x.node.label), contains('war'));
+    });
+  });
+}
+
+void mainTopicLookup() {
+  Future<String> searchWorld(Uri url) async {
+    final q = url.queryParameters['query'] ?? '';
+    if (q.contains('EntitySearch')) {
+      // Ranked by sitelinks, so the concept wins over a same-named work.
+      return jsonEncode({
+        'results': {
+          'bindings': [
+            {'item': {'value': '${_entity}Q8341'}},
+          ],
+        },
+      });
+    }
+    return jsonEncode({'results': {'bindings': <dynamic>[]}});
+  }
+
+  group('findTopic', () {
+    test('resolves words to the best-known matching item', () async {
+      final s = WikidataService(fetcher: searchWorld);
+      expect(await s.findTopic('jazz'), 'Q8341');
+    });
+
+    test('asks the search index, ordered by how widely covered a topic is',
+        () async {
+      late String sent;
+      final s = WikidataService(fetcher: (url) async {
+        sent = url.queryParameters['query'] ?? '';
+        return searchWorld(url);
+      });
+      await s.findTopic('jazz');
+      expect(sent, contains('EntitySearch'));
+      expect(sent, contains('ORDER BY DESC(?n)'));
+      // Wikipedia's own scaffolding is never a destination.
+      expect(sent, contains('FILTER NOT EXISTS'));
+    });
+
+    test('returns nothing for an empty phrase, without asking', () async {
+      var calls = 0;
+      final s = WikidataService(fetcher: (url) async {
+        calls++;
+        return searchWorld(url);
+      });
+      expect(await s.findTopic('   '), isNull);
+      expect(calls, 0);
+    });
+
+    test('returns nothing when the words match nothing', () async {
+      final s = WikidataService(
+        fetcher: (_) async => jsonEncode({'results': {'bindings': <dynamic>[]}}),
+      );
+      expect(await s.findTopic('qwertyuiopasdf'), isNull);
+    });
+
+    test('strips quotes so a phrase cannot break the query', () async {
+      late String sent;
+      final s = WikidataService(fetcher: (url) async {
+        sent = url.queryParameters['query'] ?? '';
+        return searchWorld(url);
+      });
+      await s.findTopic('say "hello"');
+      expect(sent, contains('say hello'));
+      expect(sent.split('mwapi:search').last.split('\n').first, isNot(contains('""')));
     });
   });
 }
