@@ -35,6 +35,80 @@ class RosetteState {
       seats.whereType<WikidataNeighbor>();
 }
 
+/// One node's part in a transition between two rosettes.
+class TransitionStep {
+  const TransitionStep({
+    required this.node,
+    required this.from,
+    required this.to,
+    required this.neighbor,
+  });
+
+  final WikidataNode node;
+
+  /// Seat index, [RosetteTransition.centreSeat] for the centre, or null when
+  /// the node is absent from that side of the transition.
+  final int? from;
+  final int? to;
+
+  /// How the node relates to the centre it is seated around.
+  final WikidataNeighbor? neighbor;
+
+  bool get isCentre =>
+      from == RosetteTransition.centreSeat || to == RosetteTransition.centreSeat;
+}
+
+/// Works out who moves where between two rosettes.
+///
+/// Computed once per transition rather than per frame. Seats are kept as
+/// indices, not points, so the result survives a resize and the per-frame
+/// work is reduced to interpolation.
+class RosetteTransition {
+  const RosetteTransition._();
+
+  /// Stands in for a seat index when a node is the centre.
+  static const int centreSeat = -1;
+
+  static List<TransitionStep> between(RosetteState? from, RosetteState? to) {
+    final steps = <TransitionStep>[];
+    final seen = <String>{};
+
+    void add(WikidataNode node, WikidataNeighbor? neighbor) {
+      if (!seen.add(node.qid)) return;
+      steps.add(TransitionStep(
+        node: node,
+        from: seatIn(from, node.qid),
+        to: seatIn(to, node.qid),
+        neighbor: neighbor,
+      ));
+    }
+
+    for (final state in [to, from]) {
+      if (state == null) continue;
+      for (final n in state.occupied) {
+        add(n.node, n);
+      }
+    }
+    for (final state in [from, to]) {
+      if (state != null) add(state.center, null);
+    }
+
+    // Centres paint last, so they sit above their own satellites.
+    steps.sort((a, b) {
+      if (a.isCentre == b.isCentre) return 0;
+      return a.isCentre ? 1 : -1;
+    });
+    return List<TransitionStep>.unmodifiable(steps);
+  }
+
+  /// Where [qid] sits in [state]: a seat, the centre, or nowhere.
+  static int? seatIn(RosetteState? state, String qid) {
+    if (state == null) return null;
+    if (state.center.qid == qid) return centreSeat;
+    return state.seatOf(qid);
+  }
+}
+
 /// Holds the current position in Wikidata and the path taken to reach it.
 ///
 /// Every rosette is a fresh random draw, so the session cannot rebuild a

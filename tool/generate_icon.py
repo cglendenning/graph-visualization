@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Render the Constellation launch icon and write every iOS AppIcon size.
+"""Render Perihelion's launch icon and store graphics.
+
+Writes every iOS AppIcon size, the Android launcher icons, and the Play
+Store feature graphic, all from the same rosette mark so the identity stays
+consistent wherever it appears.
 
 The mark is the app's own rosette: one lit centre, six satellites, filaments
 between them, and the tick ring that reports node degree inside the app.
@@ -133,12 +137,78 @@ def draw_marks(img):
     return img
 
 
+def build_mark(size, ground):
+    """The rosette over [ground]. On pure black it composites additively
+    onto any background without leaving an edge."""
+    glow = glow_layer(size)
+    lit = ImageChops.add(ground, glow.filter(ImageFilter.GaussianBlur(size * 0.030)))
+    lit = ImageChops.add(lit, glow.filter(ImageFilter.GaussianBlur(size * 0.060)))
+    return draw_marks(lit)
+
+
 def build_master():
     base = radial_field(S)
     glow = glow_layer(S)
     lit = ImageChops.add(base, glow.filter(ImageFilter.GaussianBlur(S * 0.030)))
     lit = ImageChops.add(lit, glow.filter(ImageFilter.GaussianBlur(S * 0.060)))
     return draw_marks(lit).resize((MASTER, MASTER), Image.LANCZOS)
+
+
+ANDROID_ICONS = {
+    'mipmap-mdpi': 48,
+    'mipmap-hdpi': 72,
+    'mipmap-xhdpi': 96,
+    'mipmap-xxhdpi': 144,
+    'mipmap-xxxhdpi': 192,
+}
+
+
+def feature_graphic(master):
+    """Play Store feature graphic: 1024x500, the mark on the deep field.
+
+    The rosette sits left of centre with the name beside it, because the
+    Play Store crops this image differently across surfaces and centred
+    artwork loses its edges."""
+    w, h = 1024, 500
+    img = radial_field(max(w, h)).resize((w, h), Image.LANCZOS)
+
+    # Drawn on pure black and added, so nothing of the mark's own ground
+    # shows. Pasting the app icon here leaves a visible square, because its
+    # ground is brighter than the banner's.
+    side = 720
+    mark = build_mark(side, Image.new('RGB', (side, side), (0, 0, 0)))
+    mark = mark.resize((360, 360), Image.LANCZOS)
+    panel = Image.new('RGB', (w, h), (0, 0, 0))
+    panel.paste(mark, (70, (h - 360) // 2))
+    img = ImageChops.add(img, panel)
+
+    d = ImageDraw.Draw(img)
+    x = 480
+    d.text((x, 196), 'PERIHELION', fill=(220, 233, 245),
+           font=_font(58, bold=True))
+    d.text((x, 268), 'Traverse a knowledge graph,', fill=(138, 165, 179),
+           font=_font(26))
+    d.text((x, 302), 'one node at a time.', fill=(138, 165, 179),
+           font=_font(26))
+    d.line([(x, 356), (x + 150, 356)], fill=(86, 232, 255), width=2)
+    return img
+
+
+def _font(size, bold=False):
+    """A system face, falling back to PIL's default if none is present."""
+    candidates = [
+        '/System/Library/Fonts/SFNSDisplay.ttf',
+        '/System/Library/Fonts/Helvetica.ttc',
+        '/Library/Fonts/Arial Bold.ttf' if bold else '/Library/Fonts/Arial.ttf',
+    ]
+    from PIL import ImageFont
+    for path in candidates:
+        if os.path.exists(path):
+            try:
+                return ImageFont.truetype(path, size)
+            except OSError:
+                continue
+    return ImageFont.load_default(size)
 
 
 def main():
@@ -160,7 +230,24 @@ def main():
         written.add(name)
         print(f"  {name:34s} {px:4d}px")
 
-    print(f"\n{len(written)} icons written")
+    # Android launcher icons
+    android = os.path.join(ROOT, 'android', 'app', 'src', 'main', 'res')
+    for folder, px in ANDROID_ICONS.items():
+        target = os.path.join(android, folder)
+        if not os.path.isdir(target):
+            continue
+        master.resize((px, px), Image.LANCZOS).save(
+            os.path.join(target, 'ic_launcher.png'))
+        print(f"  {folder + '/ic_launcher.png':34s} {px:4d}px")
+
+    # Play Store feature graphic
+    store = os.path.join(ROOT, 'store')
+    os.makedirs(store, exist_ok=True)
+    feature_graphic(master).save(os.path.join(store, 'feature-graphic.png'))
+    master.save(os.path.join(store, 'icon-1024.png'))
+    print(f"  {'store/feature-graphic.png':34s} 1024x500")
+
+    print(f"\n{len(written)} iOS icons written")
 
 
 if __name__ == "__main__":

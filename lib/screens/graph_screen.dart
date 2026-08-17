@@ -18,21 +18,7 @@ import '../widgets/new_topic_sheet.dart';
 import '../widgets/node_circle.dart';
 import 'node_detail_screen.dart';
 
-/// Where a node sits on screen at a given instant of the transition.
-class _Slot {
-  const _Slot({
-    required this.position,
-    required this.radius,
-    required this.isCenter,
-    required this.neighbor,
-  });
-
-  final Offset position;
-  final double radius;
-  final bool isCenter;
-  final WikidataNeighbor? neighbor;
-}
-
+/// A node resolved to a point on screen for one frame.
 class _Placement {
   const _Placement({
     required this.node,
@@ -50,6 +36,7 @@ class _Placement {
   final bool isCenter;
   final WikidataNeighbor? neighbor;
 }
+
 
 class GraphScreen extends StatefulWidget {
   const GraphScreen({
@@ -78,6 +65,10 @@ class _GraphScreenState extends State<GraphScreen>
   RosetteState? _from;
   RosetteState? _to;
 
+  /// The current transition, worked out whenever the rosettes change rather
+  /// than on every frame.
+  List<TransitionStep> _plan = const [];
+
   bool _busy = true;
 
   /// Set while relocating. Non-null replaces the canvas with a progress
@@ -91,19 +82,22 @@ class _GraphScreenState extends State<GraphScreen>
     super.initState();
     _session = TraversalSession(service: widget.wikidata);
     _controller = AnimationController(vsync: this, duration: _transition)
-      ..addListener(_onTick)
       ..addStatusListener(_onStatus);
     widget.wikidata.cacheRevision.addListener(_onCacheChanged);
     _load(() => _session.start());
   }
 
-  void _onTick() => setState(() {});
-
   void _onStatus(AnimationStatus status) {
     if (status == AnimationStatus.completed && _from != null) {
-      setState(() => _from = null);
+      setState(() {
+        _from = null;
+        _planTransition();
+      });
     }
   }
+
+  void _planTransition() =>
+      _plan = RosetteTransition.between(_from, _to);
 
   void _onCacheChanged() {
     if (mounted) setState(() {});
@@ -135,6 +129,7 @@ class _GraphScreenState extends State<GraphScreen>
         _to = _session.rosette;
         _busy = false;
         _working = null;
+        _planTransition();
       });
       _controller.forward(from: 0);
 
@@ -219,92 +214,52 @@ class _GraphScreenState extends State<GraphScreen>
     );
   }
 
-  _Slot? _slotIn(RosetteState? state, String qid, Offset center, double orbit) {
-    if (state == null) return null;
-    if (state.center.qid == qid) {
-      return _Slot(
-        position: center,
-        radius: _centerRadius,
-        isCenter: true,
-        neighbor: null,
-      );
-    }
-    final seat = state.seatOf(qid);
-    if (seat == null) return null;
-    return _Slot(
-      position: RosetteLayout.positionForSeat(seat, center, orbit),
-      radius: _satelliteRadius,
-      isCenter: false,
-      neighbor: state.seats[seat],
-    );
-  }
-
   double _arriveOpacity(double t) =>
       Curves.easeOut.transform(((t - 0.38) / 0.62).clamp(0.0, 1.0));
 
   double _departOpacity(double t) =>
       1.0 - Curves.easeIn.transform((t / 0.42).clamp(0.0, 1.0));
 
-  WikidataNode? _nodeFor(String qid) {
-    for (final state in [_to, _from]) {
-      if (state == null) continue;
-      if (state.center.qid == qid) return state.center;
-      for (final n in state.occupied) {
-        if (n.node.qid == qid) return n.node;
-      }
-    }
-    return null;
-  }
-
   List<_Placement> _placements(Offset center, double orbit, double t) {
-    final ids = <String>{
-      if (_to != null) _to!.center.qid,
-      if (_to != null) ..._to!.occupied.map((n) => n.node.qid),
-      if (_from != null) _from!.center.qid,
-      if (_from != null) ..._from!.occupied.map((n) => n.node.qid),
-    };
+    Offset at(int seat) => seat == RosetteTransition.centreSeat
+        ? center
+        : RosetteLayout.positionForSeat(seat, center, orbit);
+    double radius(int seat) =>
+        seat == RosetteTransition.centreSeat ? _centerRadius : _satelliteRadius;
 
     final placements = <_Placement>[];
-    for (final qid in ids) {
-      final node = _nodeFor(qid);
-      if (node == null) continue;
-      final a = _slotIn(_from, qid, center, orbit);
-      final b = _slotIn(_to, qid, center, orbit);
-
+    for (final step in _plan) {
+      final a = step.from;
+      final b = step.to;
       if (a != null && b != null) {
         placements.add(_Placement(
-          node: node,
-          position: Offset.lerp(a.position, b.position, t)!,
-          radius: _lerp(a.radius, b.radius, t),
+          node: step.node,
+          position: Offset.lerp(at(a), at(b), t)!,
+          radius: _lerp(radius(a), radius(b), t),
           opacity: 1,
-          isCenter: t < 0.5 ? a.isCenter : b.isCenter,
-          neighbor: b.neighbor ?? a.neighbor,
+          isCenter: (t < 0.5 ? a : b) == RosetteTransition.centreSeat,
+          neighbor: step.neighbor,
         ));
       } else if (b != null) {
         placements.add(_Placement(
-          node: node,
-          position: b.position,
-          radius: b.radius,
+          node: step.node,
+          position: at(b),
+          radius: radius(b),
           opacity: _arriveOpacity(t),
-          isCenter: b.isCenter,
-          neighbor: b.neighbor,
+          isCenter: b == RosetteTransition.centreSeat,
+          neighbor: step.neighbor,
         ));
       } else if (a != null) {
         placements.add(_Placement(
-          node: node,
-          position: a.position,
-          radius: a.radius,
+          node: step.node,
+          position: at(a),
+          radius: radius(a),
           opacity: _departOpacity(t),
-          isCenter: a.isCenter,
-          neighbor: a.neighbor,
+          isCenter: a == RosetteTransition.centreSeat,
+          neighbor: step.neighbor,
         ));
       }
     }
-
-    placements.sort((x, y) {
-      if (x.isCenter == y.isCenter) return 0;
-      return x.isCenter ? 1 : -1;
-    });
     return placements;
   }
 
@@ -372,7 +327,10 @@ class _GraphScreenState extends State<GraphScreen>
                       size.width / 2 - _satelliteRadius - 22,
                       size.height * 0.40,
                     );
-                    return _buildCanvas(center, orbit);
+                    return AnimatedBuilder(
+                      animation: _controller,
+                      builder: (context, _) => _buildCanvas(center, orbit),
+                    );
                   },
                 ),
               ),

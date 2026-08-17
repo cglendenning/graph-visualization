@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perihelion — Privacy Policy</title>
+<style>
+  :root { --void:#05070C; --aqua:#56E8FF; --aqua-dim:#2E7F94; --ice:#DCE9F5; --muted:#8AA5B3; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; }
+  body {
+    min-height:100vh;
+    background: radial-gradient(ellipse 90% 60% at 50% 0%, #0D1622 0%, var(--void) 60%), var(--void);
+    color: var(--ice);
+    font: 16px/1.7 -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    padding: 3.5rem 1.5rem 5rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 40rem; margin: 0 auto; }
+  h1 { font-size: 1.9rem; letter-spacing:-.02em; margin:0 0 .4rem; }
+  .updated { font-family: Menlo, Courier, monospace; font-size:.72rem; letter-spacing:.1em;
+             color: var(--aqua-dim); text-transform: uppercase; margin: 0 0 2.5rem; }
+  h2 { font-size: .74rem; font-family: Menlo, Courier, monospace; letter-spacing:.16em;
+       text-transform: uppercase; color: var(--aqua); margin: 2.5rem 0 .8rem; }
+  p { color: var(--muted); margin: 0 0 1rem; }
+  strong { color: var(--ice); font-weight:600; }
+  ul { color: var(--muted); padding-left:1.2rem; margin:0 0 1rem; }
+  li { margin-bottom:.5rem; }
+  li::marker { color: var(--aqua-dim); }
+  a { color: var(--aqua); }
+  .box { border:1px solid rgba(86,232,255,.18); border-left:3px solid var(--aqua);
+         border-radius:4px; padding:1.1rem 1.3rem; margin:1.5rem 0; background:rgba(86,232,255,.03); }
+  footer { margin-top:3.5rem; padding-top:1.5rem; border-top:1px solid rgba(86,232,255,.14);
+           font-size:.8rem; color: var(--aqua-dim); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Perihelion — Privacy Policy</h1>
+  <p class="updated">Last updated 16 August 2026</p>
+
+  <div class="box">
+    <p><strong>Perihelion collects nothing about you.</strong> There are no accounts, no analytics, no advertising, no tracking, and no data of any kind is sent to us — we do not operate a server.</p>
+  </div>
+
+  <h2>What the app stores</h2>
+  <p>Nothing is stored on your device beyond the app itself. Topics you have visited are held in memory only while the app is running and are discarded when you close it. There is no history, no profile, and no settings file recording what you looked at.</p>
+
+  <h2>What leaves your device</h2>
+  <p>Perihelion has no content of its own. Every topic, relationship and summary is read live from Wikimedia. To show you a topic, the app requests it from:</p>
+  <ul>
+    <li><strong>Wikidata</strong> (<code>query.wikidata.org</code>, <code>www.wikidata.org</code>) — the topics and the relationships between them.</li>
+    <li><strong>Wikipedia</strong> (<code>en.wikipedia.org</code>) — the summary shown on a topic's detail screen.</li>
+  </ul>
+  <p>Those requests contain the topic being looked up and, as with any internet request, your device's IP address and a user-agent string identifying the app. They are handled by the Wikimedia Foundation under its own privacy policy, which is linked below. We never see them.</p>
+
+  <h2>What we do not do</h2>
+  <ul>
+    <li>No analytics or crash reporting SDKs are present in the app.</li>
+    <li>No advertising, and no advertising identifiers are read.</li>
+    <li>No location, contacts, photos, microphone or camera access is requested.</li>
+    <li>Nothing is sold or shared with anyone, because nothing is collected.</li>
+  </ul>
+
+  <h2>Links out</h2>
+  <p>A topic's detail screen credits the Wikipedia article it quotes. Tapping that credit opens the article in your browser, at which point Wikimedia's privacy policy applies.</p>
+
+  <h2>Children</h2>
+  <p>Perihelion does not collect personal information from anyone, including children. Content is drawn live from Wikipedia and Wikidata and is not curated or age-rated by us, so it may cover any subject an encyclopedia covers.</p>
+
+  <h2>Changes</h2>
+  <p>If this policy changes, the revised version will be posted at this address with a new date above.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about this policy can be raised at the project's repository: <a href="https://github.com/cglendenning/graph-visualization">github.com/cglendenning/graph-visualization</a>.</p>
+
+  <footer>
+    Wikimedia's privacy policy: <a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy">foundation.wikimedia.org</a>.
+    Wikidata content is used under CC0. Wikipedia article extracts are shown under
+    <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> and credited in the app.
+  </footer>
+</main>
+</body>
+</html>
