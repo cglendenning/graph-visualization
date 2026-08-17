@@ -27,22 +27,64 @@ Upload key SHA-1: `3B:56:62:60:6A:8B:24:8E:68:F2:19:43:D7:5D:A1:FD:8D:E8:18:29`
 
 ---
 
-## Apple — what I need from you
+## Credentials found on this machine
 
-1. **Confirm the Developer Program is current.** Team `MCALPSQ5P5` already has a distribution certificate, so this is probably a yes.
-2. **Register the bundle id** `com.craigglendenning.perihelion` at developer.apple.com → Identifiers, or let Xcode do it on first archive.
-3. **Create the app record** in App Store Connect: name `Perihelion`, primary language English (US), bundle id as above, SKU anything (`perihelion-001`).
-4. **App Store Connect API key** — if you point me at one (you used `H96P2D43T6` for a previous project), I can build the distribution archive and upload it without you touching Xcode. Otherwise you upload from Xcode Organizer.
-5. **Answer the age-rating questionnaire.** These are legal declarations and must be yours. Guidance is in `listing.md`; expect 12+.
-6. **App Privacy** → choose *Data Not Collected*. Paste the privacy URL above.
+**App Store Connect API** — verified working, 13 apps visible on the account.
 
-## Google Play — what I need from you
+| | |
+|---|---|
+| Key id | `MRKVCR3WF6` |
+| Issuer id | `78bfbe39-6c61-4296-b086-b36925bcc396` |
+| Key file | `~/.appstoreconnect/private_keys/AuthKey_MRKVCR3WF6.p8` |
+| Working example | `~/greenpyramid/scripts/asc_release.py` |
 
-1. **A Play Console account** (one-off $25). I cannot create or pay for this.
-2. **Create the app**, then upload `app-release.aab`.
-3. **Data safety form** — answers are in `listing.md`; everything is "no".
-4. **Content rating (IARC) questionnaire** — again a legal declaration, must be yours. Declare that the app shows live web content that the developer does not curate.
-5. **Target audience** — 13+ is the honest answer given uncurated encyclopedia content.
+A second key, `H96P2D43T6`, is present in the same folder and on the Desktop.
+
+**Google Play** — `~/greenpyramid/scripts/play_publish.py` exists and works, but it takes a
+Google Cloud **service-account JSON** as an argument and **no such key is on this machine**.
+That is the one Play credential that has to be recreated.
+
+## Apple — done, and what is left
+
+Done already:
+
+- Bundle id `com.craigglendenning.perihelion` **registered** (id `CL9WD6DKTD`). It was not
+  registered before: the dev builds worked only because the team wildcard profile covers any
+  identifier, which App Store distribution does not.
+
+Only you can do:
+
+1. **Create the app record.** The API refuses this outright — `apps` allows only
+   `GET_COLLECTION, GET_INSTANCE, UPDATE`. In App Store Connect → Apps → **+**:
+   name `Perihelion`, language English (US), bundle id `com.craigglendenning.perihelion`,
+   SKU `perihelion-001`.
+2. **Age rating questionnaire** — a legal declaration. Guidance in `listing.md`; expect 12+.
+3. **App Privacy** → *Data Not Collected*, plus the privacy URL above.
+
+Once the record exists, **I can do the rest without you**: build the distribution archive,
+upload it with the key above, and set the description, keywords, and screenshots through the
+API. Just say go.
+
+## Google Play — what is left
+
+1. **Create a service account** so uploads can be automated:
+   Google Cloud Console → IAM → Service Accounts → create → add a JSON key.
+   Then Play Console → Users and permissions → invite that service-account email and grant
+   release permissions. Save the JSON somewhere outside this repo, e.g. `~/keys/`.
+2. **Create the app** in Play Console (the API cannot create listings either).
+3. **Data safety form** — answers in `listing.md`; everything is "no".
+4. **Content rating (IARC)** — a legal declaration, must be yours. Declare live web content
+   the developer does not curate.
+5. **Target audience** — 13+ is the honest answer for uncurated encyclopedia content.
+
+With the JSON key in place, the existing script does the upload:
+
+```bash
+python3 ~/greenpyramid/scripts/play_publish.py publish \
+  ~/keys/play-service-account.json \
+  build/app/outputs/bundle/release/app-release.aab \
+  store/release-notes.txt --track internal
+```
 
 ---
 
