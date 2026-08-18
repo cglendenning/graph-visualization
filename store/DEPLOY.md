@@ -116,15 +116,54 @@ Once the record exists, **I can do the rest without you**: build the distributio
 upload it with the key above, and set the description, keywords, and screenshots through the
 API. Just say go.
 
-## Google Play — UPLOADED
+## Google Play — STAGED FOR PRODUCTION
 
-Version code 19 sits on **internal testing** with the full store listing,
-icon, feature graphic and four screenshots, all pushed through the Android
-Publisher API. Nothing here needs repeating for an update — only a new
-bundle and release notes.
+Version code 19 sits as a **draft release on the production track** with the
+full store listing, icon, feature graphic and four screenshots, all pushed
+through the Android Publisher API. The testing tracks were cleared: the goal
+is publication, not testing. Internal keeps a live copy because that is the
+only track a draft app may publish to, and it exposes nothing publicly.
 
 | | |
 |---|---|
+| Package | `com.craigglendenning.perihelion` |
+| Service account | `perihelion-publisher@goal-executor.iam.gserviceaccount.com` |
+| Key | `~/keys/play-service-account.json` (chmod 600, outside the repo) |
+| Cloud project | `goal-executor` |
+| Script | `tool/play_publish.py` |
+| Contact | `c_glendenning@yahoo.com`, GitHub Pages URL |
+
+```bash
+python3 tool/play_publish.py upload --track internal        # bundle + listing
+python3 tool/play_publish.py listing                        # listing only
+python3 tool/play_publish.py status                         # what is live
+python3 tool/play_publish.py promote --track production     # after first publish
+```
+
+### The permission trap
+
+Granting the service account app-level permissions was not enough, and the
+failure was silent in a confusing way: the account could open an edit, stage
+any change, and commit an *empty* edit, but committing a listing change
+returned a bare `403 The caller does not have permission`. "Manage store
+presence" showed as ticked in the app-level dialog the whole time. Only
+granting **Admin** on the *Account permissions* tab made listing commits
+work. If a 403 reappears, isolate it the same way — commit an empty edit,
+then a listing-only edit — rather than guessing at checkboxes.
+
+### What cannot be verified from here
+
+- **Nothing in the Android Publisher API reads back the App content
+  declarations.** Content rating, data safety and target audience are
+  write-only through the console. The Publishing overview page is the only
+  source of truth.
+- **`edits:validate` cannot stand in for them.** It returns `Only releases
+  with status draft may be created on draft app` for a fully staged live
+  release regardless, because an app cannot leave draft state through the
+  API at all. **The first rollout must be done in the console.** Every
+  release after that can be scripted.
+
+---|---|
 | Package | `com.craigglendenning.perihelion` |
 | Service account | `perihelion-publisher@goal-executor.iam.gserviceaccount.com` |
 | Key | `~/keys/play-service-account.json` (chmod 600, outside the repo) |
