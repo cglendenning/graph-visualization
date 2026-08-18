@@ -20,7 +20,7 @@ Ready to paste. Character counts are checked against each store's limit.
 
 ## Apple promotional text (170)
 
-> Every launch drops you somewhere new. Six connections radiate out; tap one and it becomes the centre. Keep going and you end up somewhere you would never have thought to search for.
+> Every launch drops you somewhere new. Six connections radiate out; tap one and it becomes the centre. Keep going and you arrive somewhere you'd never have searched for.
 
 ---
 
