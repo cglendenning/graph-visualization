@@ -44,7 +44,34 @@ A second key, `H96P2D43T6`, is present in the same folder and on the Desktop.
 Google Cloud **service-account JSON** as an argument and **no such key is on this machine**.
 That is the one Play credential that has to be recreated.
 
-## Apple — done, and what is left
+## Apple — SUBMITTED
+
+Version 3.0.0 (build 20) went to review on 17 August 2026. State:
+`WAITING_FOR_REVIEW`, submission `d4b1cc4e`.
+
+Everything below was done through the API and does not need repeating for a
+resubmission — only a new build and release notes would.
+
+| | |
+|---|---|
+| App id | `6802487924` "Perihelion Graph" |
+| Bundle id | `com.craigglendenning.perihelion` (`CL9WD6DKTD`) |
+| Signing profile | "Perihelion Graph App Store", API-created against cert `Z58395TNCT` |
+| Age rating | 12+ |
+| Price | Free |
+| Device family | iPhone only |
+
+### If review comes back rejected
+
+The likeliest objection is guideline 1.2 or 4.2: the app shows live,
+uncurated encyclopedia content, and reviewers sometimes ask for filtering or
+reporting controls on anything that displays open web content. The defence
+is that the app displays a licensed third-party encyclopedia rather than
+user submissions, has no way for users to post anything, and links to the
+source for every article. If that comes up, say so plainly and offer to add
+a report-content link rather than arguing the guideline.
+
+## Apple — historical: what was left
 
 Done already:
 
