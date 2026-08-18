@@ -151,12 +151,31 @@ granting **Admin** on the *Account permissions* tab made listing commits
 work. If a 403 reappears, isolate it the same way — commit an empty edit,
 then a listing-only edit — rather than guessing at checkboxes.
 
+### Verified complete through the API
+
+Checked directly, not assumed:
+
+| | |
+|---|---|
+| Listing text | title, 58-char short, 1459-char full |
+| Graphics | icon 1, feature graphic 1, phone screenshots 4 |
+| Contact | email and website set |
+| Countries | 176 selected, plus rest-of-world |
+| Default language | en-US |
+| Bundle | versionCode 19, draft release on production |
+
+Tablet screenshots are absent (0 seven-inch, 0 ten-inch). Play warns about
+this but does not block publication.
+
 ### What cannot be verified from here
 
-- **Nothing in the Android Publisher API reads back the App content
-  declarations.** Content rating, data safety and target audience are
-  write-only through the console. The Publishing overview page is the only
-  source of truth.
+- **Nothing in the Android Publisher API touches the App content
+  declarations.** The v3 discovery document lists 145 methods, 45 of them
+  GET, and none reads or writes privacy policy, app access, ads, content
+  rating, target audience, data safety, advertising ID, or the
+  news/government/financial/health questions. That form is console-only.
+  This was enumerated from the discovery document, so it is not a matter of
+  having missed an endpoint.
 - **`edits:validate` cannot stand in for them.** It returns `Only releases
   with status draft may be created on draft app` for a fully staged live
   release regardless, because an app cannot leave draft state through the
@@ -197,6 +216,22 @@ presence" showed as ticked in the app-level dialog the whole time. Only
 granting **Admin** on the *Account permissions* tab made listing commits
 work. If a 403 reappears, isolate it the same way — commit an empty edit,
 then a listing-only edit — rather than guessing at checkboxes.
+
+### Verified complete through the API
+
+Checked directly, not assumed:
+
+| | |
+|---|---|
+| Listing text | title, 58-char short, 1459-char full |
+| Graphics | icon 1, feature graphic 1, phone screenshots 4 |
+| Contact | email and website set |
+| Countries | 176 selected, plus rest-of-world |
+| Default language | en-US |
+| Bundle | versionCode 19, draft release on production |
+
+Tablet screenshots are absent (0 seven-inch, 0 ten-inch). Play warns about
+this but does not block publication.
 
 ### What cannot be verified from here
 
