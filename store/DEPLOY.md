@@ -92,26 +92,56 @@ Once the record exists, **I can do the rest without you**: build the distributio
 upload it with the key above, and set the description, keywords, and screenshots through the
 API. Just say go.
 
-## Google Play — what is left
+## Google Play — UPLOADED
 
-1. **Create a service account** so uploads can be automated:
-   Google Cloud Console → IAM → Service Accounts → create → add a JSON key.
-   Then Play Console → Users and permissions → invite that service-account email and grant
-   release permissions. Save the JSON somewhere outside this repo, e.g. `~/keys/`.
-2. **Create the app** in Play Console (the API cannot create listings either).
-3. **Data safety form** — answers in `listing.md`; everything is "no".
-4. **Content rating (IARC)** — a legal declaration, must be yours. Declare live web content
-   the developer does not curate.
-5. **Target audience** — 13+ is the honest answer for uncurated encyclopedia content.
+Version code 19 sits on **internal testing** with the full store listing,
+icon, feature graphic and four screenshots, all pushed through the Android
+Publisher API. Nothing here needs repeating for an update — only a new
+bundle and release notes.
 
-With the JSON key in place, the existing script does the upload:
+| | |
+|---|---|
+| Package | `com.craigglendenning.perihelion` |
+| Service account | `perihelion-publisher@goal-executor.iam.gserviceaccount.com` |
+| Key | `~/keys/play-service-account.json` (chmod 600, outside the repo) |
+| Cloud project | `goal-executor` |
+| Script | `tool/play_publish.py` |
+
+Deliberately **not** promoted past internal testing. Production is a
+separate decision.
 
 ```bash
-python3 ~/greenpyramid/scripts/play_publish.py publish \
-  ~/keys/play-service-account.json \
-  build/app/outputs/bundle/release/app-release.aab \
-  store/release-notes.txt --track internal
+python3 tool/play_publish.py upload --track internal   # bundle + listing
+python3 tool/play_publish.py listing                   # listing only
+python3 tool/play_publish.py status                    # what is live
 ```
+
+### The permission trap, for next time
+
+Granting the service account app-level permissions was not enough, and the
+failure was silent in a confusing way: the account could open an edit, stage
+any change, and commit an *empty* edit, but committing a listing change
+returned a bare `403 The caller does not have permission`. "Manage store
+presence" showed as ticked in the app-level dialog the whole time. Only
+granting **Admin** on the *Account permissions* tab made listing commits
+work. If a 403 reappears, isolate it the same way — commit an empty edit,
+then a listing-only edit — rather than guessing at checkboxes.
+
+### Declarations still owed (no API exists for any of them)
+
+In Play Console → Perihelion Graph → **App content**:
+
+1. **Privacy policy** — https://cglendenning.github.io/graph-visualization/privacy.html
+2. **App access** — all functionality available without restrictions
+3. **Ads** — no
+4. **Content rating** — IARC questionnaire, category Reference; declare live
+   web content the developer does not curate. Expect Teen / PEGI 12.
+5. **Target audience** — 13+
+6. **Data safety** — no collection, no sharing, encrypted in transit, no
+   deletion mechanism because nothing is retained
+7. **Government / financial / health** — no to all
+
+Then Internal testing → Testers to add an email and install on a device.
 
 ---
 
