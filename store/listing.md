@@ -6,9 +6,13 @@ Ready to paste. Character counts are checked against each store's limit.
 
 ## Names
 
+> Store name is **Perihelion Graph** — plain `Perihelion` is reserved by someone on the
+> App Store who never shipped. The bundle id and the home-screen label stay `Perihelion`;
+> iOS truncates the label to about twelve characters anyway, so nothing on device changes.
+
 | Field | Value | Limit |
 |---|---|---|
-| App name (both stores) | `Perihelion` | 30 |
+| App name (both stores) | `Perihelion Graph` | 30 |
 | Apple subtitle | `Traverse a knowledge graph` | 30 |
 | Play short description | `Follow the connections between everything Wikipedia knows.` | 80 |
 

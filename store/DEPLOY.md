@@ -56,7 +56,7 @@ Only you can do:
 
 1. **Create the app record.** The API refuses this outright — `apps` allows only
    `GET_COLLECTION, GET_INSTANCE, UPDATE`. In App Store Connect → Apps → **+**:
-   name `Perihelion`, language English (US), bundle id `com.craigglendenning.perihelion`,
+   name `Perihelion Graph`, language English (US), bundle id `com.craigglendenning.perihelion`,
    SKU `perihelion-001`.
 2. **Age rating questionnaire** — a legal declaration. Guidance in `listing.md`; expect 12+.
 3. **App Privacy** → *Data Not Collected*, plus the privacy URL above.
