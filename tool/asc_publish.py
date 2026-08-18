@@ -11,6 +11,7 @@ Usage:
     python3 tool/asc_publish.py version 3.0.0
     python3 tool/asc_publish.py text
     python3 tool/asc_publish.py screenshots
+    python3 tool/asc_publish.py testflight
 """
 
 import json
@@ -239,6 +240,134 @@ def screenshots():
         print(f"  uploaded {path.name}")
 
 
+BETA_CONTACT = {"contactFirstName": "Craig", "contactLastName": "Glendenning",
+                "contactPhone": "+1 626 905 3509",
+                "contactEmail": "c_glendenning@yahoo.com",
+                "demoAccountRequired": False,
+                "notes": ("No account or login is needed. The app opens on a random "
+                          "Wikipedia topic with six connections around it; tap any "
+                          "one to travel to it. All content is fetched live from "
+                          "Wikidata and Wikipedia. An internet connection is "
+                          "required.")}
+
+BETA_WHATS_NEW = ("Explore Wikipedia as a graph: a topic at the centre, six "
+                  "connections around it, tap to travel.")
+
+BETA_DESCRIPTION = (
+    "Perihelion turns Wikipedia into something you travel through rather "
+    "than search. You land on a topic and six things it is connected to sit "
+    "around it. Tap one and it becomes the centre, with six new connections "
+    "of its own.\n\n"
+    "Keep going and you end up somewhere you would never have thought to "
+    "search for, by a path you can still retrace.\n\n"
+    "Everything is read live from Wikidata and Wikipedia. There is no "
+    "account, no advertising and no analytics.")
+
+PUBLIC_GROUP = "Public Link Testers"
+
+
+def _latest_build():
+    builds = call("GET", f"/builds?filter[app]={APP_ID}&limit=5&sort=-version")["data"]
+    if not builds:
+        raise SystemExit("  no builds uploaded")
+    return builds[0]
+
+
+def testflight():
+    """Stand up an external group with a public link, so the beta can be
+    shared as a URL instead of collecting tester email addresses.
+
+    External testing requires Beta App Review, which is a separate and much
+    lighter review than App Store review. Internal-only testing needs none of
+    this but caps at 100 App Store Connect users.
+    """
+    build = _latest_build()
+    bid, bver = build["id"], build["attributes"]["version"]
+    print(f"  build {bver} ({build['attributes']['processingState']})")
+
+    # Review contact. Apple rejects an external submission without it.
+    call("PATCH", f"/betaAppReviewDetails/{APP_ID}",
+         {"data": {"type": "betaAppReviewDetails", "id": APP_ID,
+                   "attributes": BETA_CONTACT}})
+    print("  beta review contact set")
+
+    # "What to test" is required for external distribution.
+    locs = call("GET", f"/builds/{bid}/betaBuildLocalizations").get("data", [])
+    loc = next((l for l in locs if l["attributes"]["locale"] == "en-US"), None)
+    if loc:
+        call("PATCH", f"/betaBuildLocalizations/{loc['id']}",
+             {"data": {"type": "betaBuildLocalizations", "id": loc["id"],
+                       "attributes": {"whatsNew": BETA_WHATS_NEW}}})
+    else:
+        call("POST", "/betaBuildLocalizations",
+             {"data": {"type": "betaBuildLocalizations",
+                       "attributes": {"locale": "en-US",
+                                      "whatsNew": BETA_WHATS_NEW},
+                       "relationships": {"build": {
+                           "data": {"type": "builds", "id": bid}}}}})
+    print("  what-to-test set")
+
+    # Apple requires a TestFlight-specific description and feedback address
+    # before any build can go to external testers.
+    alocs = call("GET", f"/apps/{APP_ID}/betaAppLocalizations").get("data", [])
+    aloc = next((l for l in alocs if l["attributes"]["locale"] == "en-US"), None)
+    battrs = {"description": BETA_DESCRIPTION,
+              "feedbackEmail": "c_glendenning@yahoo.com",
+              "marketingUrl": MARKETING_URL,
+              "privacyPolicyUrl": PRIVACY_URL}
+    if aloc:
+        call("PATCH", f"/betaAppLocalizations/{aloc['id']}",
+             {"data": {"type": "betaAppLocalizations", "id": aloc["id"],
+                       "attributes": battrs}})
+    else:
+        battrs["locale"] = "en-US"
+        call("POST", "/betaAppLocalizations",
+             {"data": {"type": "betaAppLocalizations", "attributes": battrs,
+                       "relationships": {"app": {
+                           "data": {"type": "apps", "id": APP_ID}}}}})
+    print("  beta app description set")
+
+    groups = call("GET", f"/apps/{APP_ID}/betaGroups?limit=20")["data"]
+    group = next((g for g in groups
+                  if g["attributes"]["name"] == PUBLIC_GROUP), None)
+    if group is None:
+        group = call("POST", "/betaGroups", {"data": {
+            "type": "betaGroups",
+            "attributes": {"name": PUBLIC_GROUP,
+                           "publicLinkEnabled": True,
+                           "publicLinkLimitEnabled": False},
+            "relationships": {"app": {
+                "data": {"type": "apps", "id": APP_ID}}}}})["data"]
+        print(f"  created external group '{PUBLIC_GROUP}'")
+    else:
+        group = call("PATCH", f"/betaGroups/{group['id']}", {"data": {
+            "type": "betaGroups", "id": group["id"],
+            "attributes": {"publicLinkEnabled": True,
+                           "publicLinkLimitEnabled": False}}})["data"]
+        print(f"  group '{PUBLIC_GROUP}' already existed")
+
+    call("POST", f"/betaGroups/{group['id']}/relationships/builds",
+         {"data": [{"type": "builds", "id": bid}]})
+    print(f"  build {bver} added to the group")
+
+    subs = call("GET", f"/builds/{bid}/betaAppReviewSubmission")
+    state = (subs.get("data") or {}).get("attributes", {}).get(
+        "betaReviewState")
+    if state:
+        print(f"  beta review already submitted: {state}")
+    else:
+        r = call("POST", "/betaAppReviewSubmissions", {"data": {
+            "type": "betaAppReviewSubmissions",
+            "relationships": {"build": {
+                "data": {"type": "builds", "id": bid}}}}})["data"]
+        print(f"  submitted for Beta App Review: "
+              f"{r['attributes']['betaReviewState']}")
+
+    fresh = call("GET", f"/betaGroups/{group['id']}")["data"]["attributes"]
+    print(f"\n  PUBLIC LINK: {fresh.get('publicLink')}")
+
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "inspect"
     if cmd == "inspect":
@@ -251,5 +380,7 @@ if __name__ == "__main__":
         text()
     elif cmd == "screenshots":
         screenshots()
+    elif cmd == "testflight":
+        testflight()
     else:
         raise SystemExit(__doc__)

@@ -71,6 +71,30 @@ user submissions, has no way for users to post anything, and links to the
 source for every article. If that comes up, say so plainly and offer to add
 a report-content link rather than arguing the guideline.
 
+## TestFlight — public link
+
+A textable URL, no tester emails to collect, capped at 10,000 people:
+
+**https://testflight.apple.com/join/CX6NWHxc**
+
+Set up by `python3 tool/asc_publish.py testflight`, which is idempotent —
+re-run it after uploading a new build and it attaches the build, refreshes
+the notes and resubmits if needed.
+
+The link is live but only starts installing once **Beta App Review** passes
+(submitted 18 August 2026, `WAITING_FOR_REVIEW`). That review is separate
+from and much lighter than App Store review — usually under a day. Until it
+clears, the page loads and says the build is not yet available.
+
+External testing needed four things Apple will not let you skip, all now set
+through the API: the beta app description, a feedback email, the review
+contact, and per-build "what to test" notes.
+
+Internal testers (App Store Connect users on the account) can install
+immediately without any of the above, but that path caps at 100 people and
+still needs each person added by Apple ID — which is what the public link
+exists to avoid.
+
 ## Apple — historical: what was left
 
 Done already:
