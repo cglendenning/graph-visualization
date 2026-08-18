@@ -159,6 +159,25 @@ granting **Admin** on the *Account permissions* tab made listing commits
 work. If a 403 reappears, isolate it the same way — commit an empty edit,
 then a listing-only edit — rather than guessing at checkboxes.
 
+### What cannot be verified from here
+
+Two limits worth knowing before trying to check Play state by script:
+
+- **Nothing in the Android Publisher API reads back the App content
+  declarations.** Content rating, data safety and target audience are
+  write-only through the console. There is no way to confirm them
+  programmatically — the Publishing overview page is the only source of
+  truth.
+- **`edits:validate` cannot tell you whether they are done.** It returns
+  `Only releases with status draft may be created on draft app` for a fully
+  staged live release regardless, because an app cannot leave draft state
+  through the API at all. **The first rollout has to be done in the
+  console.** After that, releases can be pushed by script.
+
+Store contact email and website were both empty and are now set
+(`c_glendenning@yahoo.com`, the GitHub Pages URL). Play requires a contact
+email on the listing, so that alone would have blocked the first rollout.
+
 ### Declarations still owed (no API exists for any of them)
 
 In Play Console → Perihelion Graph → **App content**:
