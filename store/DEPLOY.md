@@ -116,13 +116,16 @@ Once the record exists, **I can do the rest without you**: build the distributio
 upload it with the key above, and set the description, keywords, and screenshots through the
 API. Just say go.
 
-## Google Play — STAGED FOR PRODUCTION
+## Google Play — ROLLED OUT, IN REVIEW
 
-Version code 19 sits as a **draft release on the production track** with the
-full store listing, icon, feature graphic and four screenshots, all pushed
-through the Android Publisher API. The testing tracks were cleared: the goal
-is publication, not testing. Internal keeps a live copy because that is the
-only track a draft app may publish to, and it exposes nothing publicly.
+Version code 19 is a **completed release on production** as of 18 August
+2026. The App content declarations were answered in the console and the app
+has left draft state, confirmed by staging a live production release and
+validating it without the draft-app refusal.
+
+The store page still returns 404, so Google's review of the first release is
+outstanding. New apps typically take a few days. Nothing further is needed
+from either side — it goes live when review passes.
 
 | | |
 |---|---|
