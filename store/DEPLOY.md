@@ -131,13 +131,21 @@ bundle and release notes.
 | Cloud project | `goal-executor` |
 | Script | `tool/play_publish.py` |
 
-Deliberately **not** promoted past internal testing. Production is a
-separate decision.
+Version 19 is also **staged as a draft on Open testing** (API track name
+`beta`). It cannot go live yet: a Play app stays a "draft app" until it has
+been published once, and draft apps accept live releases on the internal
+track only. Answer the App content declarations below, then release it from
+the console and the opt-in link becomes:
+
+**https://play.google.com/apps/testing/com.craigglendenning.perihelion**
+
+Production is still a separate decision and has not been touched.
 
 ```bash
 python3 tool/play_publish.py upload --track internal   # bundle + listing
 python3 tool/play_publish.py listing                   # listing only
 python3 tool/play_publish.py status                    # what is live
+python3 tool/play_publish.py promote --track beta      # open testing
 ```
 
 ### The permission trap, for next time

@@ -9,7 +9,14 @@ Usage:
     python3 tool/play_publish.py upload   [--track internal]
     python3 tool/play_publish.py listing
     python3 tool/play_publish.py status
+    python3 tool/play_publish.py promote --track beta [--draft]
 """
+
+# Play's API track names do not match the console's labels:
+#   internal -> Internal testing   alpha -> Closed testing
+#   beta     -> Open testing       production -> Production
+TRACK_LABELS = {"internal": "Internal testing", "alpha": "Closed testing",
+                "beta": "Open testing", "production": "Production"}
 
 import json
 import sys
@@ -95,6 +102,7 @@ def main():
     track = "internal"
     if "--track" in sys.argv:
         track = sys.argv[sys.argv.index("--track") + 1]
+    draft = "--draft" in sys.argv
     tok = token()
 
     if cmd == "status":
@@ -116,6 +124,29 @@ def main():
     e = call("POST", f"{API}/applications/{PKG}/edits", tok, body={})
     eid = e["id"]
     print(f"  edit {eid}")
+
+    if cmd == "promote":
+        tr = call("GET", f"{API}/applications/{PKG}/edits/{eid}/tracks", tok)
+        codes = sorted({int(c) for t_ in tr.get("tracks", [])
+                        for r in t_.get("releases", [])
+                        for c in r.get("versionCodes", [])})
+        if not codes:
+            raise SystemExit("  nothing uploaded yet; run: upload")
+        vc = codes[-1]
+        # A Play app stays a "draft app" until it has been published once.
+        # Draft apps accept live releases on the internal track only, so
+        # anything wider has to be staged as a draft and released by hand
+        # once the App content declarations are answered.
+        status = "draft" if draft else "completed"
+        body = {"track": track,
+                "releases": [{"status": status, "versionCodes": [str(vc)],
+                              "releaseNotes": [{"language": "en-US",
+                                                "text": RELEASE_NOTES}]}]}
+        if status == "draft":
+            body["releases"][0].pop("releaseNotes")
+        call("PUT", f"{API}/applications/{PKG}/edits/{eid}/tracks/{track}",
+             tok, body=body)
+        print(f"  versionCode {vc} -> {TRACK_LABELS.get(track, track)} ({status})")
 
     if cmd == "upload":
         aab = ROOT / "build/app/outputs/bundle/release/app-release.aab"
