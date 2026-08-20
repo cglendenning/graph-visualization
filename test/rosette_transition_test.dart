@@ -18,7 +18,7 @@ WikidataNeighbor _neighbor(String qid) => WikidataNeighbor(
       incoming: false,
     );
 
-/// A rosette centerd on [center] with [seated] filling seats from the top.
+/// A rosette centered on [center] with [seated] filling seats from the top.
 RosetteState _rosette(String center, List<String> seated) => RosetteState(
       center: _node(center),
       seats: List<WikidataNeighbor?>.generate(

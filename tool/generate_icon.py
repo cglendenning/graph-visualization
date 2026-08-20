@@ -167,7 +167,7 @@ def feature_graphic(master):
     """Play Store feature graphic: 1024x500, the mark on the deep field.
 
     The rosette sits left of center with the name beside it, because the
-    Play Store crops this image differently across surfaces and centerd
+    Play Store crops this image differently across surfaces and centered
     artwork loses its edges."""
     w, h = 1024, 500
     img = radial_field(max(w, h)).resize((w, h), Image.LANCZOS)
