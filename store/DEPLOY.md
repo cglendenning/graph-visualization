@@ -44,10 +44,26 @@ A second key, `H96P2D43T6`, is present in the same folder and on the Desktop.
 Google Cloud **service-account JSON** as an argument and **no such key is on this machine**.
 That is the one Play credential that has to be recreated.
 
-## Apple — SUBMITTED
+## Apple — 3.1.0 SUBMITTED
 
-Version 3.0.0 (build 20) went to review on 17 August 2026. State:
-`WAITING_FOR_REVIEW`, submission `d4b1cc4e`.
+Version 3.1.0 (build 21) went to review on 20 August 2026,
+`WAITING_FOR_REVIEW`, submission `96e2b9fd`, releasing on approval.
+
+3.0.0 build 20 was withdrawn after 61 hours in the queue without being
+picked up, so that the better build would be the one reviewed and the one
+first users rate. Withdrawing forfeits queue position; it is not free.
+
+### Two traps that cost time on this submission
+
+- Withdrawing puts the version into `DEVELOPER_REJECTED`, not straight back
+  to `PREPARE_FOR_SUBMISSION`. It clears on its own within a minute or two;
+  submitting before it does returns a 409.
+- **Every new build has `usesNonExemptEncryption` unset**, and a submission
+  containing one fails with `STATE_ERROR.ENTITY_STATE_INVALID` and the
+  useless detail "this resource cannot be reviewed, please check associated
+  errors". Nothing names the build. `ITSAppUsesNonExemptEncryption=false` is
+  now declared in `ios/Runner/Info.plist`, so builds carry it and this should
+  not recur.
 
 Everything below was done through the API and does not need repeating for a
 resubmission — only a new build and release notes would.

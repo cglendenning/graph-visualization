@@ -4,6 +4,12 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<!-- Declared here so every build carries it. Without this the flag is
+	     null on each new build and the App Store submission is rejected with
+	     an opaque "this resource cannot be reviewed", which cost a debugging
+	     round trip on build 21. The app uses only HTTPS, which is exempt. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
