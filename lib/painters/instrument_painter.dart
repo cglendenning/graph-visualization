@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 
 import '../theme/hud_palette.dart';
 
-/// The rings around the centre node. Every mark here reports something:
+/// The rings around the center node. Every mark here reports something:
 ///
 ///  * the orbit ring is the exact radius the satellites sit on
-///  * the tick ring carries one tick per connection the centre node has,
+///  * the tick ring carries one tick per connection the center node has,
 ///    so a well-connected node is visibly denser
 ///  * the sweep arc fills clockwise as the traversal gets deeper
 class InstrumentPainter extends CustomPainter {

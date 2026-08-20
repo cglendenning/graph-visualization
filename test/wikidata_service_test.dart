@@ -186,7 +186,7 @@ void main() {
       ]);
     }
 
-    test('returns one neighbour per property, phrased from the centre',
+    test('returns one neighbour per property, phrased from the center',
         () async {
       final service = WikidataService(
         fetcher: (url) async => twoProperties(url),
@@ -248,7 +248,7 @@ void main() {
       expect(await service.sampleNeighbors('Q1741'), isEmpty);
     });
 
-    test('never seats the centre as its own satellite', () async {
+    test('never seats the center as its own satellite', () async {
       final service = WikidataService(
         fetcher: (url) async {
           if (url.queryParameters['query']!.contains('SELECT DISTINCT ?pd')) {

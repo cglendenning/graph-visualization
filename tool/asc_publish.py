@@ -36,14 +36,14 @@ SUBTITLE = "Traverse a knowledge graph"
 KEYWORDS = ("wikipedia,wikidata,knowledge,graph,explore,discover,"
             "encyclopedia,serendipity,trivia,learn,browse")
 PROMO = ("Every launch drops you somewhere new. Six connections radiate out; "
-         "tap one and it becomes the centre. Keep going and you arrive "
+         "tap one and it becomes the center. Keep going and you arrive "
          "somewhere you'd never have searched for.")
 MARKETING_URL = "https://cglendenning.github.io/graph-visualization/"
 PRIVACY_URL = "https://cglendenning.github.io/graph-visualization/privacy.html"
 
 DESCRIPTION = """Perihelion is a different way to move through what we collectively know.
 
-You start on a topic — any of the millions Wikipedia covers. Around it sit six things it is connected to: a person, a place, a work, an event, an idea. Tap one and it slides to the centre, and six new connections open around it.
+You start on a topic — any of the millions Wikipedia covers. Around it sit six things it is connected to: a person, a place, a work, an event, an idea. Tap one and it slides to the center, and six new connections open around it.
 
 There is no results page and no ranked list. There is only where you are and where you can go next, and the way back is always on screen.
 
@@ -250,13 +250,13 @@ BETA_CONTACT = {"contactFirstName": "Craig", "contactLastName": "Glendenning",
                           "Wikidata and Wikipedia. An internet connection is "
                           "required.")}
 
-BETA_WHATS_NEW = ("Explore Wikipedia as a graph: a topic at the centre, six "
+BETA_WHATS_NEW = ("Explore Wikipedia as a graph: a topic at the center, six "
                   "connections around it, tap to travel.")
 
 BETA_DESCRIPTION = (
     "Perihelion turns Wikipedia into something you travel through rather "
     "than search. You land on a topic and six things it is connected to sit "
-    "around it. Tap one and it becomes the centre, with six new connections "
+    "around it. Tap one and it becomes the center, with six new connections "
     "of its own.\n\n"
     "Keep going and you end up somewhere you would never have thought to "
     "search for, by a path you can still retrace.\n\n"

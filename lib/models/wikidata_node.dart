@@ -25,7 +25,7 @@ class WikidataNode {
   String get wikipediaTitle => label;
 }
 
-/// A neighbour reached from the current centre by one Wikidata statement.
+/// A neighbour reached from the current center by one Wikidata statement.
 class WikidataNeighbor {
   const WikidataNeighbor({
     required this.node,
@@ -39,11 +39,11 @@ class WikidataNeighbor {
   final String relation;
 
   /// True when the statement lives on the neighbour and points at the
-  /// centre, which is how most of the interesting edges are stored.
+  /// center, which is how most of the interesting edges are stored.
   final bool incoming;
 
 
-  /// Reads with the centre as the subject.
+  /// Reads with the center as the subject.
   String get phrasing => incoming ? '$relation of' : relation;
 
 }

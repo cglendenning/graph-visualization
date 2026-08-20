@@ -5,7 +5,7 @@ Writes every iOS AppIcon size, the Android launcher icons, and the Play
 Store feature graphic, all from the same rosette mark so the identity stays
 consistent wherever it appears.
 
-The mark is the app's own rosette: one lit centre, six satellites, filaments
+The mark is the app's own rosette: one lit center, six satellites, filaments
 between them, and the tick ring that reports node degree inside the app.
 Drawn at 2x and downsampled so the hairlines survive at 40px.
 
@@ -38,7 +38,7 @@ TICKS = 11  # a well-connected node's degree ring, as the app would draw it
 
 
 def radial_field(size):
-    """Near-black ground lifted slightly toward aqua at the centre.
+    """Near-black ground lifted slightly toward aqua at the center.
 
     Computed small and scaled up — it is a smooth gradient, so the
     interpolation costs nothing visually and saves millions of iterations.
@@ -166,8 +166,8 @@ ANDROID_ICONS = {
 def feature_graphic(master):
     """Play Store feature graphic: 1024x500, the mark on the deep field.
 
-    The rosette sits left of centre with the name beside it, because the
-    Play Store crops this image differently across surfaces and centred
+    The rosette sits left of center with the name beside it, because the
+    Play Store crops this image differently across surfaces and centerd
     artwork loses its edges."""
     w, h = 1024, 500
     img = radial_field(max(w, h)).resize((w, h), Image.LANCZOS)

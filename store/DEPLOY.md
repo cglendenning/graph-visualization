@@ -281,7 +281,7 @@ The simulator is already running with the app installed, so it is two taps:
 
 ```bash
 open -a Simulator                       # already booted: "Perihelion 6.9"
-# tap the centre circle, then:
+# tap the center circle, then:
 xcrun simctl io booted screenshot store/screenshots/ios-6.9/05-detail.png
 ```
 

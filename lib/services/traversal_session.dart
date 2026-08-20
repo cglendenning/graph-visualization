@@ -2,7 +2,7 @@ import '../models/rosette_layout.dart';
 import '../models/wikidata_node.dart';
 import 'wikidata_service.dart';
 
-/// One rendered rosette: a centre and its six seated satellites.
+/// One rendered rosette: a center and its six seated satellites.
 class RosetteState {
   const RosetteState({
     required this.center,
@@ -21,7 +21,7 @@ class RosetteState {
   final int depth;
 
   /// How many distinct properties join this item to others. Stands in for
-  /// how connected the topic is, and drives the centre tick ring.
+  /// how connected the topic is, and drives the center tick ring.
   final int degree;
 
   int? seatOf(String qid) {
@@ -46,16 +46,16 @@ class TransitionStep {
 
   final WikidataNode node;
 
-  /// Seat index, [RosetteTransition.centreSeat] for the centre, or null when
+  /// Seat index, [RosetteTransition.centerSeat] for the center, or null when
   /// the node is absent from that side of the transition.
   final int? from;
   final int? to;
 
-  /// How the node relates to the centre it is seated around.
+  /// How the node relates to the center it is seated around.
   final WikidataNeighbor? neighbor;
 
-  bool get isCentre =>
-      from == RosetteTransition.centreSeat || to == RosetteTransition.centreSeat;
+  bool get isCenter =>
+      from == RosetteTransition.centerSeat || to == RosetteTransition.centerSeat;
 }
 
 /// Works out who moves where between two rosettes.
@@ -66,8 +66,8 @@ class TransitionStep {
 class RosetteTransition {
   const RosetteTransition._();
 
-  /// Stands in for a seat index when a node is the centre.
-  static const int centreSeat = -1;
+  /// Stands in for a seat index when a node is the center.
+  static const int centerSeat = -1;
 
   static List<TransitionStep> between(RosetteState? from, RosetteState? to) {
     final steps = <TransitionStep>[];
@@ -93,18 +93,18 @@ class RosetteTransition {
       if (state != null) add(state.center, null);
     }
 
-    // Centres paint last, so they sit above their own satellites.
+    // Centers paint last, so they sit above their own satellites.
     steps.sort((a, b) {
-      if (a.isCentre == b.isCentre) return 0;
-      return a.isCentre ? 1 : -1;
+      if (a.isCenter == b.isCenter) return 0;
+      return a.isCenter ? 1 : -1;
     });
     return List<TransitionStep>.unmodifiable(steps);
   }
 
-  /// Where [qid] sits in [state]: a seat, the centre, or nowhere.
+  /// Where [qid] sits in [state]: a seat, the center, or nowhere.
   static int? seatIn(RosetteState? state, String qid) {
     if (state == null) return null;
-    if (state.center.qid == qid) return centreSeat;
+    if (state.center.qid == qid) return centerSeat;
     return state.seatOf(qid);
   }
 }
@@ -184,7 +184,7 @@ class TraversalSession {
     _rosette = await _build(qid, arrivedFrom: null);
   }
 
-  /// Re-centres on a satellite, keeping a way back to where the user was.
+  /// Re-centers on a satellite, keeping a way back to where the user was.
   Future<void> jumpTo(String qid) async {
     final leaving = _rosette;
     if (leaving == null) return;
@@ -209,7 +209,7 @@ class TraversalSession {
     _rosette = await _build(target, arrivedFrom: null);
   }
 
-  /// The edge that leads back, phrased from the new centre's point of view.
+  /// The edge that leads back, phrased from the new center's point of view.
   WikidataNeighbor _returnLink(RosetteState leaving, int seat) {
     final taken = leaving.seats[seat]!;
     return WikidataNeighbor(

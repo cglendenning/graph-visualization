@@ -18,9 +18,9 @@ WikidataNeighbor _neighbor(String qid) => WikidataNeighbor(
       incoming: false,
     );
 
-/// A rosette centred on [centre] with [seated] filling seats from the top.
-RosetteState _rosette(String centre, List<String> seated) => RosetteState(
-      center: _node(centre),
+/// A rosette centerd on [center] with [seated] filling seats from the top.
+RosetteState _rosette(String center, List<String> seated) => RosetteState(
+      center: _node(center),
       seats: List<WikidataNeighbor?>.generate(
         RosetteLayout.seatCount,
         (i) => i < seated.length ? _neighbor(seated[i]) : null,
@@ -31,9 +31,9 @@ RosetteState _rosette(String centre, List<String> seated) => RosetteState(
 
 void main() {
   group('RosetteTransition', () {
-    test('locates the centre and each seat', () {
+    test('locates the center and each seat', () {
       final r = _rosette('C', ['A', 'B']);
-      expect(RosetteTransition.seatIn(r, 'C'), RosetteTransition.centreSeat);
+      expect(RosetteTransition.seatIn(r, 'C'), RosetteTransition.centerSeat);
       expect(RosetteTransition.seatIn(r, 'A'), 0);
       expect(RosetteTransition.seatIn(r, 'B'), 1);
       expect(RosetteTransition.seatIn(r, 'Z'), isNull);
@@ -50,17 +50,17 @@ void main() {
     });
 
     test('a node on both sides carries both seats, so it can be moved', () {
-      // A was seat 0, becomes the centre; C was the centre, becomes seat 0.
+      // A was seat 0, becomes the center; C was the center, becomes seat 0.
       final steps = RosetteTransition.between(
         _rosette('C', ['A', 'B']),
         _rosette('A', ['C', 'D']),
       );
       final a = steps.firstWhere((s) => s.node.qid == 'A');
       expect(a.from, 0);
-      expect(a.to, RosetteTransition.centreSeat);
+      expect(a.to, RosetteTransition.centerSeat);
 
       final c = steps.firstWhere((s) => s.node.qid == 'C');
-      expect(c.from, RosetteTransition.centreSeat);
+      expect(c.from, RosetteTransition.centerSeat);
       expect(c.to, 0);
     });
 
@@ -84,16 +84,16 @@ void main() {
       expect(ids.toSet(), {'A', 'B', 'C', 'D'});
     });
 
-    test('centres come last, so they paint above their satellites', () {
+    test('centers come last, so they paint above their satellites', () {
       final steps = RosetteTransition.between(
         _rosette('C', ['A', 'B']),
         _rosette('A', ['C', 'D']),
       );
-      final firstCentre = steps.indexWhere((s) => s.isCentre);
-      expect(firstCentre, isNot(-1));
-      // Nothing after the first centre may be a satellite.
-      for (var i = firstCentre; i < steps.length; i++) {
-        expect(steps[i].isCentre, isTrue);
+      final firstCenter = steps.indexWhere((s) => s.isCenter);
+      expect(firstCenter, isNot(-1));
+      // Nothing after the first center may be a satellite.
+      for (var i = firstCenter; i < steps.length; i++) {
+        expect(steps[i].isCenter, isTrue);
       }
     });
 
@@ -102,7 +102,7 @@ void main() {
       final a = steps.firstWhere((s) => s.node.qid == 'A');
       expect(a.neighbor, isNotNull);
       final c = steps.firstWhere((s) => s.node.qid == 'C');
-      expect(c.neighbor, isNull, reason: 'a centre has no relation to itself');
+      expect(c.neighbor, isNull, reason: 'a center has no relation to itself');
     });
 
     test('two empty sides plan nothing', () {

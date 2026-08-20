@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/painting.dart' show Offset;
 
-/// Geometry of the six satellite seats around the centre.
+/// Geometry of the six satellite seats around the center.
 ///
 /// Seat 0 is at the top and seats advance clockwise, so a seat index is a
 /// stable spatial position rather than just a list slot.

@@ -2,7 +2,7 @@
 
 Taken 19 August 2026 against the live APIs, before any code change.
 
-## The centre is the bigger problem
+## The center is the bigger problem
 
 `generator=random` draws uniformly from ~7M articles, and the encyclopedia
 is mostly villages, species, minor athletes and album tracks.

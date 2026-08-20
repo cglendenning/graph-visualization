@@ -20,7 +20,7 @@ Ready to paste. Character counts are checked against each store's limit.
 
 ## Apple promotional text (170)
 
-> Every launch drops you somewhere new. Six connections radiate out; tap one and it becomes the centre. Keep going and you arrive somewhere you'd never have searched for.
+> Every launch drops you somewhere new. Six connections radiate out; tap one and it becomes the center. Keep going and you arrive somewhere you'd never have searched for.
 
 ---
 
@@ -28,7 +28,7 @@ Ready to paste. Character counts are checked against each store's limit.
 
 > Perihelion is a different way to move through what we collectively know.
 >
-> You start on a topic — any of the millions Wikipedia covers. Around it sit six things it is connected to: a person, a place, a work, an event, an idea. Tap one and it slides to the centre, and six new connections open around it.
+> You start on a topic — any of the millions Wikipedia covers. Around it sit six things it is connected to: a person, a place, a work, an event, an idea. Tap one and it slides to the center, and six new connections open around it.
 >
 > There is no results page and no ranked list. There is only where you are and where you can go next, and the way back is always on screen.
 >
@@ -100,6 +100,6 @@ If you overlay captions, these match what each screen shows:
 
 1. **Start anywhere.** Every launch is a topic you did not choose.
 2. **Six ways out.** Colour tells you what kind of thing each one is.
-3. **Tap to travel.** The one you pick becomes the centre.
+3. **Tap to travel.** The one you pick becomes the center.
 4. **The way back is always there.** Opposite the direction you came.
 5. **Read the record.** Facts, connections, and the article itself.

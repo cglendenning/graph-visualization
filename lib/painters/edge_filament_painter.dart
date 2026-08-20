@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
-/// One connection drawn from the centre out to a satellite.
+/// One connection drawn from the center out to a satellite.
 class EdgeFilament {
   const EdgeFilament({
     required this.hub,
@@ -28,7 +28,7 @@ class EdgeFilament {
   final double opacity;
 }
 
-/// Draws the luminous filaments between centre and satellites.
+/// Draws the luminous filaments between center and satellites.
 ///
 /// Tick density along a filament is the edge weight made visible: a strong
 /// relationship is rendered as a more heavily graduated line.
@@ -86,7 +86,7 @@ class EdgeFilamentPainter extends CustomPainter {
     for (var i = 1; i <= count; i++) {
       final t = i / (count + 1);
       final at = start + span * t;
-      // Ticks shorten and dim as they travel away from the centre.
+      // Ticks shorten and dim as they travel away from the center.
       final falloff = 1.0 - t * 0.65;
       final half = (1.4 + 1.8 * f.weight) * falloff;
       paint.color = f.hue.withValues(alpha: 0.42 * falloff * f.opacity);

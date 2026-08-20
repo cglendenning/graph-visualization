@@ -50,7 +50,7 @@ class HudPalette {
     color: Color(0xFF6E93A3),
   );
 
-  /// Background wash, warmed very slightly toward the centre node's hue.
+  /// Background wash, warmed very slightly toward the center node's hue.
   static RadialGradient field(Color hue) => RadialGradient(
         center: const Alignment(0, -0.12),
         radius: 0.95,

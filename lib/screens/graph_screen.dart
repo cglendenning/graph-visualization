@@ -221,11 +221,11 @@ class _GraphScreenState extends State<GraphScreen>
       1.0 - Curves.easeIn.transform((t / 0.42).clamp(0.0, 1.0));
 
   List<_Placement> _placements(Offset center, double orbit, double t) {
-    Offset at(int seat) => seat == RosetteTransition.centreSeat
+    Offset at(int seat) => seat == RosetteTransition.centerSeat
         ? center
         : RosetteLayout.positionForSeat(seat, center, orbit);
     double radius(int seat) =>
-        seat == RosetteTransition.centreSeat ? _centerRadius : _satelliteRadius;
+        seat == RosetteTransition.centerSeat ? _centerRadius : _satelliteRadius;
 
     final placements = <_Placement>[];
     for (final step in _plan) {
@@ -237,7 +237,7 @@ class _GraphScreenState extends State<GraphScreen>
           position: Offset.lerp(at(a), at(b), t)!,
           radius: _lerp(radius(a), radius(b), t),
           opacity: 1,
-          isCenter: (t < 0.5 ? a : b) == RosetteTransition.centreSeat,
+          isCenter: (t < 0.5 ? a : b) == RosetteTransition.centerSeat,
           neighbor: step.neighbor,
         ));
       } else if (b != null) {
@@ -246,7 +246,7 @@ class _GraphScreenState extends State<GraphScreen>
           position: at(b),
           radius: radius(b),
           opacity: _arriveOpacity(t),
-          isCenter: b == RosetteTransition.centreSeat,
+          isCenter: b == RosetteTransition.centerSeat,
           neighbor: step.neighbor,
         ));
       } else if (a != null) {
@@ -255,7 +255,7 @@ class _GraphScreenState extends State<GraphScreen>
           position: at(a),
           radius: radius(a),
           opacity: _departOpacity(t),
-          isCenter: a == RosetteTransition.centreSeat,
+          isCenter: a == RosetteTransition.centerSeat,
           neighbor: step.neighbor,
         ));
       }

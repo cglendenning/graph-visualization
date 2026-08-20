@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 /// A luminous glass disc.
 ///
-/// Only the centre node frosts what is behind it — running a backdrop blur
+/// Only the center node frosts what is behind it — running a backdrop blur
 /// on all seven circles costs more than it shows at satellite size, and the
 /// transition animates twelve of them at once.
 class NodeCircle extends StatelessWidget {
@@ -21,7 +21,7 @@ class NodeCircle extends StatelessWidget {
   final Color hue;
   final bool frosted;
 
-  /// Scales the ring brightness and bloom. The centre runs at 1.0 and the
+  /// Scales the ring brightness and bloom. The center runs at 1.0 and the
   /// satellites sit back at a lower value so the hierarchy is unambiguous.
   final double emphasis;
 

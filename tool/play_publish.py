@@ -38,7 +38,7 @@ TITLE = "Perihelion Graph"
 SHORT = "Follow the connections between everything Wikipedia knows."
 FULL = """Perihelion is a different way to move through what we collectively know.
 
-You start on a topic - any of the millions Wikipedia covers. Around it sit six things it is connected to: a person, a place, a work, an event, an idea. Tap one and it slides to the centre, and six new connections open around it.
+You start on a topic - any of the millions Wikipedia covers. Around it sit six things it is connected to: a person, a place, a work, an event, an idea. Tap one and it slides to the center, and six new connections open around it.
 
 There is no results page and no ranked list. There is only where you are and where you can go next, and the way back is always on screen.
 
@@ -56,7 +56,7 @@ No account. No advertising. No analytics. Nothing about you is collected or stor
 
 Perihelion needs an internet connection, because the graph is the whole of Wikidata rather than a copy in your pocket."""
 
-RELEASE_NOTES = ("First release. Explore Wikipedia as a graph: a topic at the centre, "
+RELEASE_NOTES = ("First release. Explore Wikipedia as a graph: a topic at the center, "
                  "six connections around it, tap to travel.")
 
 

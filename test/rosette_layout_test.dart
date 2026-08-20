@@ -6,7 +6,7 @@ import 'package:perihelion/models/rosette_layout.dart';
 
 void main() {
   group('RosetteLayout', () {
-    test('seat 0 sits directly above the centre', () {
+    test('seat 0 sits directly above the center', () {
       const center = Offset(100, 100);
       final p = RosetteLayout.positionForSeat(0, center, 50);
       expect(p.dx, closeTo(100, 0.001));
