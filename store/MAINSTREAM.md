@@ -45,3 +45,36 @@ last-resort fallback stays at 0 so seats are still always filled.
 Both new endpoints return 200 with the client's existing
 `Accept: application/sparql-results+json` header, so no change to the
 fetch path is needed.
+
+## Paragraph rule on satellites
+
+Required on satellites too, but dropped rather than left with empty seats:
+a duller satellite still beats a missing one, and "always six" stands.
+
+This falls out of the existing structure without new machinery. The tiered
+rounds in `sampleNeighbors` already run from strict to loose, and the
+unbounded fallback below them exists precisely to guarantee the six. So:
+
+- tiered rounds (floors 60 / 25 / 12) also require a >=300 character intro
+- the fallback keeps its `minSitelinks: 0`, `requireArticle: false`, and
+  additionally skips the intro check
+- result: the paragraph rule binds whenever it can be met, and lifts by
+  itself exactly when it would otherwise starve a seat
+
+### Getting the titles is free
+
+The intro check needs Wikipedia titles, not QIDs. `_buildRowsQuery` already
+joins the English sitelink when `requireArticle` is true:
+
+    ?sl$tag schema:about ?other ; schema:isPartOf <https://en.wikipedia.org/> .
+
+so adding `?sl$tag`'s `schema:name` to the SELECT yields the title with no
+extra request. Without that the check would need a second round trip per
+round just to resolve QIDs to titles.
+
+### Cost
+
+One batched Wikipedia call per tiered round, up to three per rosette, about
+0.4s each and capped by the existing 14s budget. Results are cached by QID,
+so a topic revisited within a session pays nothing. Prefetching already
+warms satellites in the background, so this stays off the critical path.
