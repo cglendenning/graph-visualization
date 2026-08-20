@@ -508,8 +508,9 @@ void main() {
             ..sort((a, b) => b.compareTo(a)),
         ),
       );
-      // The last tier accepts anything, so seats still fill.
-      expect(WikidataService.notabilityTiers.last, 0);
+      // Seats are guaranteed by the unbounded pass below the tiers, not by
+      // the last tier, so the tiers themselves stay selective.
+      expect(WikidataService.notabilityTiers.last, greaterThanOrEqualTo(12));
     });
 
     test('returns nothing when the item has no usable properties', () async {

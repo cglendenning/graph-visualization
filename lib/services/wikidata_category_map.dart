@@ -1,12 +1,12 @@
 import '../models/node_category.dart';
 
-/// Maps a Wikidata "instance of" (P31) value onto one of the eight colours
+/// Maps a Wikidata "instance of" (P31) value onto one of the eight colors
 /// the rosette uses.
 ///
 /// Deliberately small: these few dozen classes cover the overwhelming
-/// majority of items a person would browse. Anything unrecognised falls back
+/// majority of items a person would browse. Anything unrecognized falls back
 /// to [NodeCategory.thing] rather than guessing, so an unmapped class shows
-/// up as a neutral node instead of a wrong colour.
+/// up as a neutral node instead of a wrong color.
 class WikidataCategoryMap {
   const WikidataCategoryMap._();
 
@@ -112,7 +112,7 @@ class WikidataCategoryMap {
     'Q3863': NodeCategory.thing, // asteroid
   };
 
-  /// Resolves the first recognised type among an item's P31 values.
+  /// Resolves the first recognized type among an item's P31 values.
   static NodeCategory forTypes(Iterable<String> typeQids) {
     for (final qid in typeQids) {
       final match = _byType[qid];

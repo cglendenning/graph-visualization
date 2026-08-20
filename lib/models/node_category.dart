@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// The eight node types in the graph. Each carries a fixed hue so that a
-/// category becomes recognisable at a glance across the whole traversal.
+/// category becomes recognizable at a glance across the whole traversal.
 enum NodeCategory {
   person('person', 'PERSON', Color(0xFF56E8FF)),
   place('place', 'PLACE', Color(0xFF2FB6D9)),

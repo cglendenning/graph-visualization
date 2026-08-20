@@ -15,12 +15,12 @@ typedef UrlFetcher = Future<String> Function(Uri url);
 ///
 /// Wikidata states each fact once, on whichever item it belongs to — a person
 /// records the city they were born in, the city records nothing about them.
-/// So neighbours are gathered in both directions, and the incoming direction
+/// So neighbors are gathered in both directions, and the incoming direction
 /// is where almost all the interesting edges live.
 ///
 /// Vienna alone has over 180,000 incoming statements, far too many to fetch.
 /// Instead the properties are listed first (cheap), a handful are chosen at
-/// random, and one neighbour is drawn at random from each. That is
+/// random, and one neighbor is drawn at random from each. That is
 /// what makes a second visit to the same topic look different.
 class WikidataService {
   WikidataService({UrlFetcher? fetcher, Random? random})
@@ -32,6 +32,13 @@ class WikidataService {
 
   final Map<String, List<PropertyLink>> _propertyCache = {};
   final Map<String, WikidataNode> _nodeCache = {};
+
+  /// Whether an item's Wikipedia lead runs to a real paragraph.
+  ///
+  /// Keyed by QID and never invalidated: an article's lead does not shrink
+  /// below a paragraph once it has one, and a wrong answer here only costs a
+  /// slightly duller satellite.
+  final Map<String, bool> _hasParagraph = {};
 
   /// Rosettes drawn ahead of time for satellites currently on screen.
   ///
@@ -63,7 +70,7 @@ class WikidataService {
   static const Duration timeout = Duration(seconds: 20);
 
   static const String userAgent =
-      'Perihelion/2.6 (https://github.com/cglendenning/graph-visualization)';
+      'Perihelion/3.1 (https://github.com/cglendenning/graph-visualization)';
 
   static const int seatCount = 6;
 
@@ -83,7 +90,7 @@ class WikidataService {
   /// larger query costs far less than several small ones in sequence.
   static const int propertiesSampled = 18;
 
-  /// How widely covered a neighbour must be to take a seat, tried in order.
+  /// How widely covered a neighbor must be to take a seat, tried in order.
   ///
   /// Wikidata records how many language Wikipedias carry an article for each
   /// item, which is the best cheap proxy for whether a person has heard of
@@ -91,10 +98,36 @@ class WikidataService {
   /// filtered query is no slower than an unfiltered one — whereas sorting by
   /// it takes seven seconds and is unaffordable.
   ///
-  /// Forty is roughly "known outside its own country": for Vienna's natives
+  /// Sixty is roughly "known outside its own country": for Vienna's natives
   /// it yields Karl Popper and Melanie Klein rather than a local pop singer.
   /// The lower tiers exist so a modest topic can still fill its seats.
-  static const List<int> notabilityTiers = [40, 12, 0];
+  ///
+  /// Measured before choosing: Vienna offers 56 neighbors at sixty, Einstein
+  /// 79, artificial intelligence 33, and jazz — the thinnest real topic
+  /// tested — still 12. Six seats therefore fill comfortably at the top tier,
+  /// and the floor never drops below twelve here. Genuinely thin topics fall
+  /// through to the unbounded pass below, which is what keeps the six.
+  static const List<int> notabilityTiers = [60, 25, 12];
+
+  /// Shortest Wikipedia intro that counts as a real paragraph.
+  ///
+  /// A topic whose lead is two sentences is a stub wearing an article's
+  /// clothes, and landing on one is what makes a traversal feel thin. Applied
+  /// to the center and to satellites alike — but dropped rather than left
+  /// with an empty seat, since a duller satellite still beats a missing one.
+  static const int minIntroCharacters = 300;
+
+  /// Titles asked for in one intro lookup; the extracts API caps it at twenty.
+  static const int introBatchSize = 20;
+
+  /// Candidates drawn from one day's most-read list before checking them.
+  static const int mainstreamCandidates = 20;
+
+  /// Most-read days to try before settling for a plain random article.
+  static const int mainstreamAttempts = 3;
+
+  /// Earliest day with a most-read list worth drawing from.
+  static final DateTime pageviewsEpoch = DateTime.utc(2016, 1, 1);
 
   /// Slices of the property list to try before giving up on the neat path.
   ///
@@ -180,6 +213,40 @@ class WikidataService {
         'ppprop': 'wikibase_item',
       });
 
+  /// The thousand most-read articles on one day.
+  ///
+  /// Wikipedia's own traffic is the cheapest honest signal for whether a
+  /// topic is one people actually care about. A uniformly random article has
+  /// a median of 2.5 language editions and a 281-character lead; a random
+  /// article from this list has 47.5 and 1,524.
+  static Uri topPageviewsUrl(DateTime day) {
+    String two(int value) => value.toString().padLeft(2, '0');
+    return Uri.https(
+      'wikimedia.org',
+      '/api/rest_v1/metrics/pageviews/top/en.wikipedia/all-access/'
+      '${day.year}/${two(day.month)}/${two(day.day)}',
+    );
+  }
+
+  /// Lead paragraphs and Wikidata ids for up to [introBatchSize] articles.
+  ///
+  /// The item id is asked for alongside the extract so results can be keyed
+  /// by QID directly. Matching them back by title would be wrong: Wikipedia
+  /// normalizes and follows redirects, so the title asked for is often not
+  /// the title returned.
+  static Uri articleIntrosUrl(List<String> titles) =>
+      Uri.https('en.wikipedia.org', '/w/api.php', {
+        'action': 'query',
+        'format': 'json',
+        'formatversion': '2',
+        'titles': titles.join('|'),
+        'prop': 'pageprops|extracts',
+        'ppprop': 'wikibase_item',
+        'exintro': '1',
+        'explaintext': '1',
+        'exlimit': '$introBatchSize',
+      });
+
   /// A random topic from the whole of English Wikipedia.
   ///
   /// Drawn from Wikipedia rather than Wikidata directly: a third of Wikidata
@@ -200,6 +267,82 @@ class WikidataService {
       return randomStartQid();
     }
     return qid;
+  }
+
+  /// A topic worth landing on: widely read, and with a lead of real substance.
+  ///
+  /// Falls back to a plain random article when the most-read list cannot be
+  /// reached, because an obscure topic still beats no topic at all.
+  Future<String> mainstreamStartQid() async {
+    for (var attempt = 0; attempt < mainstreamAttempts; attempt++) {
+      try {
+        final qid = await _mostReadStartQid();
+        if (qid != null) return qid;
+      } on Object catch (error) {
+        debugPrint('Perihelion: most-read draw failed ($error); '
+            'falling back to a random article.');
+        break;
+      }
+    }
+    return randomStartQid();
+  }
+
+  /// One attempt at a most-read topic, or null if that day yielded nothing.
+  Future<String?> _mostReadStartQid() async {
+    final json = _decode(await _get(topPageviewsUrl(_randomPageviewDay())));
+    final items = json['items'];
+    if (items is! List || items.isEmpty) return null;
+    final articles = (items.first as Map<String, dynamic>)['articles'];
+    if (articles is! List) return null;
+
+    final titles = <String>[];
+    for (final entry in articles) {
+      if (entry is! Map<String, dynamic>) continue;
+      final raw = entry['article'];
+      if (raw is! String) continue;
+      final title = raw.replaceAll('_', ' ');
+      // The most-read list is dominated by the front page and project pages.
+      if (title == 'Main Page' || _namespacedTitle.hasMatch(title)) continue;
+      titles.add(title);
+    }
+    if (titles.isEmpty) return null;
+
+    titles.shuffle(_random);
+    final passing = await _itemsWithParagraph(
+      titles.take(mainstreamCandidates).toList(growable: false),
+    );
+    if (passing.isEmpty) return null;
+    return passing[_random.nextInt(passing.length)];
+  }
+
+  /// A day whose most-read list has settled. Recent days are excluded because
+  /// the ranking is still being computed for them.
+  DateTime _randomPageviewDay() {
+    final latest = DateTime.now().toUtc().subtract(const Duration(days: 2));
+    final span = latest.difference(pageviewsEpoch).inDays;
+    if (span <= 0) return pageviewsEpoch;
+    return pageviewsEpoch.add(Duration(days: _random.nextInt(span)));
+  }
+
+  /// Of [titles], the QIDs whose lead reaches [minIntroCharacters].
+  Future<List<String>> _itemsWithParagraph(List<String> titles) async {
+    final passing = <String>[];
+    for (var i = 0; i < titles.length; i += introBatchSize) {
+      final batch = titles.skip(i).take(introBatchSize).toList(growable: false);
+      final json = _decode(await _get(articleIntrosUrl(batch)));
+      final pages = (json['query'] as Map<String, dynamic>?)?['pages'];
+      if (pages is! List) continue;
+      for (final page in pages) {
+        if (page is! Map<String, dynamic>) continue;
+        final qid = (page['pageprops'] as Map<String, dynamic>?)?['wikibase_item'];
+        if (qid is! String || !_qid.hasMatch(qid)) continue;
+        final intro = (page['extract'] as String?)?.trim() ?? '';
+        final ok = intro.length >= minIntroCharacters;
+        _remember(_hasParagraph, qid, ok);
+        if (ok) passing.add(qid);
+      }
+    }
+    return passing;
   }
 
   /// Finds the Wikidata item best matching [phrase].
@@ -306,7 +449,7 @@ LIMIT 200''';
     return links;
   }
 
-  /// Draws six neighbours, as varied as the data allows.
+  /// Draws six neighbors, as varied as the data allows.
   ///
   /// Filling all six matters more than any single preference, so the seats
   /// are filled in descending order of pickiness:
@@ -402,7 +545,7 @@ LIMIT 200''';
       while (_readyRandom.length < randomTopicsWarm &&
           attempts < randomWarmAttempts) {
         attempts++;
-        final qid = await randomStartQid();
+        final qid = await mainstreamStartQid();
         if (_readyRandom.contains(qid)) continue;
         await node(qid);
         final draw = await _drawNeighbors(qid);
@@ -471,7 +614,7 @@ LIMIT 200''';
     // targets have an article of their own. Strictly bounded: chaining a
     // dozen queries is what made a jump look like it had frozen.
     // Each round widens the net: a fresh slice of properties, and a lower bar
-    // for how widely known a neighbour has to be. The best-known candidates
+    // for how widely known a neighbor has to be. The best-known candidates
     // therefore take seats first, and the obscure ones only fill what is left.
     for (var round = 0;
         round < maxRounds &&
@@ -495,11 +638,11 @@ LIMIT 200''';
         requireArticle: true,
         minSitelinks: notabilityTiers[round],
       );
-      _absorb(rows, qid, chosen, taken);
+      _absorb(await _keepWithParagraph(rows), qid, chosen, taken);
     }
 
     // Last resort for a thinly connected topic: drop the requirement that a
-    // neighbour have its own article, and let the blocked properties back in.
+    // neighbor have its own article, and let the blocked properties back in.
     // A duller satellite beats an empty seat.
     if (chosen.length < seatCount && clock.elapsed < sampleBudget) {
       final fallback = List<PropertyLink>.of(all)..shuffle(_random);
@@ -513,9 +656,9 @@ LIMIT 200''';
     }
 
     // A stub — a hamlet, a minor species — can genuinely hold fewer than six
-    // statements. Step out one hop through a neighbour already on screen.
-    // One seed, one query: listing a neighbour's properties can take ten
-    // seconds on its own if that neighbour happens to be a country.
+    // statements. Step out one hop through a neighbor already on screen.
+    // One seed, one query: listing a neighbor's properties can take ten
+    // seconds on its own if that neighbor happens to be a country.
     if (chosen.length < seatCount &&
         chosen.isNotEmpty &&
         clock.elapsed < sampleBudget) {
@@ -533,13 +676,14 @@ LIMIT 200''';
     Set<String> taken,
   ) async {
     // Outgoing statements only. The incoming direction is the expensive one,
-    // and a stub's neighbour is reached purely to borrow a few extra seats.
+    // and a stub's neighbor is reached purely to borrow a few extra seats.
     final rows = await _select('''
-SELECT ?pd ?dir ?other ?otherLabel ?propLabel ?type WHERE {
+SELECT ?pd ?dir ?other ?article ?otherLabel ?propLabel ?type WHERE {
   BIND("out" AS ?dir)
   wd:${seed.node.qid} ?pd ?other .
   ?prop wikibase:directClaim ?pd .
-  ?sl schema:about ?other ; schema:isPartOf <https://en.wikipedia.org/> .
+  ?sl schema:about ?other ; schema:isPartOf <https://en.wikipedia.org/> ;
+      schema:name ?article .
   FILTER NOT EXISTS { ?other wdt:P31 ?internal .
     VALUES ?internal { ${wikimediaInternalTypes.map((q) => 'wd:$q').join(' ')} } }
   OPTIONAL { ?other wdt:P31 ?type }
@@ -596,16 +740,21 @@ LIMIT 60''');
           ? '?other wdt:${link.pid} wd:$qid .'
           : 'wd:$qid wdt:${link.pid} ?other .';
       final tag = '${link.pid}${link.incoming ? 'i' : 'o'}';
+      // schema:name carries the article title, which the paragraph check
+      // needs. It rides along on a join that already had to happen, so it
+      // costs nothing; resolving QIDs to titles afterwards would cost a
+      // whole extra round trip per round.
       final article = requireArticle
           ? '?sl$tag schema:about ?other ; '
-              'schema:isPartOf <https://en.wikipedia.org/> .'
+              'schema:isPartOf <https://en.wikipedia.org/> ; '
+              'schema:name ?article .'
           : 'FILTER(isIRI(?other))';
       final notable = minSitelinks > 0
           ? '?other wikibase:sitelinks ?n$tag . FILTER(?n$tag >= $minSitelinks)'
           : '';
       return '''
   {
-    SELECT ?pd ?dir ?other WHERE {
+    SELECT ?pd ?dir ?other ?article WHERE {
       BIND(wdt:${link.pid} AS ?pd) BIND("${link.incoming ? 'in' : 'out'}" AS ?dir)
       $pattern
       $article
@@ -623,7 +772,7 @@ LIMIT 60''');
         '${wikimediaInternalTypes.map((q) => 'wd:$q').join(' ')} } }';
 
     return '''
-SELECT ?pd ?dir ?other ?otherLabel ?propLabel ?type WHERE {
+SELECT ?pd ?dir ?other ?article ?otherLabel ?propLabel ?type WHERE {
 $blocks
   ?prop wikibase:directClaim ?pd .
   $internal
@@ -631,6 +780,43 @@ $blocks
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
 LIMIT 600''';
+  }
+
+  /// Drops rows whose article is a stub, so satellites lead somewhere worth
+  /// going.
+  ///
+  /// Deliberately not applied to the passes below the tiered rounds: those
+  /// exist to guarantee six seats, and a duller satellite beats an empty one.
+  /// The rule therefore binds whenever it can be met and lifts by itself
+  /// exactly when it would otherwise starve a seat.
+  Future<List<Map<String, dynamic>>> _keepWithParagraph(
+    List<Map<String, dynamic>> rows,
+  ) async {
+    final unknown = <String>{};
+    for (final row in rows) {
+      final qid = _localName(_value(row, 'other') ?? '');
+      if (!_qid.hasMatch(qid) || _hasParagraph.containsKey(qid)) continue;
+      final title = _value(row, 'article');
+      if (title != null && title.isNotEmpty) unknown.add(title);
+    }
+
+    if (unknown.isNotEmpty) {
+      try {
+        await _itemsWithParagraph(unknown.toList(growable: false));
+      } on Object catch (error) {
+        // Losing the check is not worth losing the rosette over: fall through
+        // and seat the candidates unfiltered.
+        debugPrint('Perihelion: intro check failed ($error); '
+            'seating satellites without it.');
+        return rows;
+      }
+    }
+
+    final kept = rows.where((row) {
+      final qid = _localName(_value(row, 'other') ?? '');
+      return _hasParagraph[qid] ?? false;
+    }).toList(growable: false);
+    return kept;
   }
 
   /// Adds whatever [rows] can contribute to [chosen], in the three passes
@@ -674,7 +860,7 @@ LIMIT 600''';
     }
   }
 
-  /// Seats one neighbour from [group] if it can. Returns whether it did.
+  /// Seats one neighbor from [group] if it can. Returns whether it did.
   bool _take(
     List<Map<String, dynamic>> group,
     Map<String, List<String>> types,
@@ -806,7 +992,7 @@ LIMIT 600''';
   }
 }
 
-/// Convenience for the UI, which colours by category.
+/// Convenience for the UI, which colors by category.
 extension WikidataNodeColor on WikidataNode {
   NodeCategory get resolvedCategory => category;
 }

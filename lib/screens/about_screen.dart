@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import '../models/wikipedia_extract.dart';
 import '../theme/hud_palette.dart';
 
-/// Provenance and licence notices.
+/// Provenance and license notices.
 ///
 /// Two obligations are met here. The graph's own provenance is stated, and
 /// the bundled open-source packages get their required copyright notices via
-/// Flutter's licence registry — BSD-3-Clause, MIT and Apache-2.0 all require
+/// Flutter's license registry — BSD-3-Clause, MIT and Apache-2.0 all require
 /// those notices to travel with a binary distribution.
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -67,7 +67,7 @@ class AboutScreen extends StatelessWidget {
                       'Summaries are not bundled with this app. When you open '
                       'a node, the opening section of the matching English '
                       'Wikipedia article is fetched and shown verbatim, '
-                      'credited to that article and to its licence.',
+                      'credited to that article and to its license.',
                     ),
                     const SizedBox(height: 12),
                     _Body(
@@ -81,7 +81,7 @@ class AboutScreen extends StatelessWidget {
                     const SizedBox(height: 12),
                     _Body(
                       'Built with Flutter and a small number of open-source '
-                      'packages, all under permissive licences that require '
+                      'packages, all under permissive licenses that require '
                       'their copyright notices to be reproduced.',
                     ),
                     const SizedBox(height: 16),

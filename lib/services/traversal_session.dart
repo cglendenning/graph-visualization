@@ -160,7 +160,7 @@ class TraversalSession {
     RosetteState? best;
     for (var attempt = 0; attempt < startAttempts; attempt++) {
       final candidate = await _build(
-        await _service.randomStartQid(),
+        await _service.mainstreamStartQid(),
         arrivedFrom: null,
       );
       if (candidate.occupied.length == RosetteLayout.seatCount) {

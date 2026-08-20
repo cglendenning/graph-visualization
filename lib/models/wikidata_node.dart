@@ -25,7 +25,7 @@ class WikidataNode {
   String get wikipediaTitle => label;
 }
 
-/// A neighbour reached from the current center by one Wikidata statement.
+/// A neighbor reached from the current center by one Wikidata statement.
 class WikidataNeighbor {
   const WikidataNeighbor({
     required this.node,
@@ -38,7 +38,7 @@ class WikidataNeighbor {
   /// The property label, e.g. "place of birth".
   final String relation;
 
-  /// True when the statement lives on the neighbour and points at the
+  /// True when the statement lives on the neighbor and points at the
   /// center, which is how most of the interesting edges are stored.
   final bool incoming;
 

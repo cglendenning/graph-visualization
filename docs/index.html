@@ -134,7 +134,7 @@
   <p class="heads-up"><b>This replaces Constellation, it does not upgrade it.</b> The app was renamed, so it carries a new bundle identifier and installs alongside the old one. Delete Constellation from your home screen after this finishes.</p>
 
   <dl class="telemetry">
-    <dt>Version</dt><dd>3.0.0 (19)</dd>
+    <dt>Version</dt><dd>3.1.0 (21)</dd>
     <dt>Bundle</dt><dd>com.craigglendenning.perihelion</dd>
     <dt>Min iOS</dt><dd>13.0</dd>
     <dt>Signing</dt><dd>Development · MCALPSQ5P5</dd>
@@ -143,19 +143,19 @@
   </dl>
 
   <div class="how">
-    <strong>What changed in 3.0.0</strong>
+    <strong>What changed in 3.1.0</strong>
       <ol>
-        <li>Steering is gone. It never worked well enough to earn its place, so the control and all of its machinery have been removed.</li>
-        <li>New topic now asks where you want to go: name a topic and press Go, or take a random one.</li>
-        <li>Go lights up only once you have typed something. Rando topic shows the readiness dot when one is already drawn and waiting.</li>
-        <li>Naming a topic takes you to that topic &mdash; type &ldquo;dogs&rdquo; and the center is the Dog article.</li>
+        <li>Topics are drawn from what people actually read. A uniformly random Wikipedia article has a median of 2.5 language editions and a 281-character lead; the most-read list for a randomly chosen past day has 47.5 and 1,524. That gap, not the neighbor filter, is why the app used to open on a hamlet.</li>
+        <li>Every center now has a real paragraph behind it. Articles whose lead runs under 300 characters are skipped rather than landed on.</li>
+        <li>Satellites are held to the same paragraph rule &mdash; unless holding to it would leave a seat empty, in which case it lifts. Six seats are still guaranteed.</li>
+        <li>The bar for how widely known a satellite must be rose from 40 language editions to 60, and the floor beneath it from 0 to 12.</li>
       </ol>
   </div>
 
   <div class="credits">
     Article summaries are fetched at runtime from Wikipedia and shown verbatim under
     <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, credited in the app to the article they came from.
-    Topics and relationships come from Wikidata under CC0, a public domain dedication. Nothing under a share-alike licence is bundled into the app.
+    Topics and relationships come from Wikidata under CC0, a public domain dedication. Nothing under a share-alike license is bundled into the app.
   </div>
   <p style="margin-top:2.5rem;font-size:.75rem;color:#2E7F94">
     <a href="privacy.html" style="color:#2E7F94">Privacy policy</a>
