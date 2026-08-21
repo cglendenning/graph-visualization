@@ -119,6 +119,19 @@
     text-align: left;
   }
   .credits a { color: var(--muted); }
+    .inapp {
+      margin: 1.25rem auto 0;
+      max-width: 34rem;
+      padding: .9rem 1.1rem;
+      border: 1px solid #C8892E;
+      border-radius: .5rem;
+      background: rgba(200, 137, 46, .09);
+      color: #E4C48C;
+      font-size: .85rem;
+      line-height: 1.55;
+      text-align: left;
+    }
+    .inapp b { color: #F3DDB6; }
 </style>
 </head>
 <body>
@@ -129,7 +142,36 @@
 
   <a class="install" href="itms-services://?action=download-manifest&amp;url=https://cglendenning.github.io/graph-visualization/builds/manifest-3.2.1-23.plist">Install on iPhone</a>
 
-  <p class="note">Open this page in Safari on the iPhone 12&nbsp;mini this build was signed for. The install prompt will not appear on a desktop browser.</p>
+  <p class="note" id="note">Open this page in Safari on the iPhone 12&nbsp;mini this build was signed for. The install prompt will not appear on a desktop browser.</p>
+
+  <div class="inapp" id="inapp" hidden>
+    <b>This is an in&#8209;app browser, not Safari.</b>
+    Installing will not work here &mdash; iOS hands the link to the App Store
+    and offers to open iTunes instead. Tap the compass icon at the
+    bottom&#8209;right of this window, or the share button then
+    <b>Open in Safari</b>, and press Install there.
+  </div>
+
+  <script>
+    // Messages, Slack, Gmail and the rest open links in an embedded browser.
+    // itms-services:// is dispatched to the App Store from there, which is
+    // the "Open in iTunes?" dead end. Real Safari on iOS is the only place
+    // the install prompt works, and it is identifiable by exclusion: it is
+    // the one iOS browser that is neither a known wrapper nor a rival engine.
+    (function () {
+      var ua = navigator.userAgent;
+      var ios = /iPhone|iPad|iPod/.test(ua);
+      if (!ios) return;
+      var wrapped =
+        /FBAN|FBAV|Instagram|Line|Twitter|MicroMessenger|WhatsApp|Snapchat|LinkedIn/.test(ua) ||
+        /GSA|CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/.test(ua) ||
+        !/Safari/.test(ua);
+      if (wrapped) {
+        document.getElementById('inapp').hidden = false;
+        document.getElementById('note').hidden = true;
+      }
+    })();
+  </script>
 
   <p class="heads-up"><b>This replaces Constellation, it does not upgrade it.</b> The app was renamed, so it carries a new bundle identifier and installs alongside the old one. Delete Constellation from your home screen after this finishes.</p>
 
