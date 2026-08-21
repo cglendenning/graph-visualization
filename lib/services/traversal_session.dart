@@ -111,15 +111,19 @@ class RosetteTransition {
 
 /// Holds the current position in Wikidata and the path taken to reach it.
 ///
-/// Every rosette is a fresh random draw, so the session cannot rebuild a
-/// previous screen from memory — it keeps only the trail of item ids and
-/// re-draws when the user steps back.
+/// The trail keeps whole rosettes, not just item ids. Every draw is random,
+/// so rebuilding a previous screen from its id would return a different six
+/// satellites — which is a new screen wearing an old center, not a way back.
+/// Keeping the states makes stepping back exact, and free: no network at all.
+///
+/// The trail is dropped whenever a new topic is chosen, since nothing behind
+/// it is reachable any more.
 class TraversalSession {
   // ignore: prefer_initializing_formals — named parameters cannot be private.
   TraversalSession({required WikidataService service}) : _service = service;
 
   final WikidataService _service;
-  final List<String> _history = <String>[];
+  final List<RosetteState> _history = <RosetteState>[];
 
   RosetteState? _rosette;
 
@@ -127,13 +131,15 @@ class TraversalSession {
 
   String? get currentQid => _rosette?.center.qid;
 
-  List<String> get history => List<String>.unmodifiable(_history);
+  List<String> get history =>
+      List<String>.unmodifiable(_history.map((r) => r.center.qid));
 
   int get depth => _history.length;
 
   bool get canGoBack => _history.isNotEmpty;
 
-  String? get previousQid => _history.isEmpty ? null : _history.last;
+  String? get previousQid =>
+      _history.isEmpty ? null : _history.last.center.qid;
 
   /// How many random topics to try before settling for the best of them.
   ///
@@ -193,7 +199,7 @@ class TraversalSession {
       throw ArgumentError('$qid is not currently on screen');
     }
     final back = _returnLink(leaving, seat);
-    _history.add(leaving.center.qid);
+    _history.add(leaving);
     _rosette = await _build(
       qid,
       arrivedFrom: back,
@@ -201,12 +207,13 @@ class TraversalSession {
     );
   }
 
-  /// Steps back one jump. The rosette is drawn again, so it will not be the
-  /// same six satellites as before — that is the cost of a live random draw.
+  /// Steps back one jump, restoring that screen exactly as it was.
+  ///
+  /// Async only to match the other navigation methods and the caller's
+  /// loading path; it does no work and touches no network.
   Future<void> goBack() async {
     if (_history.isEmpty) return;
-    final target = _history.removeLast();
-    _rosette = await _build(target, arrivedFrom: null);
+    _rosette = _history.removeLast();
   }
 
   /// The edge that leads back, phrased from the new center's point of view.
