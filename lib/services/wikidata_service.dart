@@ -382,11 +382,19 @@ LIMIT 1''');
     final cached = _nodeCache[qid];
     if (cached != null) return cached;
 
+    // The article title is asked for as a fallback name. Wikidata's English
+    // label is missing more often than one would expect — Q36301 is Anne
+    // Hathaway, labelled in Arabic, Czech, Greek, Hebrew and Korean but not
+    // English — and without a fallback the app shows a bare Q-number and then
+    // searches Wikipedia for it, which of course finds nothing.
     final query = '''
-SELECT ?label ?description ?type WHERE {
+SELECT ?label ?description ?type ?article WHERE {
   OPTIONAL { wd:$qid rdfs:label ?label . FILTER(lang(?label) = "en") }
   OPTIONAL { wd:$qid schema:description ?description . FILTER(lang(?description) = "en") }
   OPTIONAL { wd:$qid wdt:P31 ?type }
+  OPTIONAL { ?sitelink schema:about wd:$qid ;
+                       schema:isPartOf <https://en.wikipedia.org/> ;
+                       schema:name ?article }
 }
 LIMIT 20''';
 
@@ -394,8 +402,18 @@ LIMIT 20''';
     if (rows.isEmpty) {
       throw WikidataUnavailable('Wikidata has no item $qid.');
     }
-    final label = _value(rows.first, 'label') ?? qid;
-    final description = _value(rows.first, 'description') ?? '';
+    // Scanned across rows rather than read off the first: the P31 join
+    // multiplies rows, and an optional can be unbound on any one of them.
+    String? firstOf(String key) {
+      for (final row in rows) {
+        final value = _value(row, key);
+        if (value != null && value.isNotEmpty) return value;
+      }
+      return null;
+    }
+
+    final label = firstOf('label') ?? firstOf('article') ?? qid;
+    final description = firstOf('description') ?? '';
     final types = rows
         .map((r) => _value(r, 'type'))
         .whereType<String>()
@@ -782,6 +800,18 @@ $blocks
 LIMIT 600''';
   }
 
+  /// A name worth showing, or null when the row has none.
+  ///
+  /// Prefers the English label and falls back to the English article title,
+  /// which is present whenever the row survived the requireArticle join.
+  static String? _readableLabel(Map<String, dynamic> row, String qid) {
+    final label = _value(row, 'otherLabel');
+    if (label != null && label.isNotEmpty && label != qid) return label;
+    final article = _value(row, 'article');
+    if (article != null && article.isNotEmpty) return article;
+    return null;
+  }
+
   /// Drops rows whose article is a stub, so satellites lead somewhere worth
   /// going.
   ///
@@ -874,10 +904,12 @@ LIMIT 600''';
     for (final row in group) {
       final qid = _localName(_value(row, 'other') ?? '');
       if (taken.contains(qid)) continue;
-      final label = _value(row, 'otherLabel');
-      // An unlabelled item shows as a bare Q-number, which is not worth a seat.
-      if (label == null || label == qid) continue;
-      // Nor is a page from Wikipedia's own scaffolding a topic.
+      // wikibase:label hands back the bare Q-number when an item has no
+      // English label. The article title is the better name in that case,
+      // and discarding the candidate would lose genuinely notable topics.
+      final label = _readableLabel(row, qid);
+      if (label == null) continue;
+      // A page from Wikipedia's own scaffolding is not a topic.
       if (_namespacedTitle.hasMatch(label)) continue;
       if (freshCategoryOnly) {
         final category = WikidataCategoryMap.forTypes(types[qid] ?? const []);
@@ -893,7 +925,7 @@ LIMIT 600''';
     chosen.add(WikidataNeighbor(
       node: WikidataNode(
         qid: qid,
-        label: _value(row, 'otherLabel')!,
+        label: _readableLabel(row, qid)!,
         description: '',
         category: WikidataCategoryMap.forTypes(types[qid] ?? const []),
       ),

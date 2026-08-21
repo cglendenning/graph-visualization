@@ -127,14 +127,14 @@
   <h1>Perihelion</h1>
   <p class="tagline">Traverse a knowledge graph, one node at a time.</p>
 
-  <a class="install" href="itms-services://?action=download-manifest&amp;url=https://cglendenning.github.io/graph-visualization/manifest.plist?v=3.2.0-22">Install on iPhone</a>
+  <a class="install" href="itms-services://?action=download-manifest&amp;url=https://cglendenning.github.io/graph-visualization/manifest.plist?v=3.2.1-23">Install on iPhone</a>
 
   <p class="note">Open this page in Safari on the iPhone 12&nbsp;mini this build was signed for. The install prompt will not appear on a desktop browser.</p>
 
   <p class="heads-up"><b>This replaces Constellation, it does not upgrade it.</b> The app was renamed, so it carries a new bundle identifier and installs alongside the old one. Delete Constellation from your home screen after this finishes.</p>
 
   <dl class="telemetry">
-    <dt>Version</dt><dd>3.2.0 (22)</dd>
+    <dt>Version</dt><dd>3.2.1 (23)</dd>
     <dt>Bundle</dt><dd>com.craigglendenning.perihelion</dd>
     <dt>Min iOS</dt><dd>13.0</dd>
     <dt>Signing</dt><dd>Development · MCALPSQ5P5</dd>
@@ -143,12 +143,11 @@
   </dl>
 
   <div class="how">
-    <strong>What changed in 3.2.0</strong>
+    <strong>What changed in 3.2.1</strong>
       <ol>
-        <li>Back is now a real return. It restores the screen you left &mdash; the same center and the same six satellites, in the same seats &mdash; instead of drawing a fresh six around an old center.</li>
-        <li>Because the screen is remembered rather than rebuilt, stepping back is instant and uses no network at all.</li>
-        <li>Choosing a new topic discards the whole trail behind it, since nothing back there is reachable any more.</li>
-        <li>Jumping forward still draws fresh. Only the way back is fixed.</li>
+        <li>Topics with no English label no longer show as a bare Q-number. Wikidata is missing an English name more often than you would expect &mdash; Q36301 is Anne Hathaway, named there in Arabic, Czech, Greek, Hebrew and Korean but not English &mdash; so the English article title is used instead.</li>
+        <li>That also fixes the detail screen, which was searching Wikipedia for &ldquo;Q36301&rdquo; and finding nothing.</li>
+        <li>Unlabelled topics can now take a seat rather than being dropped, so genuinely well-known ones stop going missing.</li>
       </ol>
   </div>
 
